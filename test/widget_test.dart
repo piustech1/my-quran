@@ -43,8 +43,8 @@ void main() {
       ),
     );
     expect(find.text('سُورَةُ قُرَيْشٍ'), findsOneWidget);
-    expect(find.text('تَرْتِيبُهَا'), findsOneWidget);
-    expect(find.text('آيَاتُهَا'), findsOneWidget);
+    expect(find.textContaining('تَرْتِيبُهَا'), findsOneWidget);
+    expect(find.textContaining('آيَاتُهَا'), findsOneWidget);
     expect(find.text('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
   });
 }

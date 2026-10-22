@@ -43,39 +43,37 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.4.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.4.1.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.4.0
-          name: "My Quran v1.4.0 - Authentic Mushaf Page Frame & Reference Mockup Precision"
+          tag_name: v1.4.1
+          name: "My Quran v1.4.1 - Perfected Mushaf Reader Page & Frame Alignment"
           body: |
-            ### 📖 My Quran - Release v1.4.0
+            ### 📖 My Quran - Release v1.4.1
 
-            What's New in **v1.4.0**:
+            What's New in **v1.4.1**:
 
-            #### 🕌 Authentic Mushaf Frame on Every Quran Page
-            - **Mufta Border Frame:** Integrated the user's `assets/mufta.png` ornate Islamic manuscript frame on every Quran page in `PageTurnView`.
-            - **Golden Surah Banner:** Flowing Arabic scripture rendered inside the traditional illuminated frame with header banner, order number, and verse count in Arabic-Indic numerals.
-            - **Synchronized Recitation & Auto Page Turn:** Live golden verse highlighting as audio recites, turning pages seamlessly with 3D page curl upon page completion.
+            #### 🕌 Authentic Mushaf Frame Expansion (Purple Outline)
+            - **Eliminated Fake Container Border:** Removed artificial gold borders so `assets/mufta.png` serves as the sole, true frame cutting through to the page boundaries.
+            - **Zero Outer Whitespace:** Trimmed transparent padding in `assets/mufta.png` so the ornate Islamic manuscript artwork directly borders the page canvas.
 
-            #### 📚 Quran Library Mockup Alignment (Image 1)
-            - **Golden "Last Read" Card:** High-contrast warm gold card (172px) with `📖 Last Read`, `Surah`, `Al-Fatihah`, `الفاتحة • Ayah 5`, `Back to reading >` dark pill button, and 3D Quran book graphic.
-            - **Tab Bar Structure:** Clean `Surah | Para | Page | Hizb` navigation tabs with gold underline indicator.
-            - **Surah List Cards:** Rounded cards (`r: 22`) with solid golden circular number badges (`r: 18`), English + Arabic titles, `• X ayat` subtitle, and solid gold circular play buttons.
+            #### 📜 Refined Surah Header Cartouche (Green Crossing)
+            - **No More Clunky Green Balls:** Replaced the boxy banner and protruding green balls with a slender, authentic illuminated cartouche nestled gracefully **inside the top arch** of the frame.
+            - **Amiri Calligraphy & Elegant Metadata:** Displays Surah title in classical Arabic script with delicate order and Ayah count indicators.
+            - **Removed Duplicate Bismillah:** Surah Al-Fatihah now displays its opening Ayah directly without duplicate heading, keeping the sacred presentation authentic.
 
-            #### 🌟 Home Dashboard Mockup Precision (Image 2)
-            - **Greeting Header:** "Assalamu alaikum, Aminah ✎" with circular notification bell and instant light/dark theme toggle.
-            - **Next Prayer Card:** Elegant card featuring "D H U H R 12:16 PM", live real-time ticking clock ("Now 11:20:51 PM"), date ("Oct 22, 2026"), sun illustration, and weather ("27° Partly cloudy • Kampala").
-            - **Quick Actions:** 3 equal-sized squircle cards (Qur'an, Zakat, Dzikir) with gold circular icon badges and "0 / 33" counter state.
-            - **Featured Card:** "DAILY DAKWAH" pill badge, "Ramadan Study", "With Ustd. Hanan", and 3D calendar illustration.
+            #### ✍️ Flowing Scripture Typography & Bounds Protection (Red Outline)
+            - **Natural Fluid Text Flow:** Verses now flow continuously as authentic Mushaf text with inline circular medallions (`۝`) containing Arabic-Indic numerals.
+            - **Safe Inner Margins:** Inner padding is calibrated (`44px` horizontal, `36px` top, `28px` bottom) so verses and medallions never collide with or overflow onto the floral border.
+            - **Audio Recitation Highlighting:** Verses and inline medallions illuminate synchronously in gold as audio plays.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.4.0.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.4.1.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.4.0.apk
+            release-output/My-Quran-v1.4.1.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

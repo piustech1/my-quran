@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
@@ -233,25 +234,23 @@ class _PageTurnViewState extends State<PageTurnView> {
   Widget _buildMushafManuscriptPage(int pageIndex, List<Ayah> pageAyahs, int? playingAyah) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final pageBg = isDark ? const Color(0xFF1E242B) : const Color(0xFFFFFDF8);
-    final outerBorderColor = isDark ? const Color(0xFF4B3C18) : const Color(0xFFD4AF37);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: pageBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: outerBorderColor, width: 2.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.4 : 0.12),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
+            color: Colors.black.withOpacity(isDark ? 0.45 : 0.10),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Stack(
         children: [
-          // Authentic Mushaf Page Frame Outline from user assets
+          // Authentic Mushaf Page Frame Outline from user assets - enlarged to outer page boundary
           Positioned.fill(
             child: IgnorePointer(
               child: Image.asset(
@@ -262,9 +261,9 @@ class _PageTurnViewState extends State<PageTurnView> {
             ),
           ),
 
-          // Page Content situated comfortably inside the Mushaf frame
+          // Page Content situated comfortably inside the Mushaf frame sanctuary
           Padding(
-            padding: const EdgeInsets.fromLTRB(28, 28, 28, 24),
+            padding: const EdgeInsets.fromLTRB(44, 36, 44, 28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -279,7 +278,7 @@ class _PageTurnViewState extends State<PageTurnView> {
                 else
                   _buildSubsequentPageHeader(),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
 
                 // Flowing Quranic Arabic Text with Live Highlighting
                 Expanded(
@@ -289,7 +288,7 @@ class _PageTurnViewState extends State<PageTurnView> {
                   ),
                 ),
 
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
 
                 // Bottom Page Number
                 Center(
@@ -297,7 +296,7 @@ class _PageTurnViewState extends State<PageTurnView> {
                     '— ${pageIndex + 1} —',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
-                      color: AppColors.accentGoldDark,
+                      color: isDark ? const Color(0xFFD4AF37) : AppColors.accentGoldDark,
                       letterSpacing: 2,
                       fontWeight: FontWeight.bold,
                     ),
@@ -348,114 +347,106 @@ class _PageTurnViewState extends State<PageTurnView> {
 
   /// Builds the flowing Arabic text, exactly like an authentic printed Mushaf
   Widget _buildFlowingArabicVerses(List<Ayah> pageAyahs, int? playingAyah) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 4,
-        runSpacing: 8,
-        children: pageAyahs.map((ayah) {
-          final isCurrentPlaying = playingAyah == ayah.verse;
-          return _buildAyahBlock(ayah, isCurrentPlaying);
-        }).toList(),
-      ),
-    );
-  }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFEDE8D0) : const Color(0xFF161C24);
 
-  Widget _buildAyahBlock(Ayah ayah, bool isPlaying) {
-    return GestureDetector(
-      onTap: () => _handleAyahTap(ayah),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        decoration: BoxDecoration(
-          color: isPlaying
-              ? AppColors.accentGold.withOpacity(0.24)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isPlaying ? AppColors.accentGold : Colors.transparent,
-            width: 1.2,
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text.rich(
+            TextSpan(
               children: [
-                // Arabic text of the Ayah
-                Flexible(
-                  child: Text(
-                    ayah.arabicText,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.center,
+                for (final ayah in pageAyahs) ...[
+                  TextSpan(
+                    text: '${ayah.arabicText} ',
                     style: GoogleFonts.amiri(
                       fontSize: widget.arabicFontSize,
-                      fontWeight: FontWeight.bold,
-                      color: isPlaying
-                          ? const Color(0xFF946200)
-                          : const Color(0xFF161C24),
-                      height: 1.9,
+                      fontWeight: FontWeight.w700,
+                      color: (playingAyah == ayah.verse)
+                          ? (isDark ? const Color(0xFFFFD54F) : const Color(0xFF8C5300))
+                          : textPrimary,
+                      backgroundColor: (playingAyah == ayah.verse)
+                          ? AppColors.accentGold.withOpacity(isDark ? 0.35 : 0.22)
+                          : Colors.transparent,
+                      height: 2.1,
+                      letterSpacing: 0.1,
+                    ),
+                    recognizer: TapGestureRecognizer()..onTap = () => _handleAyahTap(ayah),
+                  ),
+                  WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: GestureDetector(
+                      onTap: () => _handleAyahTap(ayah),
+                      child: _buildAyahEndMedallion(ayah.verse, playingAyah == ayah.verse),
                     ),
                   ),
-                ),
-                const SizedBox(width: 6),
-
-                // Ornate Ayah End Medallion (۝ with Arabic Digits)
-                _buildAyahEndMedallion(ayah.verse, isPlaying),
+                  const TextSpan(text: ' '),
+                ],
               ],
             ),
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.rtl,
+          ),
+        ),
 
-            // Optional English translation if toggled ON by user
-            if (widget.showTranslation && ayah.translation.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Directionality(
-                textDirection: TextDirection.ltr,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.03),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+        // Optional English translations if toggled ON by user
+        if (widget.showTranslation) ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF181E24).withOpacity(0.9) : const Color(0xFFF7F5EE).withOpacity(0.9),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.35)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: pageAyahs.map((ayah) {
+                final isPlaying = playingAyah == ayah.verse;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2.5),
                   child: Text(
-                    ayah.translation,
+                    '${ayah.verse}. ${ayah.translation}',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
-                      color: const Color(0xFF4A5568),
-                      height: 1.4,
+                      fontWeight: isPlaying ? FontWeight.bold : FontWeight.w500,
+                      color: isPlaying
+                          ? (isDark ? const Color(0xFFFFD54F) : const Color(0xFF8C5300))
+                          : (isDark ? Colors.white70 : const Color(0xFF374151)),
+                      height: 1.35,
                     ),
                   ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
   /// Traditional circular Ayah end medallion (۝) containing the Arabic verse numeral
   Widget _buildAyahEndMedallion(int verseNumber, bool isPlaying) {
     return Container(
-      width: 32,
-      height: 32,
+      width: 26,
+      height: 26,
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isPlaying ? AppColors.accentGold : const Color(0xFFF9F7F0),
+        color: isPlaying ? AppColors.accentGold : const Color(0xFFFBF8EE),
         border: Border.all(
           color: isPlaying ? AppColors.accentGoldDark : const Color(0xFF1B6B45),
-          width: 1.4,
+          width: 1.3,
         ),
         boxShadow: isPlaying
             ? [
                 BoxShadow(
-                  color: AppColors.accentGold.withOpacity(0.5),
-                  blurRadius: 8,
-                  spreadRadius: 2,
+                  color: AppColors.accentGold.withOpacity(0.55),
+                  blurRadius: 6,
+                  spreadRadius: 1,
                 ),
               ]
             : null,
@@ -464,7 +455,7 @@ class _PageTurnViewState extends State<PageTurnView> {
       child: Text(
         toArabicDigits(verseNumber),
         style: TextStyle(
-          fontSize: 13,
+          fontSize: 11,
           fontWeight: FontWeight.w800,
           color: isPlaying ? Colors.white : const Color(0xFF1B6B45),
           height: 1.1,
