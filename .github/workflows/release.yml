@@ -1,0 +1,72 @@
+name: Build & Release My Quran APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build Android APK & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Run Tests
+        run: flutter test
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: Prepare Release APK
+        run: |
+          mkdir -p release-output
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.0.0.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: "My Quran v1.0.0"
+          body: |
+            ### 📖 My Quran - Release v1.0.0
+
+            Welcome to the initial release of **My Quran**!
+
+            #### ✨ Highlights & Features
+            - **Design System:** Deep Imperial Emerald (`#0D3B2E`) and Warm Ivory/Parchment solid palette with authentic iOS-style glassmorphism cards (no gradients).
+            - **3D Page-Turn Mode:** Realistic manuscript book opening and 3D page flip transition.
+            - **Verse Study Mode:** Side-by-side Arabic Uthmani calligraphy, English translation, and single-tap Ayah copy.
+            - **Quran Metadata:** All 114 Surahs and 30 Juzs indexed with instant search & filter.
+            - **Persistent Storage:** Bookmarking, "Last Read" automatic resume, and customizable Arabic typography.
+            - **Offline-First:** Seamless local caching powered by `fawazahmed0/quran-api`.
+
+            #### 📲 Installation
+            Download and install **`My-Quran-v1.0.0.apk`** below directly on your Android device.
+          files: release-output/My-Quran-v1.0.0.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
