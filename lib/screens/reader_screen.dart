@@ -9,7 +9,6 @@ import '../services/storage_service.dart';
 import '../widgets/audio_player_bar.dart';
 import '../widgets/ayah_card.dart';
 import '../widgets/bismillah_banner.dart';
-import '../widgets/glass_card.dart';
 import '../widgets/page_turn_view.dart';
 
 enum ReaderMode {
@@ -36,7 +35,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  ReaderMode _readerMode = ReaderMode.pageTurn;
+  ReaderMode _readerMode = ReaderMode.verseList; // Default to study verse list
   double _arabicFontSize = 24.0;
   bool _showTranslation = true;
   bool _isBookmarked = false;
@@ -54,7 +53,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void _handleAudioAyahChange() {
     final playingAyah = _audioService.currentPlayingAyah.value;
     if (playingAyah != null && _readerMode == ReaderMode.verseList && _scrollController.hasClients) {
-      // Estimate offset: Bismillah banner ~ 120px, each Ayah card ~ 180px
       final targetOffset = ((playingAyah - 1) * 190.0) + 100.0;
       _scrollController.animateTo(
         targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
@@ -116,15 +114,26 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   void _showReciterSelectionModal() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return GlassCard(
-          borderRadius: 28,
+        return Container(
           padding: const EdgeInsets.all(24),
-          color: AppColors.primarySurface.withOpacity(0.95),
-          borderColor: AppColors.glassBorder,
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
+            border: Border.all(color: border, width: 1),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -137,11 +146,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textLight,
+                      color: textPrimary,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, color: AppColors.textMuted),
+                    icon: Icon(Icons.close_rounded, color: textSecondary),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -151,50 +160,60 @@ class _ReaderScreenState extends State<ReaderScreen> {
                 final isSelected = _audioService.selectedReciter.id == reciter.id;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: GlassCard(
-                    borderRadius: 16,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    color: isSelected ? AppColors.primary : AppColors.glassBackground,
-                    borderColor: isSelected ? AppColors.gold : AppColors.glassBorderSubtle,
+                  child: InkWell(
                     onTap: () {
                       _audioService.setReciter(reciter);
                       setState(() {});
                       Navigator.of(context).pop();
                     },
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.mic_rounded,
-                          color: isSelected ? AppColors.gold : AppColors.textMuted,
-                          size: 20,
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.accentGold.withOpacity(0.18)
+                            : (isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? AppColors.accentGold : border,
+                          width: 1,
                         ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                reciter.name,
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: isSelected ? AppColors.gold : AppColors.textLight,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                reciter.description,
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 11,
-                                  color: AppColors.textMuted,
-                                ),
-                              ),
-                            ],
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.mic_rounded,
+                            color: isSelected ? AppColors.accentGold : textSecondary,
+                            size: 20,
                           ),
-                        ),
-                        if (isSelected)
-                          const Icon(Icons.check_circle_rounded, color: AppColors.gold, size: 20),
-                      ],
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  reciter.name,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSelected ? AppColors.accentGoldDark : textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  reciter.description,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    color: textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isSelected)
+                            const Icon(Icons.check_circle_rounded, color: AppColors.accentGold, size: 20),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -207,17 +226,28 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   void _showSettingsModal() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return GlassCard(
-              borderRadius: 28,
+            return Container(
               padding: const EdgeInsets.all(24),
-              color: AppColors.primarySurface.withOpacity(0.95),
-              borderColor: AppColors.glassBorder,
+              decoration: BoxDecoration(
+                color: bg,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
+                border: Border.all(color: border, width: 1),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -230,11 +260,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textLight,
+                          color: textPrimary,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close_rounded, color: AppColors.textMuted),
+                        icon: Icon(Icons.close_rounded, color: textSecondary),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
                     ],
@@ -246,15 +276,15 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     'Arabic Font Size: ${_arabicFontSize.toInt()} pt',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
-                      color: AppColors.textMuted,
+                      color: textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: AppColors.gold,
-                      inactiveTrackColor: AppColors.glassBackgroundHeavy,
-                      thumbColor: AppColors.gold,
+                      activeTrackColor: AppColors.accentGold,
+                      inactiveTrackColor: AppColors.accentGold.withOpacity(0.2),
+                      thumbColor: AppColors.accentGold,
                     ),
                     child: Slider(
                       value: _arabicFontSize,
@@ -278,13 +308,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         'Show English Translation',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
-                          color: AppColors.textLight,
+                          color: textPrimary,
                         ),
                       ),
                       Switch(
                         value: _showTranslation,
-                        activeColor: AppColors.gold,
-                        activeTrackColor: AppColors.primary,
+                        activeColor: AppColors.accentGold,
                         onChanged: (val) {
                           setModalState(() => _showTranslation = val);
                           setState(() => _showTranslation = val);
@@ -303,13 +332,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         'Continuous Recitation Auto-Play',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
-                          color: AppColors.textLight,
+                          color: textPrimary,
                         ),
                       ),
                       Switch(
                         value: _audioService.autoPlayNext,
-                        activeColor: AppColors.gold,
-                        activeTrackColor: AppColors.primary,
+                        activeColor: AppColors.accentGold,
                         onChanged: (val) {
                           setModalState(() => _audioService.autoPlayNext = val);
                           setState(() => _audioService.autoPlayNext = val);
@@ -329,9 +357,19 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return Scaffold(
-      backgroundColor: AppColors.primaryDark,
+      backgroundColor: bg,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          color: textPrimary,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Column(
           children: [
             Text(
@@ -339,14 +377,14 @@ class _ReaderScreenState extends State<ReaderScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textLight,
+                color: textPrimary,
               ),
             ),
             Text(
               '${widget.surah.revelationType} • ${widget.surah.numberOfAyahs} Ayahs',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
-                color: AppColors.textMuted,
+                color: textSecondary,
               ),
             ),
           ],
@@ -354,7 +392,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
         actions: [
           // Play Full Surah Audio action
           IconButton(
-            icon: const Icon(Icons.play_circle_outline_rounded, color: AppColors.gold),
+            icon: const Icon(Icons.play_circle_outline_rounded, color: AppColors.accentGold),
             tooltip: 'Play Surah Audio',
             onPressed: () {
               _audioService.playAyah(
@@ -371,7 +409,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
               _readerMode == ReaderMode.pageTurn
                   ? Icons.menu_book_rounded
                   : Icons.view_headline_rounded,
-              color: AppColors.gold,
+              color: AppColors.accentGold,
             ),
             tooltip: _readerMode == ReaderMode.pageTurn
                 ? 'Switch to Verse List'
@@ -389,7 +427,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
           IconButton(
             icon: Icon(
               _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-              color: _isBookmarked ? AppColors.gold : AppColors.textLight,
+              color: _isBookmarked ? AppColors.accentGold : textPrimary,
             ),
             onPressed: () async {
               final newStatus = await _storage.toggleBookmark(widget.surah.number);
@@ -399,7 +437,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
           // Settings (Font size, translation, audio)
           IconButton(
-            icon: const Icon(Icons.tune_rounded, color: AppColors.textLight),
+            icon: Icon(Icons.tune_rounded, color: textPrimary),
             onPressed: _showSettingsModal,
           ),
         ],
@@ -432,13 +470,15 @@ class _ReaderScreenState extends State<ReaderScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(color: AppColors.gold),
+            const CircularProgressIndicator(color: AppColors.accentGold),
             const SizedBox(height: 16),
             Text(
               'Loading Surah ${widget.surah.englishName}...',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.lightTextSecondary,
               ),
             ),
           ],
@@ -453,18 +493,18 @@ class _ReaderScreenState extends State<ReaderScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_off_rounded, size: 48, color: AppColors.textMuted),
+              const Icon(Icons.cloud_off_rounded, size: 48, color: AppColors.accentGold),
               const SizedBox(height: 12),
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.plusJakartaSans(color: AppColors.textLight),
+                style: GoogleFonts.plusJakartaSans(),
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.gold,
+                  backgroundColor: AppColors.accentGold,
+                  foregroundColor: AppColors.lightPillButton,
                 ),
                 icon: const Icon(Icons.refresh_rounded),
                 label: const Text('Try Again'),

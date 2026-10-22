@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../services/audio_service.dart';
-import 'glass_card.dart';
 
 class AudioPlayerBar extends StatelessWidget {
   final int totalVerses;
@@ -17,6 +16,10 @@ class AudioPlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioService = QuranAudioService();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return ValueListenableBuilder<int?>(
       valueListenable: audioService.currentPlayingAyah,
@@ -25,11 +28,20 @@ class AudioPlayerBar extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: GlassCard(
-            borderRadius: 24,
+          child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: AppColors.primarySurface.withOpacity(0.92),
-            borderColor: AppColors.gold.withOpacity(0.4),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.accentGold, width: 1.2),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.accentGold.withOpacity(0.25),
+                  blurRadius: 18,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -41,30 +53,30 @@ class AudioPlayerBar extends StatelessWidget {
                       onTap: onReciterChangeRequested,
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: AppColors.accentGold.withOpacity(0.16),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: AppColors.gold.withOpacity(0.5),
+                            color: AppColors.accentGold,
                             width: 1,
                           ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.person_rounded, size: 14, color: AppColors.gold),
+                            const Icon(Icons.person_rounded, size: 14, color: AppColors.accentGold),
                             const SizedBox(width: 6),
                             Text(
                               audioService.selectedReciter.name,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.gold,
+                                color: isDark ? AppColors.darkTextPrimary : const Color(0xFF5A4418),
                               ),
                             ),
                             const SizedBox(width: 4),
-                            const Icon(Icons.arrow_drop_down_rounded, size: 16, color: AppColors.gold),
+                            const Icon(Icons.arrow_drop_down_rounded, size: 16, color: AppColors.accentGold),
                           ],
                         ),
                       ),
@@ -76,8 +88,8 @@ class AudioPlayerBar extends StatelessWidget {
                       'Ayah $currentAyah of $totalVerses',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textLight,
+                        fontWeight: FontWeight.bold,
+                        color: textPrimary,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -85,7 +97,7 @@ class AudioPlayerBar extends StatelessWidget {
                     // Stop / Close button
                     IconButton(
                       icon: const Icon(Icons.close_rounded, size: 18),
-                      color: AppColors.textMuted,
+                      color: textSecondary,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () => audioService.stop(),
@@ -101,7 +113,7 @@ class AudioPlayerBar extends StatelessWidget {
                     // Previous Ayah
                     IconButton(
                       icon: const Icon(Icons.skip_previous_rounded),
-                      color: currentAyah > 1 ? AppColors.textLight : AppColors.textMuted,
+                      color: currentAyah > 1 ? textPrimary : textSecondary.withOpacity(0.4),
                       iconSize: 28,
                       onPressed: currentAyah > 1 ? () => audioService.playPreviousAyah() : null,
                     ),
@@ -119,7 +131,7 @@ class AudioPlayerBar extends StatelessWidget {
                               padding: EdgeInsets.all(10),
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
-                                color: AppColors.gold,
+                                color: AppColors.accentGold,
                               ),
                             ),
                           );
@@ -131,11 +143,11 @@ class AudioPlayerBar extends StatelessWidget {
                             return Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppColors.gold,
+                                color: AppColors.accentGold,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.gold.withOpacity(0.25),
-                                    blurRadius: 12,
+                                    color: AppColors.accentGold.withOpacity(0.35),
+                                    blurRadius: 10,
                                   ),
                                 ],
                               ),
@@ -143,7 +155,7 @@ class AudioPlayerBar extends StatelessWidget {
                                 icon: Icon(
                                   isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                                 ),
-                                color: AppColors.primaryDark,
+                                color: AppColors.lightPillButton,
                                 iconSize: 28,
                                 onPressed: () {
                                   if (isPlaying) {
@@ -163,7 +175,7 @@ class AudioPlayerBar extends StatelessWidget {
                     // Next Ayah
                     IconButton(
                       icon: const Icon(Icons.skip_next_rounded),
-                      color: currentAyah < totalVerses ? AppColors.textLight : AppColors.textMuted,
+                      color: currentAyah < totalVerses ? textPrimary : textSecondary.withOpacity(0.4),
                       iconSize: 28,
                       onPressed: currentAyah < totalVerses
                           ? () => audioService.playNextAyah()

@@ -31,7 +31,6 @@ class _PageTurnViewState extends State<PageTurnView> {
   late PageController _pageController;
   double _currentPage = 0.0;
 
-  // We group ayahs into pages (roughly 5 ayahs per page, or based on text length)
   late List<List<Ayah>> _pages;
 
   @override
@@ -75,8 +74,12 @@ class _PageTurnViewState extends State<PageTurnView> {
   @override
   Widget build(BuildContext context) {
     if (_pages.isEmpty || widget.ayahs.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.gold));
+      return const Center(child: CircularProgressIndicator(color: AppColors.accentGold));
     }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return Column(
       children: [
@@ -90,15 +93,15 @@ class _PageTurnViewState extends State<PageTurnView> {
                 'Page ${(_currentPage.round() + 1)} of ${_pages.length}',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13,
-                  color: AppColors.gold,
-                  fontWeight: FontWeight.w600,
+                  color: AppColors.accentGoldDark,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Row(
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back_ios_rounded, size: 16),
-                    color: _currentPage.round() > 0 ? AppColors.textLight : AppColors.textMuted,
+                    color: _currentPage.round() > 0 ? textPrimary : textSecondary.withOpacity(0.4),
                     onPressed: _currentPage.round() > 0
                         ? () {
                             _pageController.previousPage(
@@ -111,8 +114,8 @@ class _PageTurnViewState extends State<PageTurnView> {
                   IconButton(
                     icon: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
                     color: _currentPage.round() < _pages.length - 1
-                        ? AppColors.textLight
-                        : AppColors.textMuted,
+                        ? textPrimary
+                        : textSecondary.withOpacity(0.4),
                     onPressed: _currentPage.round() < _pages.length - 1
                         ? () {
                             _pageController.nextPage(
@@ -136,7 +139,6 @@ class _PageTurnViewState extends State<PageTurnView> {
             itemBuilder: (context, index) {
               final pageOffset = _currentPage - index;
 
-              // 3D Book Page Open Transform
               final isLeaving = pageOffset > 0;
               final rotationY = isLeaving
                   ? math.min(pageOffset * -math.pi / 2.5, 0.0)
@@ -162,16 +164,16 @@ class _PageTurnViewState extends State<PageTurnView> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.parchment,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: AppColors.gold.withOpacity(0.5),
+          color: AppColors.accentGold.withOpacity(0.55),
           width: 2.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.35),
+            color: Colors.black.withOpacity(0.12),
             blurRadius: 18,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -182,10 +184,10 @@ class _PageTurnViewState extends State<PageTurnView> {
             child: Container(
               margin: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.25),
-                  width: 1.0,
+                  color: AppColors.parchmentBorder,
+                  width: 1.2,
                 ),
               ),
             ),
@@ -206,7 +208,7 @@ class _PageTurnViewState extends State<PageTurnView> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        color: AppColors.lightTextPrimary,
                       ),
                     ),
                     Text(
@@ -215,13 +217,13 @@ class _PageTurnViewState extends State<PageTurnView> {
                       style: GoogleFonts.amiri(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        color: AppColors.accentGoldDark,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                Divider(color: AppColors.gold.withOpacity(0.4), height: 1),
+                Divider(color: AppColors.accentGold.withOpacity(0.4), height: 1),
                 const SizedBox(height: 12),
 
                 // Verses on this page
@@ -236,7 +238,6 @@ class _PageTurnViewState extends State<PageTurnView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // Arabic verse with inline ayah end badge
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -246,17 +247,17 @@ class _PageTurnViewState extends State<PageTurnView> {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: AppColors.gold,
+                                      color: AppColors.accentGold,
                                       width: 1.2,
                                     ),
-                                    color: AppColors.parchmentCard,
+                                    color: Colors.white,
                                   ),
                                   child: Text(
                                     '${ayah.verse}',
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
-                                      color: AppColors.primary,
+                                      color: AppColors.lightTextPrimary,
                                     ),
                                   ),
                                 ),
@@ -268,7 +269,7 @@ class _PageTurnViewState extends State<PageTurnView> {
                                     textDirection: TextDirection.rtl,
                                     style: GoogleFonts.amiri(
                                       fontSize: widget.arabicFontSize,
-                                      color: AppColors.textDark,
+                                      color: AppColors.lightTextPrimary,
                                       fontWeight: FontWeight.w600,
                                       height: 1.9,
                                     ),
@@ -277,7 +278,6 @@ class _PageTurnViewState extends State<PageTurnView> {
                               ],
                             ),
 
-                            // Translation (if enabled)
                             if (widget.showTranslation && ayah.translation.isNotEmpty) ...[
                               const SizedBox(height: 6),
                               Padding(
@@ -286,7 +286,7 @@ class _PageTurnViewState extends State<PageTurnView> {
                                   ayah.translation,
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12.5,
-                                    color: AppColors.textDark.withOpacity(0.75),
+                                    color: AppColors.lightTextSecondary,
                                     height: 1.5,
                                   ),
                                 ),
@@ -305,7 +305,7 @@ class _PageTurnViewState extends State<PageTurnView> {
                     '— Page ${pageIndex + 1} —',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
-                      color: AppColors.goldMuted,
+                      color: AppColors.accentGoldDark,
                       letterSpacing: 1.2,
                       fontWeight: FontWeight.w600,
                     ),

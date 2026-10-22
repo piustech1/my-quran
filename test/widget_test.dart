@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_quran/main.dart';
+import 'package:my_quran/widgets/islamic_star_badge.dart';
 
 void main() {
-  testWidgets('MyQuranApp smoke test and splash transition', (WidgetTester tester) async {
+  testWidgets('MyQuranApp smoke test and splash transition to HomeDashboard', (WidgetTester tester) async {
     await tester.pumpWidget(const MyQuranApp());
     expect(find.byType(MyQuranApp), findsOneWidget);
 
@@ -10,7 +12,20 @@ void main() {
     await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
 
-    // Verify app transitions cleanly
-    expect(find.text('My Quran'), findsWidgets);
+    // Verify home dashboard elements are rendered
+    expect(find.text('DZUHUR'), findsOneWidget);
+    expect(find.text("Qur'an"), findsOneWidget);
+    expect(find.text('Featured'), findsOneWidget);
+  });
+
+  testWidgets('IslamicStarBadge renders number properly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: IslamicStarBadge(number: 7),
+        ),
+      ),
+    );
+    expect(find.text('7'), findsOneWidget);
   });
 }

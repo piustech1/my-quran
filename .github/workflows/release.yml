@@ -43,37 +43,47 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.1.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.2.0.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.1.0
-          name: "My Quran v1.1.0 (Audio Recitation)"
+          tag_name: v1.2.0
+          name: "My Quran v1.2.0 - Light Theme & Mockup Redesign"
           body: |
-            ### 📖 My Quran - Release v1.1.0
+            ### 📖 My Quran - Release v1.2.0
 
-            What's New in **v1.1.0**:
+            What's New in **v1.2.0**:
 
-            #### 🎙️ High-Quality Audio Recitation (EveryAyah)
-            - **Verse-by-Verse Audio:** Tap any Ayah to listen to its recitation directly.
-            - **Multiple World-Class Qaris:** Choose between Mishary Rashid Alafasy, Abdul Basit Murattal, and Abu Bakr Ash-Shatri.
-            - **Continuous Auto-Play:** Smoothly plays verse-by-verse and automatically scrolls to keep the reading in view.
-            - **Active Verse Highlight:** Illuminated gold border and speaker badge on the reciting Ayah.
-            - **Floating Frosted Glass Player:** Quick controls for play/pause, next/prev, reciter selector, and stop.
+            #### ☀️ Light Theme by Default (User Requested)
+            - **White / Clean Manuscript Palette:** Clean off-white canvas (`#F8F9FA`), pure white cards (`#FFFFFF`), golden ochre accents (`#F5B842`), and crisp ink typography.
+            - **Quick Theme Switch:** Switch seamlessly between Light (priority) and Dark mode with persistent storage.
+            - **Pure Solid Colors:** Zero gradients, strictly adhering to clean card layouts.
 
-            #### ✨ Core Highlights
-            - **Theme:** Deep Imperial Emerald (`#0D3B2E`) and Warm Manuscript Ivory palette (no gradients).
-            - **iOS-Style Frosted Glassmorphism:** Translucent blur cards with 1px hairline borders.
-            - **3D Book Page-Turn Mode:** Realistic 3D perspective page-opening and curling transitions.
-            - **Complete Index:** 114 Surahs and 30 Juzs with instant search.
-            - **Offline-First:** Persistent caching via `fawazahmed0/quran-api`.
+            #### 🕌 Redesigned Home Dashboard
+            - **Islamic Greeting:** Personalized "Ahlan wa Sahlan" header with quick theme switcher.
+            - **Prayer Times Widget:** DZUHUR prayer card featuring custom vector sun and clouds illustration.
+            - **Interactive Quick Actions:**
+              - **Qur'an:** One-tap jump to the redesigned Library.
+              - **Zakat:** Islamic charity calculation helper.
+              - **Dzikir:** Digital Tasbih counter modal with haptic feedback and target tracking (SubhanAllah, Alhamdulillah, etc.).
+            - **Featured Study Card:** Ramadan Daily Quran Reading with custom 3D calendar illustration.
+            - **Bottom Navigation:** Elevated diamond search button and tab navigation.
+
+            #### 📚 Redesigned Holy Quran Library
+            - **Golden "Last Read" Card:** Highlighting recent reading with custom 3D Holy Quran book illustration and one-tap resume.
+            - **Navigation Tabs:** Surah, Para (Juz), Page, and Hijb.
+            - **Islamic Rub el Hizb Badges:** 8-pointed star medallion (۞) custom-drawn with Surah numbers.
+            - **One-Touch Audio Recite:** Instant circular play buttons beside each chapter to trigger world-class recitation.
+
+            #### 🎙️ Integrated Verse-by-Verse Audio Reciter
+            - High-fidelity EveryAyah audio recitation synced with active verse highlighting and floating playback bar.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.1.0.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.2.0.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.1.0.apk
+            release-output/My-Quran-v1.2.0.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

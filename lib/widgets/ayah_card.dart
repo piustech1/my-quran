@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../models/ayah.dart';
-import 'glass_card.dart';
 
 class AyahCard extends StatelessWidget {
   final Ayah ayah;
@@ -27,15 +26,34 @@ class AyahCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isPlaying
+        ? AppColors.accentGold.withOpacity(isDark ? 0.22 : 0.14)
+        : (isDark ? AppColors.darkSurface : AppColors.lightSurface);
+    final border = isPlaying
+        ? AppColors.accentGold
+        : (isDark ? AppColors.darkBorder : AppColors.lightBorder);
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: GlassCard(
-        borderRadius: 20,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Container(
         padding: const EdgeInsets.all(18),
-        color: isPlaying
-            ? AppColors.primary.withOpacity(0.85)
-            : AppColors.primarySurface.withOpacity(0.35),
-        borderColor: isPlaying ? AppColors.gold : AppColors.glassBorderSubtle,
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: border, width: isPlaying ? 1.8 : 1.0),
+          boxShadow: [
+            BoxShadow(
+              color: isPlaying
+                  ? AppColors.accentGold.withOpacity(0.18)
+                  : Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+              blurRadius: isPlaying ? 16 : 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -46,18 +64,18 @@ class AyahCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isPlaying ? AppColors.gold : AppColors.primary,
+                    color: AppColors.accentGold.withOpacity(0.16),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.gold,
-                      width: 1,
+                      color: AppColors.accentGold,
+                      width: 1.2,
                     ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isPlaying) ...[
-                        const Icon(Icons.volume_up_rounded, size: 14, color: AppColors.primaryDark),
+                        const Icon(Icons.volume_up_rounded, size: 14, color: AppColors.accentGold),
                         const SizedBox(width: 4),
                       ],
                       Text(
@@ -65,7 +83,7 @@ class AyahCard extends StatelessWidget {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: isPlaying ? AppColors.primaryDark : AppColors.gold,
+                          color: AppColors.accentGoldDark,
                         ),
                       ),
                     ],
@@ -78,8 +96,8 @@ class AyahCard extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
-                      size: 22,
-                      color: isPlaying ? AppColors.gold : AppColors.textLight.withOpacity(0.8),
+                      size: 24,
+                      color: isPlaying ? AppColors.accentGold : AppColors.accentGold.withOpacity(0.85),
                     ),
                     tooltip: isPlaying ? 'Pause Audio' : 'Play Ayah Recitation',
                     onPressed: onPlay,
@@ -88,7 +106,7 @@ class AyahCard extends StatelessWidget {
                 // Copy verse
                 IconButton(
                   icon: const Icon(Icons.copy_rounded, size: 18),
-                  color: AppColors.textMuted,
+                  color: textSecondary,
                   tooltip: 'Copy Ayah',
                   onPressed: () {
                     final text = '${ayah.arabicText}\n\n${ayah.translation} [Quran ${ayah.chapter}:${ayah.verse}]';
@@ -97,7 +115,7 @@ class AyahCard extends StatelessWidget {
                       const SnackBar(
                         content: Text('Ayah copied to clipboard'),
                         duration: Duration(seconds: 2),
-                        backgroundColor: AppColors.primary,
+                        backgroundColor: AppColors.lightPillButton,
                       ),
                     );
                   },
@@ -109,7 +127,7 @@ class AyahCard extends StatelessWidget {
                     icon: Icon(
                       isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
                       size: 20,
-                      color: isBookmarked ? AppColors.gold : AppColors.textMuted,
+                      color: isBookmarked ? AppColors.accentGold : textSecondary,
                     ),
                     onPressed: onBookmarkToggle,
                   ),
@@ -125,7 +143,7 @@ class AyahCard extends StatelessWidget {
               style: GoogleFonts.amiri(
                 fontSize: arabicFontSize,
                 fontWeight: FontWeight.w600,
-                color: isPlaying ? AppColors.gold : AppColors.textLight,
+                color: textPrimary,
                 height: 2.1,
               ),
             ),
@@ -134,7 +152,7 @@ class AyahCard extends StatelessWidget {
             if (showTranslation && ayah.translation.isNotEmpty) ...[
               const SizedBox(height: 14),
               Divider(
-                color: isPlaying ? AppColors.gold.withOpacity(0.3) : AppColors.glassDivider,
+                color: isPlaying ? AppColors.accentGold.withOpacity(0.35) : border,
                 height: 1,
               ),
               const SizedBox(height: 12),
@@ -142,7 +160,7 @@ class AyahCard extends StatelessWidget {
                 ayah.translation,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
-                  color: AppColors.textLight.withOpacity(0.9),
+                  color: textPrimary.withOpacity(0.88),
                   height: 1.6,
                 ),
               ),

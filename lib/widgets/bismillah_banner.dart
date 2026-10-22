@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
-import 'glass_card.dart';
 
 class BismillahBanner extends StatelessWidget {
   final int surahNumber;
@@ -10,16 +9,29 @@ class BismillahBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Surah 9 (At-Tawbah) does not start with Bismillah
     if (surahNumber == 9) return const SizedBox.shrink();
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: GlassCard(
-        borderRadius: 24,
+      child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        color: AppColors.primarySurface.withOpacity(0.4),
-        borderColor: AppColors.gold.withOpacity(0.35),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: border, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
           children: [
             Text(
@@ -29,7 +41,7 @@ class BismillahBanner extends StatelessWidget {
               style: GoogleFonts.amiri(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
-                color: AppColors.gold,
+                color: AppColors.accentGold,
                 height: 1.8,
               ),
             ),
@@ -39,7 +51,7 @@ class BismillahBanner extends StatelessWidget {
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
-                color: AppColors.textMuted,
+                color: textSecondary,
                 letterSpacing: 0.3,
               ),
             ),

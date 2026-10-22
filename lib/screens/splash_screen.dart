@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
-import '../widgets/glass_card.dart';
-import 'home_screen.dart';
+import '../widgets/quran_3d_graphic.dart';
+import 'home_dashboard_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -36,12 +36,12 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate to Home Screen after 2.4s
+    // Navigate to Home Dashboard Screen after 2.4s
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const HomeScreen(),
+            pageBuilder: (_, __, ___) => const HomeDashboardScreen(),
             transitionsBuilder: (_, animation, __, child) {
               return FadeTransition(opacity: animation, child: child);
             },
@@ -60,8 +60,13 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return Scaffold(
-      backgroundColor: AppColors.primaryDark,
+      backgroundColor: bg,
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -72,71 +77,51 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Minimalist Emblem (Gold & Emerald, No Gradients)
+                  // 3D Quran Graphic in Center
                   Container(
-                    width: 100,
-                    height: 100,
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.primary,
-                      border: Border.all(
-                        color: AppColors.gold,
-                        width: 2.5,
-                      ),
+                      color: AppColors.accentGold.withOpacity(0.12),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.gold.withOpacity(0.18),
-                          blurRadius: 28,
-                          spreadRadius: 2,
+                          color: AppColors.accentGold.withOpacity(0.18),
+                          blurRadius: 32,
+                          spreadRadius: 4,
                         ),
                       ],
                     ),
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.menu_book_rounded,
-                      size: 48,
-                      color: AppColors.gold,
-                    ),
+                    child: const Quran3DGraphic(width: 100, height: 120),
                   ),
                   const SizedBox(height: 28),
 
-                  // Frosted Glass Title Card
-                  GlassCard(
-                    borderRadius: 24,
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
-                    color: AppColors.glassBackgroundHeavy,
-                    borderColor: AppColors.glassBorder,
-                    child: Column(
-                      children: [
-                        Text(
-                          'My Quran',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textLight,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'القرآن الكريم',
-                          textDirection: TextDirection.rtl,
-                          style: GoogleFonts.amiri(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.gold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'The Holy Quran & Translations',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            color: AppColors.textMuted,
-                            letterSpacing: 0.4,
-                          ),
-                        ),
-                      ],
+                  Text(
+                    'My Quran',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: textPrimary,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'القرآن الكريم',
+                    textDirection: TextDirection.rtl,
+                    style: GoogleFonts.amiri(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.accentGold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'The Holy Quran & Translations',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      color: textSecondary,
+                      letterSpacing: 0.4,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],

@@ -3,41 +3,52 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 
 class AppTheme {
-  static ThemeData get darkTheme {
+  // 1. Light Theme (Default Priority)
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: AppColors.primaryDark,
-      primaryColor: AppColors.primary,
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.primary,
-        secondary: AppColors.gold,
-        surface: AppColors.primarySurface,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: AppColors.lightBackground,
+      primaryColor: AppColors.accentGold,
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.accentGold,
+        secondary: AppColors.accentGoldDark,
+        surface: AppColors.lightSurface,
+        onPrimary: AppColors.lightPillButton,
+        onSurface: AppColors.lightTextPrimary,
+      ),
+      cardTheme: CardTheme(
+        color: AppColors.lightSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppColors.lightBorder, width: 1),
+        ),
       ),
       textTheme: GoogleFonts.plusJakartaSansTextTheme(
-        ThemeData.dark().textTheme,
+        ThemeData.light().textTheme,
       ).copyWith(
         displayLarge: GoogleFonts.plusJakartaSans(
-          color: AppColors.textLight,
+          color: AppColors.lightTextPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 28,
         ),
         titleLarge: GoogleFonts.plusJakartaSans(
-          color: AppColors.textLight,
-          fontWeight: FontWeight.w600,
+          color: AppColors.lightTextPrimary,
+          fontWeight: FontWeight.bold,
           fontSize: 20,
         ),
         titleMedium: GoogleFonts.plusJakartaSans(
-          color: AppColors.textLight,
+          color: AppColors.lightTextPrimary,
           fontWeight: FontWeight.w600,
           fontSize: 16,
         ),
         bodyLarge: GoogleFonts.plusJakartaSans(
-          color: AppColors.textLight,
+          color: AppColors.lightTextPrimary,
           fontSize: 15,
         ),
         bodyMedium: GoogleFonts.plusJakartaSans(
-          color: AppColors.textMuted,
+          color: AppColors.lightTextSecondary,
           fontSize: 13,
         ),
       ),
@@ -45,7 +56,75 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: AppColors.textLight),
+        iconTheme: IconThemeData(color: AppColors.lightTextPrimary),
+        titleTextStyle: TextStyle(
+          color: AppColors.lightTextPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  // 2. Dark Theme (Switchable)
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: AppColors.darkBackground,
+      primaryColor: AppColors.accentGold,
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.accentGold,
+        secondary: AppColors.accentGoldDark,
+        surface: AppColors.darkSurface,
+        onPrimary: AppColors.darkPillButton,
+        onSurface: AppColors.darkTextPrimary,
+      ),
+      cardTheme: CardTheme(
+        color: AppColors.darkSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppColors.darkBorder, width: 1),
+        ),
+      ),
+      textTheme: GoogleFonts.plusJakartaSansTextTheme(
+        ThemeData.dark().textTheme,
+      ).copyWith(
+        displayLarge: GoogleFonts.plusJakartaSans(
+          color: AppColors.darkTextPrimary,
+          fontWeight: FontWeight.bold,
+          fontSize: 28,
+        ),
+        titleLarge: GoogleFonts.plusJakartaSans(
+          color: AppColors.darkTextPrimary,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+        titleMedium: GoogleFonts.plusJakartaSans(
+          color: AppColors.darkTextPrimary,
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
+        ),
+        bodyLarge: GoogleFonts.plusJakartaSans(
+          color: AppColors.darkTextPrimary,
+          fontSize: 15,
+        ),
+        bodyMedium: GoogleFonts.plusJakartaSans(
+          color: AppColors.darkTextSecondary,
+          fontSize: 13,
+        ),
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: AppColors.darkTextPrimary),
+        titleTextStyle: TextStyle(
+          color: AppColors.darkTextPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

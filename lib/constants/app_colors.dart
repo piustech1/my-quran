@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Deep Green Theme (No gradients - pure solid & glass tones)
-  static const Color primary = Color(0xFF0D3B2E);       // Imperial Emerald
-  static const Color primaryDark = Color(0xFF071E17);   // Midnight Forest Canvas
-  static const Color primaryLight = Color(0xFF1B5E4A);  // Lighter Emerald
-  static const Color primarySurface = Color(0xFF104637);// Card Surface for Dark Mode
+  // Theme Accent Colors (matching mockup)
+  static const Color accentGold = Color(0xFFF5B842);     // Warm Mustard/Golden Ochre (Last Read card, play buttons)
+  static const Color accentGoldDark = Color(0xFFD99B26); // Slightly deeper gold for borders
+  static const Color accentGoldLight = Color(0xFFFDEAC1);// Light gold tint
 
-  // Neutral & Parchment (For authentic Quran manuscript feeling)
-  static const Color parchment = Color(0xFFF9F7F1);     // Warm Ivory/Parchment
-  static const Color parchmentCard = Color(0xFFF2EFE7); // Slightly deeper parchment
-  static const Color textDark = Color(0xFF182822);      // Deep charcoal/ink
-  static const Color textMuted = Color(0xFF6B7F76);     // Subtle slate green text
-  static const Color textLight = Color(0xFFFFFFFF);     // Pure white text
+  // Light Theme (Default Priority)
+  static const Color lightBackground = Color(0xFFF8F9FA); // Clean off-white
+  static const Color lightSurface = Color(0xFFFFFFFF);    // Pure white card
+  static const Color lightSurfaceSubtle = Color(0xFFF1F3F5); // Subtle grey surface for prayer card
+  static const Color lightBorder = Color(0xFFE9ECEF);     // Light hairline border
+  static const Color lightTextPrimary = Color(0xFF191D24);// Deep charcoal ink text
+  static const Color lightTextSecondary = Color(0xFF718096); // Slate grey subtitle
+  static const Color lightPillButton = Color(0xFF1A202C); // Dark pill button on Last Read card
 
-  // Ornamental Accents
-  static const Color gold = Color(0xFFC9A86A);          // Champagne Gold
-  static const Color goldMuted = Color(0xFF9E8148);     // Muted Antique Gold
-  static const Color sage = Color(0xFF3D7A62);          // Soft Sage Green
+  // Dark Theme (Toggleable)
+  static const Color darkBackground = Color(0xFF191D24);  // Deep slate canvas (from mockup)
+  static const Color darkSurface = Color(0xFF222834);     // Dark card surface
+  static const Color darkSurfaceSubtle = Color(0xFF161A20);
+  static const Color darkBorder = Color(0xFF2D3442);
+  static const Color darkTextPrimary = Color(0xFFFFFFFF);
+  static const Color darkTextSecondary = Color(0xFF8C98A9);
+  static const Color darkPillButton = Color(0xFF12151B);
 
-  // iOS Glassmorphism (Frosted glass with backdrop blur, no gradients)
-  static Color glassBackground = Colors.white.withOpacity(0.10);
-  static Color glassBackgroundHeavy = Colors.white.withOpacity(0.18);
-  static Color glassDarkBackground = const Color(0xFF071E17).withOpacity(0.75);
-  static Color glassBorder = Colors.white.withOpacity(0.22);
-  static Color glassBorderSubtle = Colors.white.withOpacity(0.12);
-  static Color glassDivider = Colors.white.withOpacity(0.15);
+  // Emerald Quran Accents
+  static const Color emeraldPrimary = Color(0xFF0D3B2E);
+  static const Color emeraldSurface = Color(0xFF164738);
+
+  // Parchment for Quran Manuscript Reader
+  static const Color parchment = Color(0xFFFAF8F2);
+  static const Color parchmentBorder = Color(0xFFEADBCE);
 }
