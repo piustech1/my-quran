@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_quran/main.dart';
 import 'package:my_quran/widgets/islamic_star_badge.dart';
+import 'package:my_quran/widgets/mushaf_header_banner.dart';
 
 void main() {
   testWidgets('MyQuranApp smoke test and splash transition to HomeDashboard', (WidgetTester tester) async {
@@ -27,5 +28,23 @@ void main() {
       ),
     );
     expect(find.text('7'), findsOneWidget);
+  });
+
+  testWidgets('MushafHeaderBanner renders Surah title and Arabic digits', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: MushafHeaderBanner(
+            surahNameArabic: 'قُرَيْشٍ',
+            numberOfAyahs: 4,
+            surahNumber: 106,
+          ),
+        ),
+      ),
+    );
+    expect(find.text('سُورَةُ قُرَيْشٍ'), findsOneWidget);
+    expect(find.text('تَرْتِيبُهَا'), findsOneWidget);
+    expect(find.text('آيَاتُهَا'), findsOneWidget);
+    expect(find.text('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
   });
 }

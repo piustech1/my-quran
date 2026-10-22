@@ -35,9 +35,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  ReaderMode _readerMode = ReaderMode.verseList; // Default to study verse list
+  ReaderMode _readerMode = ReaderMode.pageTurn; // Default to authentic 3D Mushaf book page
   double _arabicFontSize = 24.0;
-  bool _showTranslation = true;
+  bool _showTranslation = false; // Arabic-first by default as requested
   bool _isBookmarked = false;
 
   @override
@@ -423,6 +423,19 @@ class _ReaderScreenState extends State<ReaderScreen> {
             },
           ),
 
+          // Translation toggle (Arabic First, user toggles translation)
+          IconButton(
+            icon: Icon(
+              _showTranslation ? Icons.translate_rounded : Icons.g_translate_outlined,
+              color: _showTranslation ? AppColors.accentGold : textPrimary,
+            ),
+            tooltip: _showTranslation ? 'Hide English Translation' : 'Show English Translation',
+            onPressed: () {
+              setState(() => _showTranslation = !_showTranslation);
+              _storage.saveShowTranslation(_showTranslation);
+            },
+          ),
+
           // Bookmark Toggle
           IconButton(
             icon: Icon(
@@ -516,15 +529,20 @@ class _ReaderScreenState extends State<ReaderScreen> {
       );
     }
 
-    // 1. Book Page-Turn Mode (3D Open/Curl Transition)
+    // 1. Authentic Mushaf Book Page-Turn Mode (3D Open/Curl Transition)
     if (_readerMode == ReaderMode.pageTurn) {
       return PageTurnView(
         ayahs: _ayahs,
         surahNameArabic: widget.surah.name,
         surahNameEnglish: widget.surah.englishName,
         surahNumber: widget.surah.number,
+        numberOfAyahs: widget.surah.numberOfAyahs,
         arabicFontSize: _arabicFontSize,
         showTranslation: _showTranslation,
+        onToggleTranslation: () {
+          setState(() => _showTranslation = !_showTranslation);
+          _storage.saveShowTranslation(_showTranslation);
+        },
       );
     }
 

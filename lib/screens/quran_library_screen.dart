@@ -243,8 +243,15 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                         ),
                       ),
 
-                      // Right 3D Book Graphic
-                      const Quran3DGraphic(width: 90, height: 115),
+                      // Right 3D Book Graphic from user assets
+                      Image.asset(
+                        'assets/quran asset.png',
+                        width: 95,
+                        height: 115,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Quran3DGraphic(width: 90, height: 115),
+                      ),
                     ],
                   ),
                 ),

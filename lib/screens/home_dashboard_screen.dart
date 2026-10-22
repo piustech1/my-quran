@@ -518,118 +518,29 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   }
 
   Widget _buildSunCloudIllustration() {
-    return SizedBox(
-      width: 90,
-      height: 90,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Glowing Sun
-          Positioned(
-            top: 6,
-            right: 14,
-            child: Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFFBBF24),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFBBF24).withOpacity(0.6),
-                    blurRadius: 20,
-                    spreadRadius: 4,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // White Cloud
-          Positioned(
-            bottom: 10,
-            left: 4,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.92),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.cloud_rounded, color: Color(0xFFE2E8F0), size: 36),
-            ),
-          ),
-        ],
+    return Image.asset(
+      'assets/sun asset.png',
+      width: 95,
+      height: 95,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) => const SizedBox(
+        width: 95,
+        height: 95,
+        child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFBBF24), size: 48),
       ),
     );
   }
 
   Widget _build3DCalendarGraphic() {
-    return Container(
-      width: 85,
+    return Image.asset(
+      'assets/calender assets.png',
+      width: 95,
       height: 95,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Calendar top spirals
-          Container(
-            height: 22,
-            decoration: const BoxDecoration(
-              color: Color(0xFFE9D7B3),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(
-                3,
-                (_) => Container(
-                  width: 6,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGoldDark,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // Center Gold Medallion with Star
-          Expanded(
-            child: Center(
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.accentGold,
-                ),
-                child: const Icon(
-                  Icons.star_rounded,
-                  color: Colors.white,
-                  size: 26,
-                ),
-              ),
-            ),
-          ),
-        ],
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) => const SizedBox(
+        width: 95,
+        height: 95,
+        child: Icon(Icons.calendar_month_rounded, color: Colors.white, size: 48),
       ),
     );
   }

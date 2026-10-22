@@ -69,7 +69,7 @@ class StorageService {
 
   Future<bool> getShowTranslation() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyShowTranslation) ?? true;
+    return prefs.getBool(_keyShowTranslation) ?? false;
   }
 
   Future<void> saveShowTranslation(bool value) async {
