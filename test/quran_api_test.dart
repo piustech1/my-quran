@@ -2,8 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:my_quran/constants/surah_data.dart';
 import 'package:my_quran/models/ayah.dart';
 import 'package:my_quran/models/juz.dart';
+import 'package:my_quran/services/audio_service.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Quran Data & Models Test', () {
     test('114 Surahs are accurately loaded', () {
       expect(kAllSurahs.length, 114);
@@ -47,6 +50,15 @@ void main() {
       expect(fromMap.verse, ayah.verse);
       expect(fromMap.arabicText, ayah.arabicText);
       expect(fromMap.translation, ayah.translation);
+    });
+
+    test('Audio URL formatting for EveryAyah is valid', () {
+      final audioService = QuranAudioService();
+      final url = audioService.getAyahAudioUrl(1, 1);
+      expect(url, 'https://everyayah.com/data/Alafasy_128kbps/001001.mp3');
+
+      final urlSurah114Ayah6 = audioService.getAyahAudioUrl(114, 6);
+      expect(urlSurah114Ayah6, 'https://everyayah.com/data/Alafasy_128kbps/114006.mp3');
     });
   });
 }

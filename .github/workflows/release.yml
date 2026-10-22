@@ -43,29 +43,38 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.0.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.1.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0
-          name: "My Quran v1.0.0"
+          tag_name: v1.1.0
+          name: "My Quran v1.1.0 (Audio Recitation)"
           body: |
-            ### 📖 My Quran - Release v1.0.0
+            ### 📖 My Quran - Release v1.1.0
 
-            Welcome to the initial release of **My Quran**!
+            What's New in **v1.1.0**:
 
-            #### ✨ Highlights & Features
-            - **Design System:** Deep Imperial Emerald (`#0D3B2E`) and Warm Ivory/Parchment solid palette with authentic iOS-style glassmorphism cards (no gradients).
-            - **3D Page-Turn Mode:** Realistic manuscript book opening and 3D page flip transition.
-            - **Verse Study Mode:** Side-by-side Arabic Uthmani calligraphy, English translation, and single-tap Ayah copy.
-            - **Quran Metadata:** All 114 Surahs and 30 Juzs indexed with instant search & filter.
-            - **Persistent Storage:** Bookmarking, "Last Read" automatic resume, and customizable Arabic typography.
-            - **Offline-First:** Seamless local caching powered by `fawazahmed0/quran-api`.
+            #### 🎙️ High-Quality Audio Recitation (EveryAyah)
+            - **Verse-by-Verse Audio:** Tap any Ayah to listen to its recitation directly.
+            - **Multiple World-Class Qaris:** Choose between Mishary Rashid Alafasy, Abdul Basit Murattal, and Abu Bakr Ash-Shatri.
+            - **Continuous Auto-Play:** Smoothly plays verse-by-verse and automatically scrolls to keep the reading in view.
+            - **Active Verse Highlight:** Illuminated gold border and speaker badge on the reciting Ayah.
+            - **Floating Frosted Glass Player:** Quick controls for play/pause, next/prev, reciter selector, and stop.
+
+            #### ✨ Core Highlights
+            - **Theme:** Deep Imperial Emerald (`#0D3B2E`) and Warm Manuscript Ivory palette (no gradients).
+            - **iOS-Style Frosted Glassmorphism:** Translucent blur cards with 1px hairline borders.
+            - **3D Book Page-Turn Mode:** Realistic 3D perspective page-opening and curling transitions.
+            - **Complete Index:** 114 Surahs and 30 Juzs with instant search.
+            - **Offline-First:** Persistent caching via `fawazahmed0/quran-api`.
 
             #### 📲 Installation
-            Download and install **`My-Quran-v1.0.0.apk`** below directly on your Android device.
-          files: release-output/My-Quran-v1.0.0.apk
+            Download **`My-Quran-v1.1.0.apk`** below directly to your Android device to install.
+          files: |
+            release-output/My-Quran-v1.1.0.apk
+            release-output/My-Quran-release.apk
           draft: false
           prerelease: false
         env:

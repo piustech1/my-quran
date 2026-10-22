@@ -11,6 +11,8 @@ class AyahCard extends StatelessWidget {
   final bool showTranslation;
   final VoidCallback? onBookmarkToggle;
   final bool isBookmarked;
+  final bool isPlaying;
+  final VoidCallback? onPlay;
 
   const AyahCard({
     super.key,
@@ -19,6 +21,8 @@ class AyahCard extends StatelessWidget {
     this.showTranslation = true,
     this.onBookmarkToggle,
     this.isBookmarked = false,
+    this.isPlaying = false,
+    this.onPlay,
   });
 
   @override
@@ -28,8 +32,10 @@ class AyahCard extends StatelessWidget {
       child: GlassCard(
         borderRadius: 20,
         padding: const EdgeInsets.all(18),
-        color: AppColors.primarySurface.withOpacity(0.35),
-        borderColor: AppColors.glassBorderSubtle,
+        color: isPlaying
+            ? AppColors.primary.withOpacity(0.85)
+            : AppColors.primarySurface.withOpacity(0.35),
+        borderColor: isPlaying ? AppColors.gold : AppColors.glassBorderSubtle,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -40,23 +46,44 @@ class AyahCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: isPlaying ? AppColors.gold : AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.gold.withOpacity(0.4),
+                      color: AppColors.gold,
                       width: 1,
                     ),
                   ),
-                  child: Text(
-                    '${ayah.chapter}:${ayah.verse}',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.gold,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isPlaying) ...[
+                        const Icon(Icons.volume_up_rounded, size: 14, color: AppColors.primaryDark),
+                        const SizedBox(width: 4),
+                      ],
+                      Text(
+                        '${ayah.chapter}:${ayah.verse}',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: isPlaying ? AppColors.primaryDark : AppColors.gold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const Spacer(),
+
+                // Play Audio Button
+                if (onPlay != null)
+                  IconButton(
+                    icon: Icon(
+                      isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
+                      size: 22,
+                      color: isPlaying ? AppColors.gold : AppColors.textLight.withOpacity(0.8),
+                    ),
+                    tooltip: isPlaying ? 'Pause Audio' : 'Play Ayah Recitation',
+                    onPressed: onPlay,
+                  ),
 
                 // Copy verse
                 IconButton(
@@ -98,7 +125,7 @@ class AyahCard extends StatelessWidget {
               style: GoogleFonts.amiri(
                 fontSize: arabicFontSize,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textLight,
+                color: isPlaying ? AppColors.gold : AppColors.textLight,
                 height: 2.1,
               ),
             ),
@@ -106,7 +133,10 @@ class AyahCard extends StatelessWidget {
             // Translation (if enabled)
             if (showTranslation && ayah.translation.isNotEmpty) ...[
               const SizedBox(height: 14),
-              Divider(color: AppColors.glassDivider, height: 1),
+              Divider(
+                color: isPlaying ? AppColors.gold.withOpacity(0.3) : AppColors.glassDivider,
+                height: 1,
+              ),
               const SizedBox(height: 12),
               Text(
                 ayah.translation,
