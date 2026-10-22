@@ -234,7 +234,6 @@ class _PageTurnViewState extends State<PageTurnView> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final pageBg = isDark ? const Color(0xFF1E242B) : const Color(0xFFFFFDF8);
     final outerBorderColor = isDark ? const Color(0xFF4B3C18) : const Color(0xFFD4AF37);
-    final innerBorderColor = isDark ? const Color(0xFF194D33) : const Color(0xFF1B6B45);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
@@ -252,20 +251,20 @@ class _PageTurnViewState extends State<PageTurnView> {
       ),
       child: Stack(
         children: [
-          // Inner Ornamental Border (Double border frame like real printed Quran)
+          // Authentic Mushaf Page Frame Outline from user assets
           Positioned.fill(
-            child: Container(
-              margin: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: innerBorderColor, width: 1.2),
+            child: IgnorePointer(
+              child: Image.asset(
+                'assets/mufta.png',
+                fit: BoxFit.fill,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
               ),
             ),
           ),
 
-          // Page Content
+          // Page Content situated comfortably inside the Mushaf frame
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+            padding: const EdgeInsets.fromLTRB(28, 28, 28, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

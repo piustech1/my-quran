@@ -43,39 +43,39 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.3.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.4.0.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.3.0
-          name: "My Quran v1.3.0 - Mushaf Book Pages & Auto-Turn Audio"
+          tag_name: v1.4.0
+          name: "My Quran v1.4.0 - Authentic Mushaf Page Frame & Reference Mockup Precision"
           body: |
-            ### 📖 My Quran - Release v1.3.0
+            ### 📖 My Quran - Release v1.4.0
 
-            What's New in **v1.3.0**:
+            What's New in **v1.4.0**:
 
-            #### 🖼️ User Custom Assets Integrated
-            - Replaced synthetic vector illustrations with user-provided PNG assets from the `assets/` folder:
-              - **Sun Illustration:** `assets/sun asset.png` in Prayer Time Card.
-              - **3D Calendar:** `assets/calender assets.png` in Ramadan Study Card.
-              - **Holy Quran Book:** `assets/quran asset.png` in Library Last Read banner.
+            #### 🕌 Authentic Mushaf Frame on Every Quran Page
+            - **Mufta Border Frame:** Integrated the user's `assets/mufta.png` ornate Islamic manuscript frame on every Quran page in `PageTurnView`.
+            - **Golden Surah Banner:** Flowing Arabic scripture rendered inside the traditional illuminated frame with header banner, order number, and verse count in Arabic-Indic numerals.
+            - **Synchronized Recitation & Auto Page Turn:** Live golden verse highlighting as audio recites, turning pages seamlessly with 3D page curl upon page completion.
 
-            #### 📜 Authentic Arabic-First Mushaf Book Page
-            - **Manuscript Page Styling:** Double gold and emerald border framing on ivory parchment canvas.
-            - **Illuminated Surah Header Frame:** Traditional decorative frame with Surah title in calligraphy, Ayah count medallion, and order number in Arabic numerals.
-            - **Flowing Sacred Arabic Text:** Continuous classical Mushaf layout with ornate circular Ayah end medallions (۝) containing Arabic digits (١، ٢، ٣...).
-            - **Arabic First by Default:** English translation is hidden by default to keep the sacred page pristine and authentic; tap any Ayah or use the AppBar translation button to toggle translation on demand.
+            #### 📚 Quran Library Mockup Alignment (Image 1)
+            - **Golden "Last Read" Card:** High-contrast warm gold card (172px) with `📖 Last Read`, `Surah`, `Al-Fatihah`, `الفاتحة • Ayah 5`, `Back to reading >` dark pill button, and 3D Quran book graphic.
+            - **Tab Bar Structure:** Clean `Surah | Para | Page | Hizb` navigation tabs with gold underline indicator.
+            - **Surah List Cards:** Rounded cards (`r: 22`) with solid golden circular number badges (`r: 18`), English + Arabic titles, `• X ayat` subtitle, and solid gold circular play buttons.
 
-            #### 🎙️ Live Audio Highlighting & Automatic 3D Page-Turn
-            - **Synchronized Highlighting:** As audio recitation plays, the active Ayah and its end medallion illuminate with a soft golden glow.
-            - **Automatic 3D Page Turn:** When the last verse on the current page finishes reciting, the app automatically triggers the 3D page curl/turn animation to the next page!
+            #### 🌟 Home Dashboard Mockup Precision (Image 2)
+            - **Greeting Header:** "Assalamu alaikum, Aminah ✎" with circular notification bell and instant light/dark theme toggle.
+            - **Next Prayer Card:** Elegant card featuring "D H U H R 12:16 PM", live real-time ticking clock ("Now 11:20:51 PM"), date ("Oct 22, 2026"), sun illustration, and weather ("27° Partly cloudy • Kampala").
+            - **Quick Actions:** 3 equal-sized squircle cards (Qur'an, Zakat, Dzikir) with gold circular icon badges and "0 / 33" counter state.
+            - **Featured Card:** "DAILY DAKWAH" pill badge, "Ramadan Study", "With Ustd. Hanan", and 3D calendar illustration.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.3.0.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.4.0.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.3.0.apk
+            release-output/My-Quran-v1.4.0.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

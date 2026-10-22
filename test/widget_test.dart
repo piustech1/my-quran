@@ -14,7 +14,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify home dashboard elements are rendered
-    expect(find.text('DZUHUR'), findsOneWidget);
+    expect(find.text('D H U H R'), findsOneWidget);
     expect(find.text("Qur'an"), findsOneWidget);
     expect(find.text('Featured'), findsOneWidget);
   });
