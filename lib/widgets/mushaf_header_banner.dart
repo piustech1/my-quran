@@ -44,7 +44,7 @@ class MushafHeaderBanner extends StatelessWidget {
         children: [
           // Elegant Illuminated Surah Title Cartouche (Traditional Mushaf Header)
           Container(
-            constraints: const BoxConstraints(maxWidth: 290),
+            constraints: const BoxConstraints(maxWidth: 240),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
             decoration: BoxDecoration(
               color: isDark
@@ -111,39 +111,42 @@ class MushafHeaderBanner extends StatelessWidget {
                 const SizedBox(height: 1),
 
                 // Subtle metadata bar: Order & Ayah Count
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'تَرْتِيبُهَا ${toArabicDigits(surahNumber)}',
-                      textDirection: TextDirection.rtl,
-                      style: GoogleFonts.amiri(
-                        fontSize: 11,
-                        color: isDark ? const Color(0xFFD4AF37) : const Color(0xFF6B5828),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Text(
-                        '•',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: const Color(0xFFD4AF37).withOpacity(0.7),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'تَرْتِيبُهَا ${toArabicDigits(surahNumber)}',
+                        textDirection: TextDirection.rtl,
+                        style: GoogleFonts.amiri(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFFD4AF37) : const Color(0xFF6B5828),
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    Text(
-                      'آيَاتُهَا ${toArabicDigits(numberOfAyahs)}',
-                      textDirection: TextDirection.rtl,
-                      style: GoogleFonts.amiri(
-                        fontSize: 11,
-                        color: isDark ? const Color(0xFFD4AF37) : const Color(0xFF6B5828),
-                        fontWeight: FontWeight.w600,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Text(
+                          '•',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: const Color(0xFFD4AF37).withOpacity(0.7),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        'آيَاتُهَا ${toArabicDigits(numberOfAyahs)}',
+                        textDirection: TextDirection.rtl,
+                        style: GoogleFonts.amiri(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFFD4AF37) : const Color(0xFF6B5828),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

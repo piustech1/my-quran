@@ -43,37 +43,33 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.4.1.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.4.2.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.4.1
-          name: "My Quran v1.4.1 - Perfected Mushaf Reader Page & Frame Alignment"
+          tag_name: v1.4.2
+          name: "My Quran v1.4.2 - Corner Ornaments on White Mushaf Card"
           body: |
-            ### 📖 My Quran - Release v1.4.1
+            ### 📖 My Quran - Release v1.4.2
 
-            What's New in **v1.4.1**:
+            What's New in **v1.4.2**:
 
-            #### 🕌 Authentic Mushaf Frame Expansion (Purple Outline)
-            - **Eliminated Fake Container Border:** Removed artificial gold borders so `assets/mufta.png` serves as the sole, true frame cutting through to the page boundaries.
-            - **Zero Outer Whitespace:** Trimmed transparent padding in `assets/mufta.png` so the ornate Islamic manuscript artwork directly borders the page canvas.
+            #### 🏛️ Corner Ornaments on White Mushaf Card
+            - **Replaced Heavy Full-Page Frame:** Removed the full-page auto outline (`mufta.png`) that restricted page scaling and aspect ratios across devices.
+            - **Inverted Corner Assets:** Integrated the user's authentic Islamic corner asset (`image-removebg-preview.png`), dynamically flipped and mirrored to crown the **top-left and top-right corners** of the white card.
+            - **Pristine White/Parchment Card:** Restored the clean rounded card (`r: 20`) with warm ivory background, delicate gold border line, and soft ambient drop shadow.
 
-            #### 📜 Refined Surah Header Cartouche (Green Crossing)
-            - **No More Clunky Green Balls:** Replaced the boxy banner and protruding green balls with a slender, authentic illuminated cartouche nestled gracefully **inside the top arch** of the frame.
-            - **Amiri Calligraphy & Elegant Metadata:** Displays Surah title in classical Arabic script with delicate order and Ayah count indicators.
-            - **Removed Duplicate Bismillah:** Surah Al-Fatihah now displays its opening Ayah directly without duplicate heading, keeping the sacred presentation authentic.
-
-            #### ✍️ Flowing Scripture Typography & Bounds Protection (Red Outline)
-            - **Natural Fluid Text Flow:** Verses now flow continuously as authentic Mushaf text with inline circular medallions (`۝`) containing Arabic-Indic numerals.
-            - **Safe Inner Margins:** Inner padding is calibrated (`44px` horizontal, `36px` top, `28px` bottom) so verses and medallions never collide with or overflow onto the floral border.
-            - **Audio Recitation Highlighting:** Verses and inline medallions illuminate synchronously in gold as audio plays.
+            #### 📜 Spacious Header & Flowing Scripture
+            - **Centered Cartouche:** Surah title cartouche sits gracefully centered between the top two corner ornaments.
+            - **Unrestricted Reading Canvas:** Verses flow continuously with generous line height and inline medallions (`۝`), giving the sacred Arabic text room to breathe without edge collisions.
+            - **Audio Synchronized Highlighting:** Verses and inline medallions illuminate together in gold during audio recitation.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.4.1.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.4.2.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.4.1.apk
+            release-output/My-Quran-v1.4.2.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

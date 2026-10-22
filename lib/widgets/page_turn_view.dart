@@ -236,49 +236,81 @@ class _PageTurnViewState extends State<PageTurnView> {
     final pageBg = isDark ? const Color(0xFF1E242B) : const Color(0xFFFFFDF8);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: pageBg,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? const Color(0xFF3E3321) : const Color(0xFFE8DFC8),
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.45 : 0.10),
+            color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          // Authentic Mushaf Page Frame Outline from user assets - enlarged to outer page boundary
-          Positioned.fill(
-            child: IgnorePointer(
-              child: Image.asset(
-                'assets/mufta.png',
-                fit: BoxFit.fill,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            // Top-Left Corner Islamic Ornament
+            Positioned(
+              top: 0,
+              left: 0,
+              width: 78,
+              height: 52,
+              child: IgnorePointer(
+                child: Transform.flip(
+                  flipX: true,
+                  flipY: true,
+                  child: Image.asset(
+                    'assets/image-removebg-preview.png',
+                    fit: BoxFit.fill,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
               ),
             ),
-          ),
 
-          // Page Content situated comfortably inside the Mushaf frame sanctuary
-          Padding(
-            padding: const EdgeInsets.fromLTRB(44, 36, 44, 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Surah Header Frame: shown on page 0
-                if (pageIndex == 0)
-                  MushafHeaderBanner(
-                    surahNameArabic: widget.surahNameArabic,
-                    numberOfAyahs: widget.numberOfAyahs,
-                    surahNumber: widget.surahNumber,
-                    showBismillah: true,
-                  )
-                else
-                  _buildSubsequentPageHeader(),
+            // Top-Right Corner Islamic Ornament
+            Positioned(
+              top: 0,
+              right: 0,
+              width: 78,
+              height: 52,
+              child: IgnorePointer(
+                child: Transform.flip(
+                  flipY: true,
+                  child: Image.asset(
+                    'assets/image-removebg-preview.png',
+                    fit: BoxFit.fill,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+            ),
 
-                const SizedBox(height: 6),
+            // Page Content situated inside the pristine white card
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Surah Header Frame: shown on page 0
+                  if (pageIndex == 0)
+                    MushafHeaderBanner(
+                      surahNameArabic: widget.surahNameArabic,
+                      numberOfAyahs: widget.numberOfAyahs,
+                      surahNumber: widget.surahNumber,
+                      showBismillah: true,
+                    )
+                  else
+                    _buildSubsequentPageHeader(),
+
+                  const SizedBox(height: 8),
 
                 // Flowing Quranic Arabic Text with Live Highlighting
                 Expanded(
@@ -307,7 +339,8 @@ class _PageTurnViewState extends State<PageTurnView> {
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 
   /// Small title banner for pages 2, 3, etc.
