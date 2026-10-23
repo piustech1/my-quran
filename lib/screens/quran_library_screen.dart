@@ -6,6 +6,7 @@ import '../models/juz.dart';
 import '../services/audio_service.dart';
 import '../services/storage_service.dart';
 import '../widgets/audio_player_bar.dart';
+import '../widgets/curved_header.dart';
 import '../widgets/islamic_star_badge.dart';
 import '../widgets/quran_3d_graphic.dart';
 import 'reader_screen.dart';
@@ -92,83 +93,105 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
 
     return Scaffold(
       backgroundColor: bg,
-      appBar: AppBar(
-        leadingWidth: 64,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: Center(
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isDark ? AppColors.darkSurface : AppColors.lightSurfaceSubtle,
-                  border: Border.all(
-                    color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                    width: 1,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Forest-Green Curved Dome Header with Back, Title, & Search
+          CurvedDownwardHeader(
+            curveDepth: 22.0,
+            backgroundColor: AppColors.forestGreen,
+            padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 8, 16, 22),
+            child: Row(
+              children: [
+                // Circular Back Button (no outline)
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.15),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white),
                   ),
                 ),
-                alignment: Alignment.center,
-                child: Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: textPrimary),
-              ),
+                const SizedBox(width: 12),
+
+                // Center Title or Search Input
+                Expanded(
+                  child: _isSearching
+                      ? TextField(
+                          controller: _searchController,
+                          autofocus: true,
+                          onChanged: _onSearch,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          cursorColor: AppColors.accentGold,
+                          decoration: InputDecoration(
+                            hintText: 'Search Surah...',
+                            hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white70),
+                            border: InputBorder.none,
+                          ),
+                        )
+                      : Center(
+                          child: Text(
+                            'Q U R \' A N',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 4.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                ),
+                const SizedBox(width: 12),
+
+                // Search Toggle Button (no outline)
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (_isSearching) {
+                        _searchController.clear();
+                        _filteredSurahs = kAllSurahs;
+                      }
+                      _isSearching = !_isSearching;
+                    });
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.15),
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      _isSearching ? Icons.close_rounded : Icons.search_rounded,
+                      color: AppColors.warmGold,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        centerTitle: true,
-        title: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                onChanged: _onSearch,
-                style: GoogleFonts.plusJakartaSans(
-                  color: textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Search Surah...',
-                  hintStyle: GoogleFonts.plusJakartaSans(color: textSecondary),
-                  border: InputBorder.none,
-                ),
-              )
-            : Text(
-                'Q U R \' A N',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 4.0,
-                  color: textPrimary,
-                ),
-              ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _isSearching ? Icons.close_rounded : Icons.search_rounded,
-              color: textPrimary,
-            ),
-            onPressed: () {
-              setState(() {
-                if (_isSearching) {
-                  _searchController.clear();
-                  _filteredSurahs = kAllSurahs;
-                }
-                _isSearching = !_isSearching;
-              });
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 1. Golden "Last Read" Card (Exact replica of mockup)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 6, 16, 14),
+
+          // Main Library Body
+          Expanded(
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 1. Golden "Last Read" Card (Pushed comfortably below the dome curve)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
                 child: Container(
                   height: 172,
                   padding: const EdgeInsets.fromLTRB(22, 18, 14, 18),
@@ -348,8 +371,11 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           ),
         ],
       ),
-    );
-  }
+    ),
+  ],
+),
+);
+}
 
   Widget _buildSurahListView(Color textPrimary, Color textSecondary, bool isDark) {
     return ListView.builder(
@@ -378,17 +404,13 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
                 children: [
-                  // Number in circular gold border (matching Image 1)
+                  // Number in circular gold medallion (no outline)
                   Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.accentGold.withOpacity(0.65),
-                        width: 1.2,
-                      ),
-                      color: isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle,
+                      color: AppColors.accentGold.withOpacity(isDark ? 0.18 : 0.12),
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -498,10 +520,6 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-              width: 1,
-            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
@@ -522,11 +540,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                     height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.accentGold.withOpacity(0.65),
-                        width: 1.2,
-                      ),
-                      color: isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle,
+                      color: AppColors.accentGold.withOpacity(isDark ? 0.18 : 0.12),
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -603,10 +617,13 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-              width: 1,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: ListTile(
             dense: true,
@@ -648,10 +665,13 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-              width: 1,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: ListTile(
             dense: true,

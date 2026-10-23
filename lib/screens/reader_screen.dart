@@ -6,7 +6,7 @@ import '../models/ayah.dart';
 import '../services/audio_service.dart';
 import '../services/quran_api_service.dart';
 import '../services/storage_service.dart';
-import '../widgets/audio_player_bar.dart';
+import '../widgets/audio_frequency_wave.dart';
 import '../widgets/ayah_card.dart';
 import '../widgets/bismillah_banner.dart';
 import '../widgets/curved_header.dart';
@@ -36,9 +36,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  ReaderMode _readerMode = ReaderMode.pageTurn; // Default to authentic 3D Mushaf book page
+  ReaderMode _readerMode = ReaderMode.pageTurn;
   double _arabicFontSize = 24.0;
-  bool _showTranslation = false; // Arabic-first by default as requested
+  TranslationMode _translationMode = TranslationMode.arabicOnly;
   bool _isBookmarked = false;
 
   @override
@@ -77,7 +77,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     if (mounted) {
       setState(() {
         _arabicFontSize = size;
-        _showTranslation = translation;
+        _translationMode = translation ? TranslationMode.arabicAndEnglish : TranslationMode.arabicOnly;
         _isBookmarked = bookmarked;
       });
     }
@@ -318,11 +318,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         ),
                       ),
                       Switch(
-                        value: _showTranslation,
+                        value: _translationMode != TranslationMode.arabicOnly,
                         activeColor: AppColors.accentGold,
                         onChanged: (val) {
-                          setModalState(() => _showTranslation = val);
-                          setState(() => _showTranslation = val);
+                          final newMode = val ? TranslationMode.arabicAndEnglish : TranslationMode.arabicOnly;
+                          setModalState(() => _translationMode = newMode);
+                          setState(() => _translationMode = newMode);
                           _storage.saveShowTranslation(val);
                         },
                       ),
@@ -366,37 +367,26 @@ class _ReaderScreenState extends State<ReaderScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
     final topPadding = MediaQuery.of(context).padding.top;
-    final headerHeight = topPadding + 104.0;
+    final headerHeight = topPadding + 138.0;
 
     return Scaffold(
       backgroundColor: bg,
       body: Stack(
         children: [
-          // Main Reader Body positioned below header with bottom space for audio bar
+          // Main Reader Body (takes full height with zero bottom obstruction)
           Positioned.fill(
             child: Padding(
-              padding: EdgeInsets.only(top: headerHeight - 12, bottom: 64),
+              padding: EdgeInsets.only(top: headerHeight - 6, bottom: 8),
               child: _buildBody(),
             ),
           ),
 
-          // Curved Downward Solid Forest Green Header (no outlines)
+          // Curved Downward Solid Forest Green Header with Golden Audio Frequency Wave
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: _buildCurvedHeader(context),
-          ),
-
-          // Floating Audio Player Bar at bottom
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: AudioPlayerBar(
-              totalVerses: widget.surah.numberOfAyahs,
-              onReciterChangeRequested: _showReciterSelectionModal,
-            ),
           ),
         ],
       ),
@@ -411,22 +401,21 @@ class _ReaderScreenState extends State<ReaderScreen> {
       backgroundColor: AppColors.forestGreen,
       padding: EdgeInsets.only(
         top: topPadding + 6,
-        left: 12,
-        right: 12,
+        left: 10,
+        right: 10,
         bottom: 22,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // 1. Top Row: Back button, Surah English & Arabic titles, Reciter avatar, Play/Pause, Menu
           Row(
             children: [
-              // Back Button
               IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),
               ),
 
-              // Surah Title & Metadata
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -530,100 +519,194 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   );
                 },
               ),
+
+              // Glassmorphic Options Dropdown Menu Button
+              InkWell(
+                onTap: _showReaderOptionsMenu,
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.14),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.more_horiz_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
             ],
           ),
 
           const SizedBox(height: 6),
 
-          // Secondary Quick Controls Row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildHeaderPillAction(
-                  icon: _showTranslation ? Icons.translate_rounded : Icons.g_translate_outlined,
-                  label: _showTranslation ? 'English ON' : 'Arabic Only',
-                  isActive: _showTranslation,
-                  onTap: () {
-                    setState(() => _showTranslation = !_showTranslation);
-                    _storage.saveShowTranslation(_showTranslation);
-                  },
-                ),
-                _buildHeaderPillAction(
-                  icon: _readerMode == ReaderMode.pageTurn
-                      ? Icons.menu_book_rounded
-                      : Icons.view_headline_rounded,
-                  label: _readerMode == ReaderMode.pageTurn ? 'Book Page' : 'Verse List',
-                  isActive: _readerMode == ReaderMode.pageTurn,
-                  onTap: () {
-                    setState(() {
-                      _readerMode = _readerMode == ReaderMode.pageTurn
-                          ? ReaderMode.verseList
-                          : ReaderMode.pageTurn;
-                    });
-                  },
-                ),
-                _buildHeaderPillAction(
-                  icon: _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                  label: _isBookmarked ? 'Saved' : 'Bookmark',
-                  isActive: _isBookmarked,
-                  onTap: () async {
-                    final newStatus = await _storage.toggleBookmark(widget.surah.number);
-                    setState(() => _isBookmarked = newStatus);
-                  },
-                ),
-                _buildHeaderPillAction(
-                  icon: Icons.tune_rounded,
-                  label: 'Prefs',
-                  isActive: false,
-                  onTap: _showSettingsModal,
-                ),
-              ],
-            ),
+          // 2. Audio Frequency Visualizer Wave in golden curves (animates when reciting)
+          AudioFrequencyWave(totalVerses: widget.surah.numberOfAyahs),
+
+          const SizedBox(height: 8),
+
+          // 3. Three Clean Translation Modes Row: [ Arabic Only ] [ English Only ] [ Arabic + English ]
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildTranslationSegment('Arabic Only', TranslationMode.arabicOnly),
+              const SizedBox(width: 8),
+              _buildTranslationSegment('English Only', TranslationMode.englishOnly),
+              const SizedBox(width: 8),
+              _buildTranslationSegment('Ar + En', TranslationMode.arabicAndEnglish),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildHeaderPillAction({
-    required IconData icon,
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildTranslationSegment(String label, TranslationMode mode) {
+    final isActive = _translationMode == mode;
     return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      onTap: () => _setTranslationMode(mode),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
           color: isActive
-              ? AppColors.warmGold.withOpacity(0.25)
+              ? AppColors.warmGold
               : Colors.white.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 14,
-              color: isActive ? AppColors.warmGold : Colors.white,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? AppColors.warmGold : Colors.white,
-              ),
-            ),
-          ],
+        child: Text(
+          label,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11,
+            fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+            color: isActive ? const Color(0xFF143825) : Colors.white,
+          ),
         ),
       ),
+    );
+  }
+
+  void _setTranslationMode(TranslationMode mode) {
+    setState(() => _translationMode = mode);
+    _storage.saveShowTranslation(mode != TranslationMode.arabicOnly);
+  }
+
+  void _showReaderOptionsMenu() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'Reading & Display Options',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // View Mode: 3D Book Page vs Vertical List
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  _readerMode == ReaderMode.pageTurn ? Icons.menu_book_rounded : Icons.view_headline_rounded,
+                  color: AppColors.warmGold,
+                ),
+                title: Text(
+                  _readerMode == ReaderMode.pageTurn ? 'Switch to Vertical Study List' : 'Switch to 3D Mushaf Page Turn',
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: textPrimary),
+                ),
+                subtitle: Text(
+                  _readerMode == ReaderMode.pageTurn ? 'Currently in authentic 3D Mushaf Book' : 'Currently in vertical list mode',
+                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: textSecondary),
+                ),
+                onTap: () {
+                  setState(() {
+                    _readerMode = _readerMode == ReaderMode.pageTurn
+                        ? ReaderMode.verseList
+                        : ReaderMode.pageTurn;
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+
+              // Bookmark
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                  color: AppColors.warmGold,
+                ),
+                title: Text(
+                  _isBookmarked ? 'Remove Bookmark' : 'Bookmark this Surah',
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: textPrimary),
+                ),
+                onTap: () async {
+                  final newStatus = await _storage.toggleBookmark(widget.surah.number);
+                  setState(() => _isBookmarked = newStatus);
+                  if (context.mounted) Navigator.of(context).pop();
+                },
+              ),
+
+              // Reciter selection
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.record_voice_over_rounded, color: AppColors.warmGold),
+                title: Text('Change Reciter (Qari)', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: textPrimary)),
+                subtitle: Text(_audioService.selectedReciter.name, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: textSecondary)),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _showReciterSelectionModal();
+                },
+              ),
+
+              // Font & Audio Preferences
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.tune_rounded, color: AppColors.warmGold),
+                title: Text('Font Size & Recitation Prefs', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: textPrimary)),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _showSettingsModal();
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -688,11 +771,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
         surahNumber: widget.surah.number,
         numberOfAyahs: widget.surah.numberOfAyahs,
         arabicFontSize: _arabicFontSize,
-        showTranslation: _showTranslation,
-        onToggleTranslation: () {
-          setState(() => _showTranslation = !_showTranslation);
-          _storage.saveShowTranslation(_showTranslation);
-        },
+        translationMode: _translationMode,
       );
     }
 
@@ -716,7 +795,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
             return AyahCard(
               ayah: ayah,
               arabicFontSize: _arabicFontSize,
-              showTranslation: _showTranslation,
+              showTranslation: _translationMode != TranslationMode.arabicOnly,
               isPlaying: isCurrentPlaying,
               onPlay: () {
                 if (isCurrentPlaying && _audioService.isPlayingNotifier.value) {

@@ -43,43 +43,41 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.5.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.6.0.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.5.0
-          name: "My Quran v1.5.0 - Liquid Glass UI, Curved Forest Green Headers & Reciter Photos"
+          tag_name: v1.6.0
+          name: "My Quran v1.6.0 - Enhanced Dome Curves, Audio Frequency Wave, 3 Translation Modes & iOS Islamic Dock"
           body: |
-            ### 📖 My Quran - Release v1.5.0
+            ### 📖 My Quran - Release v1.6.0
 
-            What's New in **v1.5.0**:
+            What's New in **v1.6.0**:
 
-            #### 🌿 Solid Forest-Green Curved Downward Headers
-            - **Quran Reader Header:** Curved downward solid deep forest green (`#143825`, no outlines) containing back button, Surah title, reciter avatar, audio play/pause, and reading mode/translation pills.
-            - **Home Dashboard Header:** Organic downward curve housing user greeting ("Assalamu alaikum, Aminah ✎"), notification bell, and theme switch.
-            - **Eliminated All Card Borders:** Borderless design with solid fills, soft ambient shadows, and liquid glass styling.
+            #### 🏛️ True Dome Curved Headers (Convex Arch Formula)
+            - **Smooth Dome Architecture:** Replaced quadratic curves with a smooth cubic Bézier dome arch (`size.height + curveDepth * 0.33` apex) across Reader, Library, and Dashboard.
+            - **Library Dome Header:** Solid forest green curved header housing back button, centered `Q U R ' A N` title, and search toggle.
+            - **Yellow Last Read Card:** Repositioned comfortably below the dome curve with clean spacing.
 
-            #### 📜 Solid Deep Green Title Cartouche & Clean Page Badges
-            - **Surah Title Cartouche:** Solid deep green (`#143825`) with pure white Arabic calligraphy (`سُورَةُ [الاسم]`) and delicate warm gold metadata (`#F3D278`).
-            - **Subsequent Page Headers:** Compact centered solid forest-green pill badge with white text, fitting tightly between corner ornaments without edge collisions.
+            #### 🎵 Golden Audio Frequency Visualizer & Reader Clean-up
+            - **Eliminated Bottom Audio Bar:** Completely removed the bottom floating audio player bar from the reader for an uncluttered reading experience.
+            - **Top Header Golden Visualizer:** Animated harmonic frequency curve in the curved top header beneath the Surah name that pulses when reciting and settles when paused.
 
-            #### 🏛️ 4-Corner Islamic Ornaments & Liquid Glass Parchment Card
-            - **4-Corner Ornaments:** Beautifully placed in all four corners (top-left, top-right, bottom-left, bottom-right) of the reader page card with proper flips.
-            - **Liquid Glass Translucent Card:** iOS liquid glass translucent parchment (`BackdropFilter` with blur, soft ambient shadow, no border lines).
+            #### 📜 3 Clean Translation Modes
+            - **Arabic Only:** Pure Mushaf scripture with ayah end medallions.
+            - **English Only:** Pure English Quran typography and layout with English numbered verse badges, completely free of Arabic words.
+            - **Arabic + English:** Interlinear verse-by-verse presentation with clean glassmorphic spacing and no borders.
 
-            #### 🎙️ Reciter Portraits & Audio Recitation
-            - Integrated high-quality reciter portraits for:
-              - **Abu Bakr Ash-Shatri** (`assets/reciters/shatri.jpg`)
-              - **Abdul Basit Murattal** (`assets/reciters/basit.jpg`)
-              - **Mishary Rashid Alafasy** (`assets/reciters/alafasy.jpg`)
-            - Real-time reciter switcher with photo avatars in both the reader header and audio bar.
+            #### ⛵ iOS Islamic Bottom Navigation Dock
+            - **Floating Glassmorphic Dock:** 4 items (Home, Qur'an, Dzikir, Library) with backdrop blur, subtle shadow, and zero harsh outlines.
+            - **Fluid Pill Indicator:** Active tab gracefully highlights with an animated forest green and gold pill indicator.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.5.0.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.6.0.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.5.0.apk
+            release-output/My-Quran-v1.6.0.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

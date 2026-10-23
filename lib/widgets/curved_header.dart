@@ -11,9 +11,12 @@ class DownwardCurveClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     path.lineTo(0, size.height - curveDepth);
-    path.quadraticBezierTo(
-      size.width / 2,
-      size.height,
+    // Smooth, organic convex dome arch with gentle horizontal apex
+    path.cubicTo(
+      size.width * 0.28,
+      size.height + (curveDepth * 0.33),
+      size.width * 0.72,
+      size.height + (curveDepth * 0.33),
       size.width,
       size.height - curveDepth,
     );

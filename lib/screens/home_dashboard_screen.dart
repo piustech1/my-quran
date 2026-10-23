@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
@@ -474,10 +475,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                               Container(
                                 width: 28,
                                 height: 28,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: const Color(0xFF281E08),
-                                  border: Border.all(color: Colors.white, width: 1.2),
+                                  color: Color(0xFF281E08),
                                 ),
                                 child: const Icon(Icons.person, size: 16, color: AppColors.accentGold),
                               ),
@@ -628,82 +628,130 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     Color textSecondary,
   ) {
     return Container(
-      height: 72,
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          // Home Tab
-          IconButton(
-            icon: Icon(
-              Icons.home_filled,
-              color: _selectedNavIndex == 0 ? AppColors.accentGold : textSecondary,
-              size: 26,
-            ),
-            onPressed: () => setState(() => _selectedNavIndex = 0),
-          ),
-
-          // Center Floating Diamond/Squircle Search Button (Mockup)
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
-              );
-            },
-            child: Transform.rotate(
-              angle: 0.785398, // 45 degrees
-              child: Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: AppColors.accentGold,
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.accentGold.withOpacity(0.4),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            height: 66,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? const Color(0xE8141D17)
+                  : Colors.white.withOpacity(0.92),
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
                 ),
-                child: Transform.rotate(
-                  angle: -0.785398,
-                  child: const Icon(
-                    Icons.search_rounded,
-                    color: AppColors.lightPillButton,
-                    size: 24,
-                  ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(
+                  index: 0,
+                  icon: Icons.mosque_rounded,
+                  label: 'Home',
+                  isDark: isDark,
+                  textSecondary: textSecondary,
+                  onTap: () => setState(() => _selectedNavIndex = 0),
+                ),
+                _buildNavItem(
+                  index: 1,
+                  icon: Icons.menu_book_rounded,
+                  label: 'Qur\'an',
+                  isDark: isDark,
+                  textSecondary: textSecondary,
+                  onTap: () {
+                    setState(() => _selectedNavIndex = 1);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
+                    );
+                  },
+                ),
+                _buildNavItem(
+                  index: 2,
+                  icon: Icons.grain_rounded,
+                  label: 'Dzikir',
+                  isDark: isDark,
+                  textSecondary: textSecondary,
+                  onTap: () {
+                    setState(() => _selectedNavIndex = 2);
+                    showDialog(
+                      context: context,
+                      builder: (_) => const DzikirCounterDialog(),
+                    );
+                  },
+                ),
+                _buildNavItem(
+                  index: 3,
+                  icon: Icons.bookmark_rounded,
+                  label: 'Library',
+                  isDark: isDark,
+                  textSecondary: textSecondary,
+                  onTap: () {
+                    setState(() => _selectedNavIndex = 3);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required int index,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required bool isDark,
+    required Color textSecondary,
+  }) {
+    final isSelected = _selectedNavIndex == index;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 14 : 10,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.forestGreen : Colors.transparent,
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 22,
+              color: isSelected ? AppColors.warmGold : textSecondary,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-            ),
-          ),
-
-          // Quran Library / Bookmarks Tab
-          IconButton(
-            icon: Icon(
-              Icons.menu_book_rounded,
-              color: _selectedNavIndex == 1 ? AppColors.accentGold : textSecondary,
-              size: 26,
-            ),
-            onPressed: () {
-              setState(() => _selectedNavIndex = 1);
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
-              );
-            },
-          ),
-        ],
+            ],
+          ],
+        ),
       ),
     );
   }

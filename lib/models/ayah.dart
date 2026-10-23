@@ -1,3 +1,9 @@
+enum TranslationMode {
+  arabicOnly,
+  englishOnly,
+  arabicAndEnglish,
+}
+
 class Ayah {
   final int chapter;
   final int verse;
