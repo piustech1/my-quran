@@ -29,14 +29,16 @@ class AppColors {
   static const Color darkPillButton = Color(0xFF0F151F);
 
   // Light Theme (Clean Crisp with Deep Emerald & Gold Accents)
-  static const Color lightBackground = Color(0xFFF7F9FA); // Clean off-white
+  static const Color lightBackground = Color(0xFFFBF9F5); // Clean warm ivory canvas
   static const Color lightSurface = Color(0xFFFFFFFF); // Pure white card
   static const Color lightSurfaceSubtle =
-      Color(0xFFEDF2F0); // Emerald-tinted subtle grey
-  static const Color lightBorder = Color(0xFFE2E8F0); // Light hairline border
+      Color(0xFFF4EFE6); // Warm sandy beige inner hour card
+  static const Color lightQuickAction =
+      Color(0xFFF0EBE2); // Soft cream squircle action card
+  static const Color lightBorder = Color(0xFFEAE5DC); // Subtle hairline border
   static const Color lightTextPrimary =
-      Color(0xFF171F2D); // Midnight navy ink text
-  static const Color lightTextSecondary = Color(0xFF64748B); // Slate subtitle
+      Color(0xFF1D2321); // Charcoal dark ink text
+  static const Color lightTextSecondary = Color(0xFF757B78); // Soft grey subtitle
   static const Color lightPillButton =
       Color(0xFF171F2D); // Midnight Navy button
 

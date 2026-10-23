@@ -5,7 +5,6 @@ import '../constants/app_colors.dart';
 import '../services/theme_service.dart';
 import '../widgets/dzikir_counter_dialog.dart';
 import '../widgets/floating_nav_dock.dart';
-import '../widgets/ustadha_aisha_bubble.dart';
 import 'quran_library_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
@@ -301,191 +300,239 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
-    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
     final textPrimary =
         isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final textSecondary =
         isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     final topPadding = MediaQuery.of(context).padding.top;
-    final screenWidth = MediaQuery.of(context).size.width;
-    // Mufta extends well past the card so the muqarnas curves are visible behind it
-    final muftaHeight = screenWidth * 0.95 + topPadding;
+    final headerHeight = topPadding + 265.0;
 
     return Scaffold(
       backgroundColor: bg,
       body: Stack(
         children: [
-          // 1. Mufta Backdrop — extends far down, NO gradient fade, curves visible behind cards
+          // 1. Mufta Islamic Dome Header with rounded bottom edge matching reference
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: SizedBox(
-              height: muftaHeight,
-              child: Image.asset(
-                'assets/new_mufta.jpg',
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
-          ),
+              height: headerHeight,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(40),
+                ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Deep forest green base
+                    Container(color: const Color(0xFF0D2F1F)),
 
-          // 2. Scrollable Body Content (Starts smoothly under the floating top bar)
-          Positioned.fill(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(18, topPadding + 130.0, 18, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // 2. Main Prayer Card — liquid glass sitting on top of mufta curves
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                      child: Container(
-                        height: 184,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.black.withOpacity(0.5)
-                              : Colors.black.withOpacity(0.35),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.12),
-                            width: 0.8,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            // Left: The Nested Hour Card — wider rectangle
-                            Expanded(
-                              flex: 6,
-                              child: Container(
-                                height: double.infinity,
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 12, 14, 12),
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? Colors.white.withOpacity(0.08)
-                                      : Colors.white.withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
-                                    width: 0.5,
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'D H U H R',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 2.5,
-                                        color: AppColors.accentGold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: '12:16 ',
-                                            style: GoogleFonts.plusJakartaSans(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w800,
-                                              color: Colors.white,
-                                              letterSpacing: -0.5,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: 'PM',
-                                            style: GoogleFonts.plusJakartaSans(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.white.withOpacity(0.7),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Now 01:00:58 PM',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        color: Colors.white.withOpacity(0.55),
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 1),
-                                    Text(
-                                      'Oct 23, 2026',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        color: Colors.white.withOpacity(0.45),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
+                    // Mufta Grand Muqarnas Backdrop
+                    Image.asset(
+                      'assets/new_mufta.jpg',
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
+                      filterQuality: FilterQuality.high,
+                    ),
 
-                            // Right: Sun/Cloud Graphic & Weather Info
-                            Expanded(
-                              flex: 4,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  _buildSunCloudIllustration(),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    '27°',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Partly cloudy · Kampala',
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 11,
-                                      color: Colors.white.withOpacity(0.55),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                    // Atmospheric gradient overlay for contrast
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0x750D2F1F),
+                            Color(0x200D2F1F),
+                            Color(0x8A0D2F1F),
                           ],
                         ),
                       ),
                     ),
+
+                    // Subtle hairline gold accent line at curved bottom
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 1,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Color(0x55F5CE63),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 2. Scrollable Body Content (Overlaps the bottom of the Mufta header)
+          Positioned.fill(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(18, topPadding + 155.0, 18, 96),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 2. Main Prayer Card (Solid White with drop shadow in Light Mode)
+                  Container(
+                    height: 184,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkCard : Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: isDark
+                            ? AppColors.darkBorder
+                            : const Color(0xFFEFE9DF),
+                        width: 1.0,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(isDark ? 0.40 : 0.08),
+                          blurRadius: 28,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        // Left: The Nested Hour Card (Warm sandy cream surface)
+                        Expanded(
+                          flex: 11,
+                          child: Container(
+                            height: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppColors.darkInnerCard
+                                  : AppColors.lightSurfaceSubtle,
+                              borderRadius: BorderRadius.circular(22),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'D H U H R',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 2.5,
+                                    color: const Color(0xFFB8934A),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: '12:16 ',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w800,
+                                          color: isDark
+                                              ? Colors.white
+                                              : AppColors.lightTextPrimary,
+                                          letterSpacing: -0.5,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: 'PM',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: isDark
+                                              ? Colors.white70
+                                              : const Color(0xFF2B3430),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Now 04:44:44 PM',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+                                    color: isDark
+                                        ? Colors.white54
+                                        : AppColors.lightTextSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Oct 23, 2026',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+                                    color: isDark
+                                        ? Colors.white38
+                                        : AppColors.lightTextSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+
+                        // Right: 3D Sun/Cloud Graphic & Weather Info
+                        Expanded(
+                          flex: 9,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _buildSunCloudIllustration(),
+                              const SizedBox(height: 6),
+                              Text(
+                                '27°',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? Colors.white
+                                      : AppColors.lightTextPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Partly cloudy · Kampala',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  color: isDark
+                                      ? Colors.white54
+                                      : AppColors.lightTextSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 22),
 
-                  // 3. Quick Action Cards: Qur'an, Zakat, Dzikir (Exact 3-card squircle row matching Image 2)
+                  // 3. Quick Action Cards: Qur'an, Zakat, Dzikir (Exact 3-card squircle row matching reference)
                   Row(
                     children: [
                       _buildQuickActionItem(
                         label: "Qur'an",
                         icon: Icons.menu_book_rounded,
                         isDark: isDark,
-                        cardBg: cardBg,
-                        border: border,
-                        textPrimary: textPrimary,
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -496,11 +543,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       const SizedBox(width: 14),
                       _buildQuickActionItem(
                         label: "Zakat",
-                        icon: Icons.all_inbox_rounded,
+                        icon: Icons.all_inclusive_rounded,
                         isDark: isDark,
-                        cardBg: cardBg,
-                        border: border,
-                        textPrimary: textPrimary,
                         onTap: _showZakatDialog,
                       ),
                       const SizedBox(width: 14),
@@ -509,9 +553,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                         icon: Icons.nightlight_round,
                         subtitle: "0 / 33",
                         isDark: isDark,
-                        cardBg: cardBg,
-                        border: border,
-                        textPrimary: textPrimary,
                         onTap: () {
                           showDialog(
                             context: context,
@@ -530,7 +571,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       Text(
                         'Featured',
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
+                          fontSize: 19,
                           fontWeight: FontWeight.bold,
                           color: textPrimary,
                         ),
@@ -553,27 +594,35 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
 
-                  // 5. Featured Card: Ramadan Study / Daily Dakwah (Exact proportions of Image 2)
+                  // 5. Featured Card: Ramadan Study / Daily Dakwah (Exact proportions of reference)
                   Container(
                     height: 175,
-                    padding: const EdgeInsets.all(22),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.accentGold,
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFE6BA54),
+                          Color(0xFFD49E31),
+                        ],
+                      ),
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.accentGold.withOpacity(0.38),
-                          blurRadius: 20,
-                          offset: const Offset(0, 6),
+                          color: const Color(0xFFD49E31).withOpacity(0.38),
+                          blurRadius: 22,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: Row(
                       children: [
-                        // Text Column
+                        // Left Text Column
                         Expanded(
+                          flex: 12,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -600,24 +649,22 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                               Text(
                                 'Ramadan Study',
                                 style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 22,
+                                  fontSize: 23,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF14171A),
                                   height: 1.15,
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 14),
                               Row(
                                 children: [
-                                  Container(
-                                    width: 28,
-                                    height: 28,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Color(0xFF281E08),
+                                  ClipOval(
+                                    child: Image.asset(
+                                      'assets/aminah.png',
+                                      width: 28,
+                                      height: 28,
+                                      fit: BoxFit.cover,
                                     ),
-                                    child: const Icon(Icons.person,
-                                        size: 16, color: AppColors.accentGold),
                                   ),
                                   const SizedBox(width: 8),
                                   Column(
@@ -648,8 +695,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                           ),
                         ),
 
-                        // 3D Calendar Graphic from user assets
-                        _build3DCalendarGraphic(),
+                        // Right: 3D Desk Calendar Graphic from user assets
+                        Expanded(
+                          flex: 10,
+                          child: _build3DCalendarGraphic(),
+                        ),
                       ],
                     ),
                   ),
@@ -658,38 +708,73 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
             ),
           ),
 
-          // 3. Floating Glassmorphic Top App Bar
+          // 3. Floating Deep Emerald Capsule Top Bar matching reference
           Positioned(
-            top: topPadding + 6,
+            top: topPadding + 10,
             left: 18,
             right: 18,
             child: _buildHeaderRow(isDark),
           ),
 
-          // 4. Floating AI Guide (Ustadha Aisha)
+          // 4. Peeking Ustadha Aisha Guide on bottom right matching reference
           Positioned(
-            bottom: 84,
-            right: 18,
-            child: UstadhaAishaBubble(
+            bottom: 60,
+            right: 24,
+            child: GestureDetector(
               onTap: _showAishaGuideDialog,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 36,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.85),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.keyboard_arrow_up_rounded,
+                      size: 14,
+                      color: Color(0xFFB8934A),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  ClipOval(
+                    child: Image.asset(
+                      'assets/ustadha_aisha.png',
+                      width: 58,
+                      height: 58,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
 
-      // Custom Floating Bottom Navigation Bar matching Noor reference
+      // Custom Floating Bottom Navigation Bar matching reference
       bottomNavigationBar: FloatingNavDock(
         currentIndex: _selectedNavIndex,
         onTabSelected: (index) {
           setState(() => _selectedNavIndex = index);
-          if (index == 1 || index == 3) {
+          if (index == 1) {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
             );
           } else if (index == 2) {
-            showDialog(
-              context: context,
-              builder: (_) => const DzikirCounterDialog(),
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
             );
           }
         },
@@ -704,104 +789,103 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
   Widget _buildHeaderRow(bool isDark) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: BorderRadius.circular(32),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            // Liquid glass — very low opacity, mufta shows through
-            color: isDark
-                ? Colors.black.withOpacity(0.45)
-                : Colors.black.withOpacity(0.22),
-            borderRadius: BorderRadius.circular(30),
+            color: const Color(0xFF0E3323).withOpacity(0.92),
+            borderRadius: BorderRadius.circular(32),
             border: Border.all(
-              color: Colors.white.withOpacity(isDark ? 0.15 : 0.25),
-              width: 0.8,
+              color: Colors.white.withOpacity(0.12),
+              width: 1.0,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.20),
+                blurRadius: 18,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  // Profile Avatar
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.15),
+              Expanded(
+                child: Row(
+                  children: [
+                    // Aminah Avatar from reference
+                    ClipOval(
+                      child: Image.asset(
+                        'assets/aminah.png',
+                        width: 44,
+                        height: 44,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    child: const Icon(Icons.person_rounded,
-                        color: Colors.white, size: 22),
-                  ),
-                  const SizedBox(width: 10),
+                    const SizedBox(width: 10),
 
-                  // Greeting "Assalamu alaikum," with waving hand icon & "Aminah" ✎
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
+                    // Greeting "Assalamu alaikum," & "Aminah" ✎
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             "Assalamu alaikum,",
                             style: GoogleFonts.plusJakartaSans(
-                              fontSize: 11,
-                              color: Colors.white.withOpacity(0.75),
+                              fontSize: 12,
+                              color: const Color(0xFFC5D6C5),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.waving_hand_rounded,
-                            size: 13,
-                            color: AppColors.accentGold.withOpacity(0.9),
+                          const SizedBox(height: 1),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  "Aminah",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFFEAB34D),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              const Icon(
+                                Icons.edit_outlined,
+                                size: 14,
+                                color: Color(0xFFEAB34D),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Aminah",
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Icon(
-                            Icons.edit_outlined,
-                            size: 13,
-                            color: AppColors.warmGold.withOpacity(0.8),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
 
               // Actions: Notification Bell + Theme Toggle Button
               Row(
                 children: [
                   Container(
-                    width: 38,
-                    height: 38,
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.12),
+                      color: Colors.white.withOpacity(0.10),
                     ),
                     alignment: Alignment.center,
                     child: const Icon(
-                      Icons.notifications_outlined,
-                      color: Colors.white,
+                      Icons.notifications_none_rounded,
+                      color: Color(0xFFEAB34D),
                       size: 20,
                     ),
                   ),
@@ -809,18 +893,18 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   GestureDetector(
                     onTap: () => _themeService.toggleTheme(),
                     child: Container(
-                      width: 38,
-                      height: 38,
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.12),
+                        color: Colors.white.withOpacity(0.10),
                       ),
                       alignment: Alignment.center,
                       child: Icon(
                         isDark
-                            ? Icons.dark_mode_rounded
-                            : Icons.light_mode_rounded,
-                        color: AppColors.accentGold,
+                            ? Icons.light_mode_rounded
+                            : Icons.dark_mode_outlined,
+                        color: const Color(0xFFEAB34D),
                         size: 20,
                       ),
                     ),
@@ -839,24 +923,30 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     required IconData icon,
     String? subtitle,
     required bool isDark,
-    required Color cardBg,
-    required Color border,
-    required Color textPrimary,
     required VoidCallback onTap,
   }) {
+    final cardBg =
+        isDark ? AppColors.darkCard : const Color(0xFFF0EBE2);
+    final textPrimary =
+        isDark ? Colors.white : AppColors.lightTextPrimary;
+
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 122,
+          height: 132,
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: cardBg,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(
+              color: isDark ? AppColors.darkBorder : const Color(0xFFEBE5DC),
+              width: 0.8,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
-                blurRadius: 12,
+                blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -865,31 +955,45 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 46,
-                height: 46,
+                width: 48,
+                height: 48,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.accentGold,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFE4B750),
+                      Color(0xFFC89736),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x30C89736),
+                      blurRadius: 8,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
                 ),
-                child: Icon(icon, color: const Color(0xFF14171A), size: 22),
+                child: Icon(icon, color: const Color(0xFF1D2321), size: 22),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
                 label,
                 style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: textPrimary,
                 ),
               ),
               if (subtitle != null) ...[
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   subtitle,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.accentGoldDark,
+                    color: const Color(0xFFC29642),
                   ),
                 ),
               ],
@@ -903,29 +1007,58 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   Widget _buildSunCloudIllustration() {
     return Image.asset(
       'assets/sun asset.png',
-      width: 48,
-      height: 48,
+      width: 72,
+      height: 72,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) => const SizedBox(
-        width: 48,
-        height: 48,
-        child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFBBF24), size: 30),
+        width: 72,
+        height: 72,
+        child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFBBF24), size: 40),
       ),
     );
   }
 
   Widget _build3DCalendarGraphic() {
-    return Image.asset(
-      'assets/calender assets.png',
-      width: 120,
-      height: 120,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) => const SizedBox(
-        width: 120,
-        height: 120,
-        child:
-            Icon(Icons.calendar_month_rounded, color: Colors.white, size: 50),
-      ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Image.asset(
+          'assets/calender assets.png',
+          width: 125,
+          height: 125,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => const SizedBox(
+            width: 125,
+            height: 125,
+            child: Icon(Icons.calendar_month_rounded,
+                color: Colors.white, size: 50),
+          ),
+        ),
+        Positioned(
+          bottom: 2,
+          child: Container(
+            width: 32,
+            height: 16,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.keyboard_arrow_up_rounded,
+              size: 14,
+              color: Color(0xFFB8934A),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

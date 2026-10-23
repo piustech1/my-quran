@@ -43,34 +43,32 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.2.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.3.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.2
-          name: "My Quran v1.8.2 - Noor Islamic Redesign, Floating Nav Dock & Ustadha Aisha Guide"
+          tag_name: v1.8.3
+          name: "My Quran v1.8.3 - Exact Light Theme Home Dashboard from Reference"
           body: |
-            ### 📖 My Quran - Release v1.8.2
+            ### 📖 My Quran - Release v1.8.3
 
-            What's New in **v1.8.2**:
+            What's New in **v1.8.3**:
 
-            #### 🕌 Authentic Noor Islamic Redesign
-            - **Harmonized Color Palette:** Midnight Navy (`#171F2D`), Quran Gold (`#F5CE63`), and Deep Emerald (`#103C30`) across all views.
-            - **Floating Glassmorphic Bottom Nav Dock:** Detached pill dock with backdrop blur, active tab indicators, and an elevated tilted 45° gold diamond center button for instant Quran search.
-            - **Floating Ustadha Aisha AI Guide:** Interactive Quran study assistant bubble and bottom sheet guidance.
-            - **Re-engineered Prayer & Library Cards:** Perfectly proportioned nested hour cards and Deep Emerald gradient Last Read banner.
-
-            #### 📜 Complete Quran Integrity & Offline Reader
-            - Preserved all 114 Surahs, 30 Juz, 604 Pages, and 60 Hizbs with offline caching.
-            - Dual reading modes: 3D authentic Page Turn and Study Mode.
-            - Real-time EveryAyah audio streaming and instant recitation.
+            #### 🕌 Exact Reference Light Theme Dashboard
+            - **Warm Ivory Canvas:** Replaced dark styling with the pure warm cream/ivory background (`#FBF9F5`).
+            - **Deep Emerald Capsule Top Bar:** Pinned dark emerald capsule with Aminah profile avatar, gold greeting & edit pencil icon, and circular notification/theme buttons.
+            - **Curved Mufta Grand Vaulting:** Islamic muqarnas dome curves down behind the main white prayer card without artificial gradients.
+            - **Solid White Prayer Card:** Pure white outer card with soft drop shadow, nested warm sandy beige inner hour card (`#F4EFE6`) with dark typography, and 3D sun/cloud weather card.
+            - **Soft Cream Action Squircles:** Qur'an, Zakat, and Dzikir with circular gold metallic buttons and dark icons.
+            - **Honey Gold Featured Card:** Daily Dakwah capsule, heavy bold "Ramadan Study" typography, instructor profile, and 3D desk calendar.
+            - **Frosted Glass Floating Nav Dock:** Ultra-sleek pill dock with pure icons and elevated circular gold search button.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.2.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.3.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.2.apk
+            release-output/My-Quran-v1.8.3.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

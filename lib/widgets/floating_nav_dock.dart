@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 
 class FloatingNavDock extends StatelessWidget {
@@ -39,7 +38,7 @@ class FloatingNavDock extends StatelessWidget {
               filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: Container(
                 height: 64,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: dockBg,
                   borderRadius: BorderRadius.circular(36),
@@ -53,13 +52,12 @@ class FloatingNavDock extends StatelessWidget {
                   ],
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Item 0: Home
                     _buildNavItem(
                       index: 0,
-                      icon: Icons.mosque_rounded,
-                      label: 'Home',
+                      icon: Icons.home_outlined,
                       isSelected: currentIndex == 0,
                       isDark: isDark,
                       textMuted: textMuted,
@@ -69,37 +67,24 @@ class FloatingNavDock extends StatelessWidget {
                     // Item 1: Qur'an
                     _buildNavItem(
                       index: 1,
-                      icon: Icons.menu_book_rounded,
-                      label: "Qur'an",
+                      icon: Icons.menu_book_outlined,
                       isSelected: currentIndex == 1,
                       isDark: isDark,
                       textMuted: textMuted,
                       onTap: () => onTabSelected(1),
                     ),
 
-                    // Spacer for the center elevated diamond button
-                    const SizedBox(width: 48),
+                    // Spacer for the center elevated circular gold button
+                    const SizedBox(width: 56),
 
-                    // Item 2: Dzikir
+                    // Item 2: Library / Profile
                     _buildNavItem(
                       index: 2,
-                      icon: Icons.grain_rounded,
-                      label: 'Dzikir',
-                      isSelected: currentIndex == 2,
+                      icon: Icons.person_outline_rounded,
+                      isSelected: currentIndex == 2 || currentIndex == 3,
                       isDark: isDark,
                       textMuted: textMuted,
                       onTap: () => onTabSelected(2),
-                    ),
-
-                    // Item 3: Library / Bookmarks
-                    _buildNavItem(
-                      index: 3,
-                      icon: Icons.bookmark_rounded,
-                      label: 'Library',
-                      isSelected: currentIndex == 3,
-                      isDark: isDark,
-                      textMuted: textMuted,
-                      onTap: () => onTabSelected(3),
                     ),
                   ],
                 ),
@@ -107,52 +92,42 @@ class FloatingNavDock extends StatelessWidget {
             ),
           ),
 
-          // 2. Noor Signature Center Diamond / Tilted Gold Button
+          // 2. Center Circular Gold Button matching reference
           Positioned(
-            top: -12,
+            top: -10,
             child: GestureDetector(
               onTap: onSearchPressed,
               child: Container(
-                width: 52,
-                height: 52,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFFFFDF7A),
+                      Color(0xFFE5B850),
+                      Color(0xFFCC9730),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.quranGold.withOpacity(0.40),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
+                      color: const Color(0xFFD4A747).withOpacity(0.45),
+                      blurRadius: 18,
+                      offset: const Offset(0, 5),
                     ),
                   ],
-                ),
-                child: Transform.rotate(
-                  angle: 0.785398, // 45 degrees
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFFFDF7A),
-                          AppColors.quranGold,
-                          Color(0xFFD49E24),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.6),
-                        width: 1.2,
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Transform.rotate(
-                      angle: -0.785398, // counter-rotate
-                      child: const Icon(
-                        Icons.search_rounded,
-                        color: Color(0xFF14171A),
-                        size: 26,
-                      ),
-                    ),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.7),
+                    width: 1.5,
                   ),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(
+                  Icons.search_rounded,
+                  color: Color(0xFF1D2321),
+                  size: 26,
                 ),
               ),
             ),
@@ -165,7 +140,6 @@ class FloatingNavDock extends StatelessWidget {
   Widget _buildNavItem({
     required int index,
     required IconData icon,
-    required String label,
     required bool isSelected,
     required bool isDark,
     required Color textMuted,
@@ -174,43 +148,16 @@ class FloatingNavDock extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-        padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? 12 : 8,
-          vertical: 6,
-        ),
-        decoration: BoxDecoration(
+      child: Container(
+        width: 48,
+        height: 48,
+        alignment: Alignment.center,
+        child: Icon(
+          icon,
+          size: 26,
           color: isSelected
-              ? (isDark
-                  ? AppColors.deepEmerald
-                  : AppColors.deepEmerald.withOpacity(0.12))
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isSelected
-                  ? (isDark ? AppColors.quranGold : AppColors.deepEmerald)
-                  : textMuted,
-            ),
-            if (isSelected) ...[
-              const SizedBox(width: 5),
-              Text(
-                label,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : AppColors.deepEmerald,
-                ),
-              ),
-            ],
-          ],
+              ? (isDark ? const Color(0xFFF5CE63) : const Color(0xFFC79934))
+              : (isDark ? textMuted : const Color(0xFF757B78)),
         ),
       ),
     );
