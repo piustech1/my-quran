@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../services/theme_service.dart';
+import '../widgets/curved_header.dart';
 import '../widgets/dzikir_counter_dialog.dart';
 import 'quran_library_screen.dart';
 
@@ -145,130 +146,127 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
     return Scaffold(
       backgroundColor: bg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 1. Top Header Row: Profile Avatar, "Assalamu alaikum, Aminah ✎", Notification Bell & Theme Toggle
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      // Avatar
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isDark ? AppColors.darkSurface : AppColors.lightSurfaceSubtle,
-                          border: Border.all(color: AppColors.accentGold, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
+      body: Column(
+        children: [
+          // 1. Curved Downward Solid Forest Green Header (no outlines)
+          CurvedDownwardHeader(
+            curveDepth: 24.0,
+            backgroundColor: AppColors.forestGreen,
+            padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 10, 20, 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    // Profile Avatar
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.15),
+                      ),
+                      child: const Icon(Icons.person_rounded, color: AppColors.warmGold, size: 26),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Greeting "Assalamu alaikum, Aminah ✎"
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Assalamu alaikum,",
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            color: AppColors.warmGold,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "Aminah",
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
+                            const SizedBox(width: 5),
+                            const Icon(Icons.edit_outlined, size: 14, color: AppColors.warmGold),
                           ],
                         ),
-                        child: const Icon(Icons.person_rounded, color: AppColors.accentGold, size: 26),
-                      ),
-                      const SizedBox(width: 12),
+                      ],
+                    ),
+                  ],
+                ),
 
-                      // Greeting "Assalamu alaikum, Aminah ✎"
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Assalamu alaikum,",
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              color: isDark ? const Color(0xFFD4AF37) : AppColors.accentGoldDark,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "Aminah",
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimary,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              const Icon(Icons.edit_outlined, size: 14, color: AppColors.accentGold),
-                            ],
-                          ),
-                        ],
+                // Actions: Notification Bell + Theme Toggle Button
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.12),
                       ),
-                    ],
-                  ),
-
-                  // Actions: Notification Bell + Theme Toggle Button
-                  Row(
-                    children: [
-                      Container(
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.notifications_outlined,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => _themeService.toggleTheme(),
+                      child: Container(
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                          border: Border.all(color: border, width: 1),
+                          color: AppColors.warmGold.withOpacity(0.25),
                         ),
                         alignment: Alignment.center,
                         child: Icon(
-                          Icons.notifications_outlined,
-                          color: isDark ? Colors.white70 : textPrimary,
+                          isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                          color: AppColors.warmGold,
                           size: 20,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () => _themeService.toggleTheme(),
-                        child: Container(
-                          width: 42,
-                          height: 42,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                            border: Border.all(color: AppColors.accentGold.withOpacity(0.5), width: 1.5),
-                          ),
-                          alignment: Alignment.center,
-                          child: Icon(
-                            isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                            color: AppColors.accentGold,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // 2. Prayer Card ("DHUHR 12:16 PM" with Sun/Cloud Illustration & Weather)
-              Container(
-                height: 165,
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: border, width: 1),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
-                      blurRadius: 18,
-                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
-                child: Row(
+              ],
+            ),
+          ),
+
+          // Scrollable Body Content
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 2. Prayer Card ("DHUHR 12:16 PM" with Sun/Cloud Illustration & Weather)
+                  Container(
+                    height: 165,
+                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Row(
                   children: [
                     // Prayer Time Details
                     Expanded(
@@ -520,10 +518,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           ),
         ),
       ),
+    ],
+  ),
 
-      // Custom Floating Bottom Navigation Bar matching mockup
-      bottomNavigationBar: _buildBottomNav(isDark, cardBg, border, textPrimary, textSecondary),
-    );
+  // Custom Floating Bottom Navigation Bar matching mockup
+  bottomNavigationBar: _buildBottomNav(isDark, cardBg, border, textPrimary, textSecondary),
+);
   }
 
   Widget _buildQuickActionItem({
@@ -545,7 +545,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           decoration: BoxDecoration(
             color: cardBg,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: border, width: 1),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
@@ -634,7 +633,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: border, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),

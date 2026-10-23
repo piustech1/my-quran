@@ -363,10 +363,6 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-              width: 1,
-            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),

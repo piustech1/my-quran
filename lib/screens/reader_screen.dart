@@ -9,6 +9,7 @@ import '../services/storage_service.dart';
 import '../widgets/audio_player_bar.dart';
 import '../widgets/ayah_card.dart';
 import '../widgets/bismillah_banner.dart';
+import '../widgets/curved_header.dart';
 import '../widgets/page_turn_view.dart';
 
 enum ReaderMode {
@@ -168,23 +169,28 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.accentGold.withOpacity(0.18)
+                            ? AppColors.warmGold.withOpacity(0.18)
                             : (isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isSelected ? AppColors.accentGold : border,
-                          width: 1,
-                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.mic_rounded,
-                            color: isSelected ? AppColors.accentGold : textSecondary,
-                            size: 20,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              reciter.imageAsset,
+                              width: 42,
+                              height: 42,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const CircleAvatar(
+                                radius: 21,
+                                backgroundColor: AppColors.forestGreen,
+                                child: Icon(Icons.mic_rounded, color: Colors.white, size: 20),
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -211,7 +217,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             ),
                           ),
                           if (isSelected)
-                            const Icon(Icons.check_circle_rounded, color: AppColors.accentGold, size: 20),
+                            const Icon(Icons.check_circle_rounded, color: AppColors.accentGold, size: 22),
                         ],
                       ),
                     ),
@@ -359,107 +365,27 @@ class _ReaderScreenState extends State<ReaderScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final topPadding = MediaQuery.of(context).padding.top;
+    final headerHeight = topPadding + 104.0;
 
     return Scaffold(
       backgroundColor: bg,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          color: textPrimary,
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Column(
-          children: [
-            Text(
-              widget.surah.englishName,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: textPrimary,
-              ),
-            ),
-            Text(
-              '${widget.surah.revelationType} • ${widget.surah.numberOfAyahs} Ayahs',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
-                color: textSecondary,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          // Play Full Surah Audio action
-          IconButton(
-            icon: const Icon(Icons.play_circle_outline_rounded, color: AppColors.accentGold),
-            tooltip: 'Play Surah Audio',
-            onPressed: () {
-              _audioService.playAyah(
-                surahNumber: widget.surah.number,
-                ayahNumber: 1,
-                maxVerses: widget.surah.numberOfAyahs,
-              );
-            },
-          ),
-
-          // Mode toggle button (Book Page-Turn vs Verse List)
-          IconButton(
-            icon: Icon(
-              _readerMode == ReaderMode.pageTurn
-                  ? Icons.menu_book_rounded
-                  : Icons.view_headline_rounded,
-              color: AppColors.accentGold,
-            ),
-            tooltip: _readerMode == ReaderMode.pageTurn
-                ? 'Switch to Verse List'
-                : 'Switch to Book Page Turn',
-            onPressed: () {
-              setState(() {
-                _readerMode = _readerMode == ReaderMode.pageTurn
-                    ? ReaderMode.verseList
-                    : ReaderMode.pageTurn;
-              });
-            },
-          ),
-
-          // Translation toggle (Arabic First, user toggles translation)
-          IconButton(
-            icon: Icon(
-              _showTranslation ? Icons.translate_rounded : Icons.g_translate_outlined,
-              color: _showTranslation ? AppColors.accentGold : textPrimary,
-            ),
-            tooltip: _showTranslation ? 'Hide English Translation' : 'Show English Translation',
-            onPressed: () {
-              setState(() => _showTranslation = !_showTranslation);
-              _storage.saveShowTranslation(_showTranslation);
-            },
-          ),
-
-          // Bookmark Toggle
-          IconButton(
-            icon: Icon(
-              _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-              color: _isBookmarked ? AppColors.accentGold : textPrimary,
-            ),
-            onPressed: () async {
-              final newStatus = await _storage.toggleBookmark(widget.surah.number);
-              setState(() => _isBookmarked = newStatus);
-            },
-          ),
-
-          // Settings (Font size, translation, audio)
-          IconButton(
-            icon: Icon(Icons.tune_rounded, color: textPrimary),
-            onPressed: _showSettingsModal,
-          ),
-        ],
-      ),
       body: Stack(
         children: [
-          // Main Reader Body
+          // Main Reader Body positioned below header with bottom space for audio bar
           Positioned.fill(
-            child: _buildBody(),
+            child: Padding(
+              padding: EdgeInsets.only(top: headerHeight - 12, bottom: 64),
+              child: _buildBody(),
+            ),
+          ),
+
+          // Curved Downward Solid Forest Green Header (no outlines)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: _buildCurvedHeader(context),
           ),
 
           // Floating Audio Player Bar at bottom
@@ -473,6 +399,230 @@ class _ReaderScreenState extends State<ReaderScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCurvedHeader(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+
+    return CurvedDownwardHeader(
+      curveDepth: 22.0,
+      backgroundColor: AppColors.forestGreen,
+      padding: EdgeInsets.only(
+        top: topPadding + 6,
+        left: 12,
+        right: 12,
+        bottom: 22,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              // Back Button
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+
+              // Surah Title & Metadata
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            widget.surah.englishName,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          widget.surah.name,
+                          style: GoogleFonts.amiri(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.warmGold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${widget.surah.revelationType} • ${widget.surah.numberOfAyahs} Ayahs',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: Colors.white.withOpacity(0.8),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Reciter Avatar button
+              ValueListenableBuilder<Reciter>(
+                valueListenable: _audioService.selectedReciterNotifier,
+                builder: (context, reciter, _) {
+                  return Tooltip(
+                    message: 'Select Reciter: ${reciter.name}',
+                    child: InkWell(
+                      onTap: _showReciterSelectionModal,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColors.warmGold, width: 1.5),
+                        ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            reciter.imageAsset,
+                            width: 28,
+                            height: 28,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const CircleAvatar(
+                              radius: 14,
+                              backgroundColor: AppColors.forestGreenSurface,
+                              child: Icon(Icons.person, size: 16, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 4),
+
+              // Audio Play / Pause in header
+              ValueListenableBuilder<bool>(
+                valueListenable: _audioService.isPlayingNotifier,
+                builder: (context, isPlaying, _) {
+                  return IconButton(
+                    icon: Icon(
+                      isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_filled_rounded,
+                      color: AppColors.warmGold,
+                      size: 28,
+                    ),
+                    tooltip: isPlaying ? 'Pause Recitation' : 'Play Surah',
+                    onPressed: () {
+                      if (isPlaying) {
+                        _audioService.player.pause();
+                      } else {
+                        _audioService.playAyah(
+                          surahNumber: widget.surah.number,
+                          ayahNumber: 1,
+                          maxVerses: widget.surah.numberOfAyahs,
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 6),
+
+          // Secondary Quick Controls Row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildHeaderPillAction(
+                  icon: _showTranslation ? Icons.translate_rounded : Icons.g_translate_outlined,
+                  label: _showTranslation ? 'English ON' : 'Arabic Only',
+                  isActive: _showTranslation,
+                  onTap: () {
+                    setState(() => _showTranslation = !_showTranslation);
+                    _storage.saveShowTranslation(_showTranslation);
+                  },
+                ),
+                _buildHeaderPillAction(
+                  icon: _readerMode == ReaderMode.pageTurn
+                      ? Icons.menu_book_rounded
+                      : Icons.view_headline_rounded,
+                  label: _readerMode == ReaderMode.pageTurn ? 'Book Page' : 'Verse List',
+                  isActive: _readerMode == ReaderMode.pageTurn,
+                  onTap: () {
+                    setState(() {
+                      _readerMode = _readerMode == ReaderMode.pageTurn
+                          ? ReaderMode.verseList
+                          : ReaderMode.pageTurn;
+                    });
+                  },
+                ),
+                _buildHeaderPillAction(
+                  icon: _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                  label: _isBookmarked ? 'Saved' : 'Bookmark',
+                  isActive: _isBookmarked,
+                  onTap: () async {
+                    final newStatus = await _storage.toggleBookmark(widget.surah.number);
+                    setState(() => _isBookmarked = newStatus);
+                  },
+                ),
+                _buildHeaderPillAction(
+                  icon: Icons.tune_rounded,
+                  label: 'Prefs',
+                  isActive: false,
+                  onTap: _showSettingsModal,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderPillAction({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: isActive
+              ? AppColors.warmGold.withOpacity(0.25)
+              : Colors.white.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: isActive ? AppColors.warmGold : Colors.white,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                color: isActive ? AppColors.warmGold : Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -24,7 +24,10 @@ class AppColors {
   static const Color darkTextSecondary = Color(0xFF8C98A9);
   static const Color darkPillButton = Color(0xFF12151B);
 
-  // Emerald Quran Accents
+  // Emerald & Forest Quran Accents
+  static const Color forestGreen = Color(0xFF143825); // Solid deep forest green requested by user
+  static const Color forestGreenSurface = Color(0xFF1B4931);
+  static const Color warmGold = Color(0xFFF3D278);
   static const Color emeraldPrimary = Color(0xFF0D3B2E);
   static const Color emeraldSurface = Color(0xFF164738);
 

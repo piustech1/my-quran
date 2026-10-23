@@ -6,11 +6,13 @@ class Reciter {
   final String id;
   final String name;
   final String description;
+  final String imageAsset;
 
   const Reciter({
     required this.id,
     required this.name,
     required this.description,
+    required this.imageAsset,
   });
 }
 
@@ -29,21 +31,25 @@ class QuranAudioService {
       id: 'Alafasy_128kbps',
       name: 'Mishary Rashid Alafasy',
       description: 'Clear, modern Tajweed pronunciation',
+      imageAsset: 'assets/reciters/alafasy.jpg',
     ),
     Reciter(
       id: 'Abdul_Basit_Murattal_192kbps',
       name: 'Abdul Basit Murattal',
       description: 'Legendary classical Egyptian master',
+      imageAsset: 'assets/reciters/basit.jpg',
     ),
     Reciter(
       id: 'Abu_Bakr_Ash-Shaatree_128kbps',
       name: 'Abu Bakr Ash-Shatri',
       description: 'Warm, melodious and heartfelt',
+      imageAsset: 'assets/reciters/shatri.jpg',
     ),
   ];
 
-  Reciter _selectedReciter = availableReciters[0];
-  Reciter get selectedReciter => _selectedReciter;
+  late final ValueNotifier<Reciter> selectedReciterNotifier =
+      ValueNotifier<Reciter>(availableReciters[0]);
+  Reciter get selectedReciter => selectedReciterNotifier.value;
 
   final ValueNotifier<int?> currentPlayingAyah = ValueNotifier<int?>(null);
   final ValueNotifier<int?> currentPlayingSurah = ValueNotifier<int?>(null);
@@ -68,7 +74,7 @@ class QuranAudioService {
   }
 
   void setReciter(Reciter reciter) {
-    _selectedReciter = reciter;
+    selectedReciterNotifier.value = reciter;
     // If currently playing, replay current ayah with new reciter
     if (currentPlayingSurah.value != null && currentPlayingAyah.value != null) {
       playAyah(
@@ -82,7 +88,7 @@ class QuranAudioService {
   String getAyahAudioUrl(int surah, int ayah) {
     final s = surah.toString().padLeft(3, '0');
     final a = ayah.toString().padLeft(3, '0');
-    return 'https://everyayah.com/data/${_selectedReciter.id}/$s$a.mp3';
+    return 'https://everyayah.com/data/${selectedReciter.id}/$s$a.mp3';
   }
 
   Future<void> playAyah({

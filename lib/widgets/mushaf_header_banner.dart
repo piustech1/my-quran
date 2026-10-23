@@ -42,24 +42,18 @@ class MushafHeaderBanner extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Elegant Illuminated Surah Title Cartouche (Traditional Mushaf Header)
+          // Solid Dark Forest Green Cartouche (No outlines, White & Gold text)
           Container(
             constraints: const BoxConstraints(maxWidth: 240),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF2A2315).withOpacity(0.9)
-                  : const Color(0xFFFBF8EE),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: const Color(0xFFD4AF37),
-                width: 1.5,
-              ),
+              color: const Color(0xFF143825),
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFD4AF37).withOpacity(0.18),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -93,24 +87,24 @@ class MushafHeaderBanner extends StatelessWidget {
 
                 const SizedBox(height: 1),
 
-                // Surah Name in classical Arabic calligraphy
+                // Surah Name in classical Arabic calligraphy (Pure White)
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
                     'سُورَةُ $surahNameArabic',
                     textDirection: TextDirection.rtl,
                     style: GoogleFonts.amiri(
-                      fontSize: 20,
+                      fontSize: 21,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? const Color(0xFFF5E6BE) : const Color(0xFF1B4D36),
+                      color: Colors.white,
                       height: 1.25,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 1),
+                const SizedBox(height: 2),
 
-                // Subtle metadata bar: Order & Ayah Count
+                // Subtle metadata bar: Order & Ayah Count (Gold & White)
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
@@ -122,7 +116,7 @@ class MushafHeaderBanner extends StatelessWidget {
                         textDirection: TextDirection.rtl,
                         style: GoogleFonts.amiri(
                           fontSize: 11,
-                          color: isDark ? const Color(0xFFD4AF37) : const Color(0xFF6B5828),
+                          color: const Color(0xFFF3D278),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -132,7 +126,7 @@ class MushafHeaderBanner extends StatelessWidget {
                           '•',
                           style: TextStyle(
                             fontSize: 10,
-                            color: const Color(0xFFD4AF37).withOpacity(0.7),
+                            color: const Color(0xFFF3D278).withOpacity(0.7),
                           ),
                         ),
                       ),
@@ -141,7 +135,7 @@ class MushafHeaderBanner extends StatelessWidget {
                         textDirection: TextDirection.rtl,
                         style: GoogleFonts.amiri(
                           fontSize: 11,
-                          color: isDark ? const Color(0xFFD4AF37) : const Color(0xFF6B5828),
+                          color: const Color(0xFFF3D278),
                           fontWeight: FontWeight.w600,
                         ),
                       ),

@@ -43,33 +43,43 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.4.2.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.5.0.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.4.2
-          name: "My Quran v1.4.2 - Corner Ornaments on White Mushaf Card"
+          tag_name: v1.5.0
+          name: "My Quran v1.5.0 - Liquid Glass UI, Curved Forest Green Headers & Reciter Photos"
           body: |
-            ### 📖 My Quran - Release v1.4.2
+            ### 📖 My Quran - Release v1.5.0
 
-            What's New in **v1.4.2**:
+            What's New in **v1.5.0**:
 
-            #### 🏛️ Corner Ornaments on White Mushaf Card
-            - **Replaced Heavy Full-Page Frame:** Removed the full-page auto outline (`mufta.png`) that restricted page scaling and aspect ratios across devices.
-            - **Inverted Corner Assets:** Integrated the user's authentic Islamic corner asset (`image-removebg-preview.png`), dynamically flipped and mirrored to crown the **top-left and top-right corners** of the white card.
-            - **Pristine White/Parchment Card:** Restored the clean rounded card (`r: 20`) with warm ivory background, delicate gold border line, and soft ambient drop shadow.
+            #### 🌿 Solid Forest-Green Curved Downward Headers
+            - **Quran Reader Header:** Curved downward solid deep forest green (`#143825`, no outlines) containing back button, Surah title, reciter avatar, audio play/pause, and reading mode/translation pills.
+            - **Home Dashboard Header:** Organic downward curve housing user greeting ("Assalamu alaikum, Aminah ✎"), notification bell, and theme switch.
+            - **Eliminated All Card Borders:** Borderless design with solid fills, soft ambient shadows, and liquid glass styling.
 
-            #### 📜 Spacious Header & Flowing Scripture
-            - **Centered Cartouche:** Surah title cartouche sits gracefully centered between the top two corner ornaments.
-            - **Unrestricted Reading Canvas:** Verses flow continuously with generous line height and inline medallions (`۝`), giving the sacred Arabic text room to breathe without edge collisions.
-            - **Audio Synchronized Highlighting:** Verses and inline medallions illuminate together in gold during audio recitation.
+            #### 📜 Solid Deep Green Title Cartouche & Clean Page Badges
+            - **Surah Title Cartouche:** Solid deep green (`#143825`) with pure white Arabic calligraphy (`سُورَةُ [الاسم]`) and delicate warm gold metadata (`#F3D278`).
+            - **Subsequent Page Headers:** Compact centered solid forest-green pill badge with white text, fitting tightly between corner ornaments without edge collisions.
+
+            #### 🏛️ 4-Corner Islamic Ornaments & Liquid Glass Parchment Card
+            - **4-Corner Ornaments:** Beautifully placed in all four corners (top-left, top-right, bottom-left, bottom-right) of the reader page card with proper flips.
+            - **Liquid Glass Translucent Card:** iOS liquid glass translucent parchment (`BackdropFilter` with blur, soft ambient shadow, no border lines).
+
+            #### 🎙️ Reciter Portraits & Audio Recitation
+            - Integrated high-quality reciter portraits for:
+              - **Abu Bakr Ash-Shatri** (`assets/reciters/shatri.jpg`)
+              - **Abdul Basit Murattal** (`assets/reciters/basit.jpg`)
+              - **Mishary Rashid Alafasy** (`assets/reciters/alafasy.jpg`)
+            - Real-time reciter switcher with photo avatars in both the reader header and audio bar.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.4.2.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.5.0.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.4.2.apk
+            release-output/My-Quran-v1.5.0.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

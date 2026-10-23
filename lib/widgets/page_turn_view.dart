@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -230,150 +231,185 @@ class _PageTurnViewState extends State<PageTurnView> {
     );
   }
 
-  /// Builds a manuscript page matching the attached layout from the user
+  /// Builds a manuscript page with iOS-style liquid glassmorphism and 4-corner ornaments
   Widget _buildMushafManuscriptPage(int pageIndex, List<Ayah> pageAyahs, int? playingAyah) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final pageBg = isDark ? const Color(0xFF1E242B) : const Color(0xFFFFFDF8);
+    final glassBg = isDark
+        ? const Color(0xFF1B2228).withOpacity(0.85)
+        : Colors.white.withOpacity(0.92);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: pageBg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? const Color(0xFF3E3321) : const Color(0xFFE8DFC8),
-          width: 1.2,
-        ),
+        color: glassBg,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(isDark ? 0.35 : 0.07),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
+          ),
+          BoxShadow(
+            color: Colors.white.withOpacity(isDark ? 0.05 : 0.7),
+            blurRadius: 1,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: [
-            // Top-Left Corner Islamic Ornament
-            Positioned(
-              top: 0,
-              left: 0,
-              width: 78,
-              height: 52,
-              child: IgnorePointer(
-                child: Transform.flip(
-                  flipX: true,
-                  flipY: true,
-                  child: Image.asset(
-                    'assets/image-removebg-preview.png',
-                    fit: BoxFit.fill,
-                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                  ),
-                ),
-              ),
-            ),
-
-            // Top-Right Corner Islamic Ornament
-            Positioned(
-              top: 0,
-              right: 0,
-              width: 78,
-              height: 52,
-              child: IgnorePointer(
-                child: Transform.flip(
-                  flipY: true,
-                  child: Image.asset(
-                    'assets/image-removebg-preview.png',
-                    fit: BoxFit.fill,
-                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                  ),
-                ),
-              ),
-            ),
-
-            // Page Content situated inside the pristine white card
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Surah Header Frame: shown on page 0
-                  if (pageIndex == 0)
-                    MushafHeaderBanner(
-                      surahNameArabic: widget.surahNameArabic,
-                      numberOfAyahs: widget.numberOfAyahs,
-                      surahNumber: widget.surahNumber,
-                      showBismillah: true,
-                    )
-                  else
-                    _buildSubsequentPageHeader(),
-
-                  const SizedBox(height: 8),
-
-                // Flowing Quranic Arabic Text with Live Highlighting
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: _buildFlowingArabicVerses(pageAyahs, playingAyah),
-                  ),
-                ),
-
-                const SizedBox(height: 4),
-
-                // Bottom Page Number
-                Center(
-                  child: Text(
-                    '— ${pageIndex + 1} —',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 11,
-                      color: isDark ? const Color(0xFFD4AF37) : AppColors.accentGoldDark,
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.bold,
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Stack(
+            children: [
+              // Top-Left Corner Islamic Ornament
+              Positioned(
+                top: 0,
+                left: 0,
+                width: 72,
+                height: 48,
+                child: IgnorePointer(
+                  child: Transform.flip(
+                    flipX: true,
+                    flipY: true,
+                    child: Image.asset(
+                      'assets/corner_asset.png',
+                      fit: BoxFit.fill,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              // Top-Right Corner Islamic Ornament
+              Positioned(
+                top: 0,
+                right: 0,
+                width: 72,
+                height: 48,
+                child: IgnorePointer(
+                  child: Transform.flip(
+                    flipY: true,
+                    child: Image.asset(
+                      'assets/corner_asset.png',
+                      fit: BoxFit.fill,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Bottom-Left Corner Islamic Ornament
+              Positioned(
+                bottom: 0,
+                left: 0,
+                width: 72,
+                height: 48,
+                child: IgnorePointer(
+                  child: Transform.flip(
+                    flipX: true,
+                    child: Image.asset(
+                      'assets/corner_asset.png',
+                      fit: BoxFit.fill,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Bottom-Right Corner Islamic Ornament
+              Positioned(
+                bottom: 0,
+                right: 0,
+                width: 72,
+                height: 48,
+                child: IgnorePointer(
+                  child: Image.asset(
+                    'assets/corner_asset.png',
+                    fit: BoxFit.fill,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+
+              // Page Content situated inside the liquid glass card
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Surah Header Frame: shown on page 0
+                    if (pageIndex == 0)
+                      MushafHeaderBanner(
+                        surahNameArabic: widget.surahNameArabic,
+                        numberOfAyahs: widget.numberOfAyahs,
+                        surahNumber: widget.surahNumber,
+                        showBismillah: true,
+                      )
+                    else
+                      _buildSubsequentPageHeader(),
+
+                    const SizedBox(height: 8),
+
+                    // Flowing Quranic Arabic Text with Live Highlighting
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: _buildFlowingArabicVerses(pageAyahs, playingAyah),
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // Bottom Page Number
+                    Center(
+                      child: Text(
+                        '— ${pageIndex + 1} —',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFFD4AF37) : AppColors.accentGoldDark,
+                          letterSpacing: 2,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    ),
-  );
+    );
   }
 
-  /// Small title banner for pages 2, 3, etc.
+  /// Compact centered solid forest green pill badge for pages 2, 3, etc. (No border, white text)
   Widget _buildSubsequentPageHeader() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1B6B45).withOpacity(0.08),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF1B6B45).withOpacity(0.3), width: 1),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            widget.surahNameEnglish,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: AppColors.accentGoldDark,
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        decoration: BoxDecoration(
+          color: const Color(0xFF143825),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
+          ],
+        ),
+        child: Text(
+          'سُورَةُ ${widget.surahNameArabic}',
+          textDirection: TextDirection.rtl,
+          style: GoogleFonts.amiri(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            height: 1.2,
           ),
-          Text(
-            'سُورَةُ ${widget.surahNameArabic}',
-            textDirection: TextDirection.rtl,
-            style: GoogleFonts.amiri(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1B6B45),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
