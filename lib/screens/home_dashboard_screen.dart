@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import '../services/location_weather_service.dart';
+import '../services/prayer_time_service.dart';
 import '../services/theme_service.dart';
 import '../widgets/dzikir_counter_dialog.dart';
 import '../widgets/floating_nav_dock.dart';
@@ -16,7 +19,99 @@ class HomeDashboardScreen extends StatefulWidget {
 
 class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   final ThemeService _themeService = ThemeService();
+  final PrayerTimeService _prayerService = PrayerTimeService();
+  final LocationWeatherService _weatherService = LocationWeatherService();
+
   int _selectedNavIndex = 0;
+  PrayerSchedule? _prayerSchedule;
+  UpcomingPrayer? _upcomingPrayer;
+  WeatherData? _weatherData;
+  UserLocation? _userLocation;
+  Timer? _clockTimer;
+  DateTime _currentTime = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _startClock();
+    _loadRealData();
+  }
+
+  @override
+  void dispose() {
+    _clockTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startClock() {
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {
+          _currentTime = DateTime.now();
+          if (_prayerSchedule != null) {
+            _upcomingPrayer = _prayerService.getUpcomingPrayer(
+              _prayerSchedule!,
+              _currentTime,
+            );
+          }
+        });
+      }
+    });
+  }
+
+  Future<void> _loadRealData() async {
+    try {
+      final loc = await _weatherService.detectLocation();
+      if (mounted) {
+        setState(() => _userLocation = loc);
+      }
+
+      final schedule = await _prayerService.fetchPrayerTimes(
+        lat: loc.lat,
+        lon: loc.lon,
+        city: loc.city,
+        country: loc.country,
+      );
+      final upcoming = _prayerService.getUpcomingPrayer(schedule, DateTime.now());
+
+      final weather = await _weatherService.fetchWeather(
+        lat: loc.lat,
+        lon: loc.lon,
+        city: loc.city,
+      );
+
+      if (mounted) {
+        setState(() {
+          _prayerSchedule = schedule;
+          _upcomingPrayer = upcoming;
+          _weatherData = weather;
+        });
+      }
+    } catch (_) {
+      // Keep graceful offline fallbacks
+    }
+  }
+
+  String _formatLiveClock(DateTime dt) {
+    var hour = dt.hour;
+    final min = dt.minute.toString().padLeft(2, '0');
+    final sec = dt.second.toString().padLeft(2, '0');
+    final period = hour >= 12 ? 'PM' : 'AM';
+    if (hour > 12) hour -= 12;
+    if (hour == 0) hour = 12;
+    final hourStr = hour.toString().padLeft(2, '0');
+    return '$hourStr:$min:$sec $period';
+  }
+
+  String _formatCurrentDate(DateTime dt) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    final m = months[dt.month - 1];
+    return '$m ${dt.day}, ${dt.year}';
+  }
+
 
   void _showZakatDialog() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -151,150 +246,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     );
   }
 
-  void _showAishaGuideDialog() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? AppColors.darkCard : AppColors.lightSurface;
-    final textPrimary =
-        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary =
-        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: bg,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
-              Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.deepEmerald,
-                      border: Border.all(color: AppColors.quranGold, width: 2),
-                    ),
-                    child: const Icon(Icons.person_pin_circle_rounded,
-                        color: AppColors.quranGold, size: 26),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Ustadha Aisha',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                      ),
-                      Text(
-                        'AI Islamic & Quran Learning Guide',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          color: AppColors.quranGold,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.darkInnerCard
-                      : AppColors.lightSurfaceSubtle,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color:
-                        isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '“The best among you are those who learn the Quran and teach it.”',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w600,
-                        color: textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '— Sahih Al-Bukhari 5027',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        color: textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Explore Quran, memorize verses, or practice your daily Dzikir using the bottom navigation.',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
-                  color: textSecondary,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (_) => const QuranLibraryScreen()),
-                  );
-                },
-                icon: const Icon(Icons.menu_book_rounded,
-                    color: AppColors.midnightNavy, size: 18),
-                label: Text(
-                  'Open Quran Library',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.midnightNavy,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.quranGold,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -424,7 +375,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'D H U H R',
+                                  (_upcomingPrayer?.name ?? 'DHUHR')
+                                      .split('')
+                                      .join(' '),
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
@@ -433,36 +386,48 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 5),
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: '12:16 ',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w800,
-                                          color: isDark
-                                              ? Colors.white
-                                              : AppColors.lightTextPrimary,
-                                          letterSpacing: -0.5,
-                                        ),
+                                Builder(
+                                  builder: (context) {
+                                    final prayerTimeStr =
+                                        _upcomingPrayer?.timeFormatted ??
+                                            '12:16 PM';
+                                    final parts = prayerTimeStr.split(' ');
+                                    final timeDigits =
+                                        parts.isNotEmpty ? parts[0] : '12:16';
+                                    final timeAmPm =
+                                        parts.length > 1 ? parts[1] : 'PM';
+                                    return RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: '$timeDigits ',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w800,
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : AppColors.lightTextPrimary,
+                                              letterSpacing: -0.5,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: timeAmPm,
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: isDark
+                                                  ? Colors.white70
+                                                  : const Color(0xFF2B3430),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      TextSpan(
-                                        text: 'PM',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: isDark
-                                              ? Colors.white70
-                                              : const Color(0xFF2B3430),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  'Now 04:44:44 PM',
+                                  'Now ${_formatLiveClock(_currentTime)}',
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
                                     color: isDark
@@ -473,7 +438,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'Oct 23, 2026',
+                                  _formatCurrentDate(_currentTime),
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
                                     color: isDark
@@ -497,7 +462,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                               _buildSunCloudIllustration(),
                               const SizedBox(height: 6),
                               Text(
-                                '27°',
+                                '${_weatherData?.temperature ?? 27}°',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 26,
                                   fontWeight: FontWeight.bold,
@@ -508,7 +473,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Partly cloudy · Kampala',
+                                '${_weatherData?.condition ?? "Partly cloudy"} · ${_weatherData?.city ?? (_userLocation?.city ?? "Kampala")}',
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 11,
@@ -526,42 +491,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   ),
                   const SizedBox(height: 22),
 
-                  // 3. Quick Action Cards: Qur'an, Zakat, Dzikir (Exact 3-card squircle row matching reference)
-                  Row(
-                    children: [
-                      _buildQuickActionItem(
-                        label: "Qur'an",
-                        icon: Icons.menu_book_rounded,
-                        isDark: isDark,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (_) => const QuranLibraryScreen()),
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 14),
-                      _buildQuickActionItem(
-                        label: "Zakat",
-                        icon: Icons.all_inclusive_rounded,
-                        isDark: isDark,
-                        onTap: _showZakatDialog,
-                      ),
-                      const SizedBox(width: 14),
-                      _buildQuickActionItem(
-                        label: "Dzikir",
-                        icon: Icons.nightlight_round,
-                        subtitle: "0 / 33",
-                        isDark: isDark,
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => const DzikirCounterDialog(),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                  // 3. Islamic Bento Grid: Qur'an, Zakat, Dzikir (Edge-to-edge photography, glass tags)
+                  _buildBentoGrid(isDark),
+
                   const SizedBox(height: 26),
 
                   // 4. "Featured" Section
@@ -714,51 +646,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
             left: 18,
             right: 18,
             child: _buildHeaderRow(isDark),
-          ),
-
-          // 4. Peeking Ustadha Aisha Guide on bottom right matching reference
-          Positioned(
-            bottom: 60,
-            right: 24,
-            child: GestureDetector(
-              onTap: _showAishaGuideDialog,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 36,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.85),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.keyboard_arrow_up_rounded,
-                      size: 14,
-                      color: Color(0xFFB8934A),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  ClipOval(
-                    child: Image.asset(
-                      'assets/ustadha_aisha.png',
-                      width: 58,
-                      height: 58,
-                      fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -918,86 +805,185 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     );
   }
 
-  Widget _buildQuickActionItem({
+  Widget _buildBentoGrid(bool isDark) {
+    return Row(
+      children: [
+        _buildBentoCard(
+          label: "Qur'an",
+          imagePath: 'assets/bento_quran.jpg',
+          icon: Icons.menu_book_rounded,
+          isDark: isDark,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
+            );
+          },
+        ),
+        const SizedBox(width: 12),
+        _buildBentoCard(
+          label: "Zakat",
+          imagePath: 'assets/bento_zakat.jpg',
+          icon: Icons.all_inclusive_rounded,
+          isDark: isDark,
+          onTap: _showZakatDialog,
+        ),
+        const SizedBox(width: 12),
+        _buildBentoCard(
+          label: "Dzikir",
+          imagePath: 'assets/bento_dzikir.jpg',
+          icon: Icons.nightlight_round,
+          badgeText: "0 / 33",
+          isDark: isDark,
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (_) => const DzikirCounterDialog(),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBentoCard({
     required String label,
+    required String imagePath,
     required IconData icon,
-    String? subtitle,
+    String? badgeText,
     required bool isDark,
     required VoidCallback onTap,
   }) {
-    final cardBg =
-        isDark ? AppColors.darkCard : const Color(0xFFF0EBE2);
-    final textPrimary =
-        isDark ? Colors.white : AppColors.lightTextPrimary;
-
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 132,
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          height: 148,
           decoration: BoxDecoration(
-            color: cardBg,
             borderRadius: BorderRadius.circular(26),
-            border: Border.all(
-              color: isDark ? AppColors.darkBorder : const Color(0xFFEBE5DC),
-              width: 0.8,
-            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                color: Colors.black.withOpacity(isDark ? 0.38 : 0.12),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFE4B750),
-                      Color(0xFFC89736),
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x30C89736),
-                      blurRadius: 8,
-                      offset: Offset(0, 3),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(26),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // 1. Full cover image without outline
+                Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: isDark
+                          ? AppColors.darkCard
+                          : const Color(0xFFF0EBE2),
+                      child: Icon(icon, color: AppColors.quranGold, size: 36),
+                    );
+                  },
+                ),
+
+                // 2. Glassmorphic gradient overlay for contrast and depth
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Color(0x22000000),
+                        Color(0xB80A1F16),
+                      ],
+                      stops: [0.35, 0.65, 1.0],
                     ),
-                  ],
+                  ),
                 ),
-                child: Icon(icon, color: const Color(0xFF1D2321), size: 22),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                label,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
+
+                // 3. Frosted Glass Label Tag at bottom
+                Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.38),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.18),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              label,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black54,
+                                    blurRadius: 4,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (badgeText != null) ...[
+                              const SizedBox(height: 1),
+                              Text(
+                                badgeText,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.quranGold,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 3),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFFC29642),
+
+                // 4. Floating subtle Islamic icon bubble at top right
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    width: 26,
+                    height: 26,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black.withOpacity(0.32),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.16),
+                        width: 0.6,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(icon, color: AppColors.quranGold, size: 14),
                   ),
                 ),
               ],
-            ],
+            ),
           ),
         ),
       ),
