@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../models/ayah.dart';
 import '../services/audio_service.dart';
+import '../services/storage_service.dart';
 import 'mushaf_header_banner.dart';
 
 /// A 3D Mushaf Book Page-Turning View that opens and curls pages like an authentic Quran manuscript.
@@ -19,6 +20,7 @@ class PageTurnView extends StatefulWidget {
   final double arabicFontSize;
   final TranslationMode translationMode;
   final VoidCallback? onToggleTranslation;
+  final int? initialAyah;
 
   const PageTurnView({
     super.key,
@@ -30,6 +32,7 @@ class PageTurnView extends StatefulWidget {
     this.arabicFontSize = 23.0,
     this.translationMode = TranslationMode.arabicOnly,
     this.onToggleTranslation,
+    this.initialAyah,
   });
 
   @override
@@ -39,15 +42,28 @@ class PageTurnView extends StatefulWidget {
 class _PageTurnViewState extends State<PageTurnView> {
   late PageController _pageController;
   final QuranAudioService _audioService = QuranAudioService();
+  final StorageService _storage = StorageService();
   double _currentPage = 0.0;
   late List<List<Ayah>> _pages;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
-    _pageController.addListener(_handleScroll);
     _chunkAyahsIntoPages();
+
+    int startPage = 0;
+    if (widget.initialAyah != null && widget.initialAyah! > 1) {
+      for (int p = 0; p < _pages.length; p++) {
+        if (_pages[p].any((a) => a.verse == widget.initialAyah)) {
+          startPage = p;
+          break;
+        }
+      }
+    }
+
+    _currentPage = startPage.toDouble();
+    _pageController = PageController(initialPage: startPage);
+    _pageController.addListener(_handleScroll);
 
     // Listen to active audio recitation to highlight verses & auto-flip pages
     _audioService.currentPlayingAyah.addListener(_handleAudioVerseChange);
@@ -55,9 +71,19 @@ class _PageTurnViewState extends State<PageTurnView> {
 
   void _handleScroll() {
     if (mounted) {
+      final page = _pageController.page ?? 0.0;
       setState(() {
-        _currentPage = _pageController.page ?? 0.0;
+        _currentPage = page;
       });
+      final pageIndex = page.round();
+      if ((page - pageIndex).abs() < 0.05 && pageIndex < _pages.length && _pages[pageIndex].isNotEmpty) {
+        final currentAyah = _pages[pageIndex].first;
+        _storage.saveLastRead(
+          surahNumber: widget.surahNumber,
+          surahName: widget.surahNameEnglish,
+          ayahNumber: currentAyah.verse,
+        );
+      }
     }
   }
 

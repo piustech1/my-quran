@@ -61,10 +61,10 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
     });
   }
 
-  void _openReader(SurahMeta surah) {
+  void _openReader(SurahMeta surah, {int? initialAyah}) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => ReaderScreen(surah: surah),
+        builder: (_) => ReaderScreen(surah: surah, initialAyah: initialAyah),
       ),
     ).then((_) => _loadLastRead());
   }
@@ -91,275 +91,87 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
       orElse: () => kAllSurahs.first,
     );
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final topPadding = MediaQuery.of(context).padding.top;
+    final muftaHeight = screenWidth * 0.58 + topPadding;
+
     return Scaffold(
       backgroundColor: bg,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Stack(
         children: [
-          // AI-Generated Islamic Mufta Dome Header (HD 4K texture, no outlines)
-          MuftaHeader(
-            child: Row(
-              children: [
-                // Circular Back Button (no outline)
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.18),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white),
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                // Center Title or Search Input
-                Expanded(
-                  child: _isSearching
-                      ? TextField(
-                          controller: _searchController,
-                          autofocus: true,
-                          onChanged: _onSearch,
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          cursorColor: AppColors.accentGold,
-                          decoration: InputDecoration(
-                            hintText: 'Search Surah...',
-                            hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white70),
-                            border: InputBorder.none,
-                          ),
-                        )
-                      : Center(
-                          child: Text(
-                            'Q U R \' A N',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 4.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                ),
-                const SizedBox(width: 12),
-
-                // Search Toggle Button (no outline)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (_isSearching) {
-                        _searchController.clear();
-                        _filteredSurahs = kAllSurahs;
-                      }
-                      _isSearching = !_isSearching;
-                    });
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.18),
-                    ),
-                    alignment: Alignment.center,
-                    child: Icon(
-                      _isSearching ? Icons.close_rounded : Icons.search_rounded,
-                      color: AppColors.warmGold,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ],
+          // 1. Mufta Backdrop at the top — full crisp curves ending naturally with NO gradient fade
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: muftaHeight,
+              child: Image.asset(
+                'assets/new_mufta.jpg',
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                filterQuality: FilterQuality.high,
+              ),
             ),
           ),
 
-          // Main Library Body
-          Expanded(
-            child: Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // 1. Golden "Last Read" Card
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
-                      child: Container(
-                        height: 180,
-                        padding: const EdgeInsets.fromLTRB(22, 20, 14, 18),
-                        decoration: BoxDecoration(
-                          color: AppColors.accentGold,
-                          borderRadius: BorderRadius.circular(28),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.accentGold.withOpacity(0.38),
-                              blurRadius: 20,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                    children: [
-                      // Left content
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.menu_book_rounded,
-                                  size: 15,
-                                  color: Color(0xFF4A3812),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Last Read',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF4A3812),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Surah',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                color: const Color(0xFF634D1C),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              lastReadSurahName,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFF1F1705),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${lastReadMeta.name} • Ayah $lastReadAyah',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF4A3812),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-
-                            // Pill button: "Back to reading >"
-                            GestureDetector(
-                              onTap: () => _openReader(lastReadMeta),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF14171A),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Back to reading',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    const Icon(
-                                      Icons.chevron_right_rounded,
-                                      size: 15,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Right 3D Book Graphic from user assets
-                      Image.asset(
-                        'assets/quran asset.png',
-                        width: 120,
-                        height: 140,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Quran3DGraphic(width: 100, height: 125),
-                      ),
-                    ],
+          // 2. Main Collapsible Scroll Body: Last Read card scrolls up reducing Mufta dome size
+          Positioned.fill(
+            child: NestedScrollView(
+              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                return [
+                  // Pinned Top Bar (Back button, QUR'AN / Search field, Search button)
+                  SliverAppBar(
+                    pinned: true,
+                    floating: false,
+                    elevation: 0,
+                    toolbarHeight: 56,
+                    automaticallyImplyLeading: false,
+                    backgroundColor: innerBoxIsScrolled
+                        ? (isDark ? AppColors.darkBackground : AppColors.lightBackground).withOpacity(0.96)
+                        : Colors.transparent,
+                    title: _buildTopBarRow(context, isDark),
                   ),
-                ),
-              ),
 
-              // 2. Category Tabs: Surah | Para | Page | Hizb (matching Image 1)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TabBar(
-                  controller: _tabController,
-                  dividerColor: Colors.transparent,
-                  indicatorColor: AppColors.accentGold,
-                  indicatorWeight: 3.0,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  labelColor: textPrimary,
-                  unselectedLabelColor: textSecondary,
-                  labelStyle: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                  // Golden "Last Read" Card — scrolls up smoothly when user scrolls Surahs
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                      child: _buildLastReadCard(lastReadMeta, lastReadSurahName, lastReadAyah),
+                    ),
                   ),
-                  unselectedLabelStyle: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
+
+                  // Modern Islamic Segmented Capsule TabBar — pins smoothly under the top bar
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _ModernTabBarDelegate(
+                      height: 56.0,
+                      backgroundColor: bg,
+                      child: _buildModernTabBar(isDark, textPrimary, textSecondary),
+                    ),
                   ),
-                  tabs: const [
-                    Tab(text: 'Surah'),
-                    Tab(text: 'Para'),
-                    Tab(text: 'Page'),
-                    Tab(text: 'Hizb'),
-                  ],
-                ),
+                ];
+              },
+              body: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Tab 1: Surah List (with rounded cards, gold play buttons, and ayat count)
+                  _buildSurahListView(textPrimary, textSecondary, isDark),
+
+                  // Tab 2: Para (Juz) List
+                  _buildParaListView(textPrimary, textSecondary, isDark),
+
+                  // Tab 3: Page List (Medina Mushaf 604 standard pages)
+                  _buildPageListView(textPrimary, textSecondary, isDark),
+
+                  // Tab 4: Hizb List (60 Hizbs)
+                  _buildHizbListView(textPrimary, textSecondary, isDark),
+                ],
               ),
-              const SizedBox(height: 8),
-
-              // 3. Tab Views
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    // Tab 1: Surah List (with rounded cards, gold play buttons, and ayat count)
-                    _buildSurahListView(textPrimary, textSecondary, isDark),
-
-                    // Tab 2: Para (Juz) List
-                    _buildParaListView(textPrimary, textSecondary, isDark),
-
-                    // Tab 3: Page List (Medina Mushaf 604 standard pages)
-                    _buildPageListView(textPrimary, textSecondary, isDark),
-
-                    // Tab 4: Hizb List (60 Hizbs)
-                    _buildHizbListView(textPrimary, textSecondary, isDark),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
 
-          // Floating Audio Player at bottom if recitation is active
+          // 3. Floating Audio Player at bottom if recitation is active
           const Positioned(
             left: 0,
             right: 0,
@@ -368,11 +180,257 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           ),
         ],
       ),
-    ),
-  ],
-),
-);
-}
+    );
+  }
+
+  Widget _buildTopBarRow(BuildContext context, bool isDark) {
+    return Row(
+      children: [
+        // Circular Back Button
+        GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.20),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white),
+          ),
+        ),
+        const SizedBox(width: 12),
+
+        // Center Title or Search Input
+        Expanded(
+          child: _isSearching
+              ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  onChanged: _onSearch,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: AppColors.accentGold,
+                  decoration: InputDecoration(
+                    hintText: 'Search Surah...',
+                    hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white70),
+                    border: InputBorder.none,
+                  ),
+                )
+              : Center(
+                  child: Text(
+                    'Q U R \' A N',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 4.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+        ),
+        const SizedBox(width: 12),
+
+        // Search Toggle Button
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              if (_isSearching) {
+                _searchController.clear();
+                _filteredSurahs = kAllSurahs;
+              }
+              _isSearching = !_isSearching;
+            });
+          },
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.20),
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              _isSearching ? Icons.close_rounded : Icons.search_rounded,
+              color: AppColors.warmGold,
+              size: 20,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLastReadCard(SurahMeta lastReadMeta, String lastReadSurahName, int lastReadAyah) {
+    return Container(
+      height: 180,
+      padding: const EdgeInsets.fromLTRB(22, 20, 14, 18),
+      decoration: BoxDecoration(
+        color: AppColors.accentGold,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.accentGold.withOpacity(0.38),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Left content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.menu_book_rounded,
+                      size: 15,
+                      color: Color(0xFF4A3812),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Last Read',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF4A3812),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Surah',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    color: const Color(0xFF634D1C),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  lastReadSurahName,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF1F1705),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${lastReadMeta.name} • Ayah $lastReadAyah',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF4A3812),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Pill button: "Back to reading >" (Takes user directly back to where they stopped)
+                GestureDetector(
+                  onTap: () => _openReader(lastReadMeta, initialAyah: lastReadAyah),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF14171A),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Back to reading',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.chevron_right_rounded,
+                          size: 15,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Right 3D Book Graphic from user assets
+          Image.asset(
+            'assets/quran asset.png',
+            width: 120,
+            height: 140,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) =>
+                const Quran3DGraphic(width: 100, height: 125),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernTabBar(bool isDark, Color textPrimary, Color textSecondary) {
+    return Container(
+      height: 46,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E2220) : const Color(0xFFF0F4F2),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
+        ),
+      ),
+      child: TabBar(
+        controller: _tabController,
+        dividerColor: Colors.transparent,
+        indicatorSize: TabBarIndicatorSize.tab,
+        indicator: BoxDecoration(
+          color: isDark ? AppColors.accentGold : const Color(0xFF1C4431),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: (isDark ? AppColors.accentGold : const Color(0xFF1C4431)).withOpacity(0.28),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        labelColor: Colors.white,
+        unselectedLabelColor: isDark ? Colors.white60 : const Color(0xFF6B7280),
+        labelStyle: GoogleFonts.plusJakartaSans(
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
+        ),
+        unselectedLabelStyle: GoogleFonts.plusJakartaSans(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+        tabs: const [
+          Tab(text: 'Surah'),
+          Tab(text: 'Para'),
+          Tab(text: 'Page'),
+          Tab(text: 'Hizb'),
+        ],
+      ),
+    );
+  }
 
   Widget _buildSurahListView(Color textPrimary, Color textSecondary, bool isDark) {
     return ListView.builder(
@@ -692,5 +750,39 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
         );
       },
     );
+  }
+}
+
+class _ModernTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final double height;
+  final Color backgroundColor;
+
+  _ModernTabBarDelegate({
+    required this.child,
+    this.height = 56.0,
+    required this.backgroundColor,
+  });
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: backgroundColor,
+      alignment: Alignment.center,
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _ModernTabBarDelegate oldDelegate) {
+    return oldDelegate.child != child ||
+        oldDelegate.height != height ||
+        oldDelegate.backgroundColor != backgroundColor;
   }
 }

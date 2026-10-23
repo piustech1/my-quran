@@ -55,27 +55,6 @@ class MuftaHeader extends StatelessWidget {
             ),
           ),
 
-          // 2. Subtle soft bottom fade blending gracefully into screen background
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 48,
-            child: IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      fadeColor.withOpacity(0.0),
-                      fadeColor.withOpacity(0.92),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
 
           // 3. Foreground Controls (Floating glassmorphic top bar)
           Positioned(

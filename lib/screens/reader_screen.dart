@@ -19,8 +19,9 @@ enum ReaderMode {
 
 class ReaderScreen extends StatefulWidget {
   final SurahMeta surah;
+  final int? initialAyah;
 
-  const ReaderScreen({super.key, required this.surah});
+  const ReaderScreen({super.key, required this.surah, this.initialAyah});
 
   @override
   State<ReaderScreen> createState() => _ReaderScreenState();
@@ -53,13 +54,20 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   void _handleAudioAyahChange() {
     final playingAyah = _audioService.currentPlayingAyah.value;
-    if (playingAyah != null && _readerMode == ReaderMode.verseList && _scrollController.hasClients) {
-      final targetOffset = ((playingAyah - 1) * 190.0) + 100.0;
-      _scrollController.animateTo(
-        targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOutCubic,
+    if (playingAyah != null) {
+      _storage.saveLastRead(
+        surahNumber: widget.surah.number,
+        surahName: widget.surah.englishName,
+        ayahNumber: playingAyah,
       );
+      if (_readerMode == ReaderMode.verseList && _scrollController.hasClients) {
+        final targetOffset = ((playingAyah - 1) * 190.0) + 100.0;
+        _scrollController.animateTo(
+          targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutCubic,
+        );
+      }
     }
   }
 
@@ -82,11 +90,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
       });
     }
 
-    // Save as last read
+    // Save as last read with initial ayah position
     await _storage.saveLastRead(
       surahNumber: widget.surah.number,
       surahName: widget.surah.englishName,
-      ayahNumber: 1,
+      ayahNumber: widget.initialAyah ?? 1,
     );
   }
 
@@ -103,6 +111,19 @@ class _ReaderScreenState extends State<ReaderScreen> {
           _ayahs = data;
           _isLoading = false;
         });
+
+        if (widget.initialAyah != null && widget.initialAyah! > 1) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_readerMode == ReaderMode.verseList && _scrollController.hasClients) {
+              final targetOffset = ((widget.initialAyah! - 1) * 190.0);
+              _scrollController.animateTo(
+                targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeOutCubic,
+              );
+            }
+          });
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -772,6 +793,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
         numberOfAyahs: widget.surah.numberOfAyahs,
         arabicFontSize: _arabicFontSize,
         translationMode: _translationMode,
+        initialAyah: widget.initialAyah,
       );
     }
 
