@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../services/theme_service.dart';
-import '../widgets/curved_header.dart';
 import '../widgets/dzikir_counter_dialog.dart';
+import '../widgets/mufta_cutout_clipper.dart';
+import '../widgets/mufta_header.dart';
 import 'quran_library_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
@@ -149,13 +150,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
       backgroundColor: bg,
       body: Column(
         children: [
-          // 1. Curved Downward Solid Forest Green Header (no outlines)
-          CurvedDownwardHeader(
-            curveDepth: 24.0,
-            backgroundColor: AppColors.forestGreen,
-            padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 10, 20, 24),
+          // 1. AI-Generated Islamic Mufta Dome Header (HD 4K texture, no outlines)
+          MuftaHeader(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Row(
                   children: [
@@ -165,7 +164,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       height: 48,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withOpacity(0.18),
                       ),
                       child: const Icon(Icons.person_rounded, color: AppColors.warmGold, size: 26),
                     ),
@@ -211,7 +210,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       height: 42,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.12),
+                        color: Colors.white.withOpacity(0.15),
                       ),
                       alignment: Alignment.center,
                       child: const Icon(
@@ -228,7 +227,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                         height: 42,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.warmGold.withOpacity(0.25),
+                          color: AppColors.warmGold.withOpacity(0.28),
                         ),
                         alignment: Alignment.center,
                         child: Icon(
@@ -248,99 +247,116 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 2. Prayer Card ("DHUHR 12:16 PM" with Sun/Cloud Illustration & Weather)
-                  Container(
-                    height: 165,
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
-                          blurRadius: 18,
-                          offset: const Offset(0, 6),
+                  // 2. Prayer Card with Mufta Cutout Cradle ("DHUHR 12:16 PM" with Sun/Cloud Illustration & Weather)
+                  Stack(
+                    children: [
+                      // Ambient drop shadow for the card
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
+                                blurRadius: 18,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                    child: Row(
-                  children: [
-                    // Prayer Time Details
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'D H U H R',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 3.0,
-                              color: AppColors.accentGold,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            '12:16 PM',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w800,
-                              color: textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Now 11:20:51 PM',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              color: textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            'Oct 22, 2026',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 11,
-                              color: textSecondary,
-                            ),
-                          ),
-                        ],
                       ),
-                    ),
+                      // Card with custom cutout notch for the Mufta protruding sharp tip
+                      ClipPath(
+                        clipper: const MuftaCutoutClipper(
+                          notchWidth: 80.0,
+                          notchDepth: 22.0,
+                          borderRadius: 28.0,
+                        ),
+                        child: Container(
+                          height: 172,
+                          padding: const EdgeInsets.fromLTRB(22, 20, 22, 16),
+                          color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                          child: Row(
+                            children: [
+                              // Prayer Time Details
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'D H U H R',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 3.0,
+                                        color: AppColors.accentGold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      '12:16 PM',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.w800,
+                                        color: textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      'Now 11:20:51 PM',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 12,
+                                        color: textSecondary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Oct 22, 2026',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11,
+                                        color: textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
 
-                    // Sun Behind Cloud Illustration & Weather info (matching Image 2)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        _buildSunCloudIllustration(),
-                        const SizedBox(height: 4),
-                        Text(
-                          '27°',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
+                              // Sun Behind Cloud Illustration & Weather info (matching Image 2)
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  _buildSunCloudIllustration(),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '27°',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: textPrimary,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Partly cloudy • Kampala',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 11,
+                                      color: textSecondary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                          'Partly cloudy • Kampala',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11,
-                            color: textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                      ),
+                    ],
+                  ),
               const SizedBox(height: 22),
 
               // 3. Quick Action Cards: Qur'an, Zakat, Dzikir (Exact 3-card squircle row matching Image 2)

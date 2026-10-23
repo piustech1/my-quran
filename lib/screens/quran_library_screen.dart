@@ -6,8 +6,9 @@ import '../models/juz.dart';
 import '../services/audio_service.dart';
 import '../services/storage_service.dart';
 import '../widgets/audio_player_bar.dart';
-import '../widgets/curved_header.dart';
 import '../widgets/islamic_star_badge.dart';
+import '../widgets/mufta_cutout_clipper.dart';
+import '../widgets/mufta_header.dart';
 import '../widgets/quran_3d_graphic.dart';
 import 'reader_screen.dart';
 
@@ -96,11 +97,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Forest-Green Curved Dome Header with Back, Title, & Search
-          CurvedDownwardHeader(
-            curveDepth: 22.0,
-            backgroundColor: AppColors.forestGreen,
-            padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 8, 16, 22),
+          // AI-Generated Islamic Mufta Dome Header (HD 4K texture, no outlines)
+          MuftaHeader(
             child: Row(
               children: [
                 // Circular Back Button (no outline)
@@ -111,7 +109,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                     height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.15),
+                      color: Colors.white.withOpacity(0.18),
                     ),
                     alignment: Alignment.center,
                     child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white),
@@ -168,7 +166,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                     height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.15),
+                      color: Colors.white.withOpacity(0.18),
                     ),
                     alignment: Alignment.center,
                     child: Icon(
@@ -189,23 +187,35 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // 1. Golden "Last Read" Card (Pushed comfortably below the dome curve)
+                    // 1. Golden "Last Read" Card with Mufta Cutout Cradle
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
-                child: Container(
-                  height: 172,
-                  padding: const EdgeInsets.fromLTRB(22, 18, 14, 18),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGold,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.accentGold.withOpacity(0.38),
-                        blurRadius: 20,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(28),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.accentGold.withOpacity(0.38),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          ClipPath(
+                            clipper: const MuftaCutoutClipper(
+                              notchWidth: 80.0,
+                              notchDepth: 20.0,
+                              borderRadius: 28.0,
+                            ),
+                            child: Container(
+                              height: 172,
+                              padding: const EdgeInsets.fromLTRB(22, 22, 14, 18),
+                              color: AppColors.accentGold,
                   child: Row(
                     children: [
                       // Left content
@@ -310,6 +320,9 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
 
               // 2. Category Tabs: Surah | Para | Page | Hizb (matching Image 1)
               Padding(

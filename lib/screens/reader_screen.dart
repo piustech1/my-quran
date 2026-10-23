@@ -9,7 +9,7 @@ import '../services/storage_service.dart';
 import '../widgets/audio_frequency_wave.dart';
 import '../widgets/ayah_card.dart';
 import '../widgets/bismillah_banner.dart';
-import '../widgets/curved_header.dart';
+import '../widgets/mufta_header.dart';
 import '../widgets/page_turn_view.dart';
 
 enum ReaderMode {
@@ -367,7 +367,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
     final topPadding = MediaQuery.of(context).padding.top;
-    final headerHeight = topPadding + 138.0;
+    final headerHeight = topPadding + 148.0;
 
     return Scaffold(
       backgroundColor: bg,
@@ -376,12 +376,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
           // Main Reader Body (takes full height with zero bottom obstruction)
           Positioned.fill(
             child: Padding(
-              padding: EdgeInsets.only(top: headerHeight - 6, bottom: 8),
+              padding: EdgeInsets.only(top: headerHeight - 4, bottom: 8),
               child: _buildBody(),
             ),
           ),
 
-          // Curved Downward Solid Forest Green Header with Golden Audio Frequency Wave
+          // HD 4K Arabesque Mufta Dome Header with Golden Audio Frequency Wave
           Positioned(
             top: 0,
             left: 0,
@@ -395,15 +395,15 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   Widget _buildCurvedHeader(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
+    final headerHeight = topPadding + 148.0;
 
-    return CurvedDownwardHeader(
-      curveDepth: 22.0,
-      backgroundColor: AppColors.forestGreen,
+    return MuftaHeader(
+      height: headerHeight,
       padding: EdgeInsets.only(
         top: topPadding + 6,
         left: 10,
         right: 10,
-        bottom: 22,
+        bottom: 24,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
