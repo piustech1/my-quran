@@ -43,35 +43,33 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.7.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.7.1.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.7.0
-          name: "My Quran v1.7.0 - AI-Generated 4K Arabesque Mufta Dome Header & Card Cutout System"
+          tag_name: v1.7.1
+          name: "My Quran v1.7.1 - Full Mufta Arch Curves, Overlapping Dome & High-Positioned Controls"
           body: |
-            ### 📖 My Quran - Release v1.7.0
+            ### 📖 My Quran - Release v1.7.1
 
-            What's New in **v1.7.0**:
+            What's New in **v1.7.1**:
 
-            #### 🕌 AI-Generated 4K Arabesque Mufta Dome Header
-            - **HD 4K Asset Integration:** Processed and sharpened the AI-generated `top_mufta.png` asset with Lanczos-4 upscaling, unsharp masking, and crisp alpha cutout.
-            - **Deep Forest Green Relief:** Rich multi-lobed arch boundary with relief carvings and an organic protruding sharp center tip pointing downwards.
-            - **Universal Header (`MuftaHeader`):** Seamlessly deployed across Home Dashboard, Quran Library, and Reader Screen.
+            #### 🕌 Complete Arabesque Mufta Arch Curves & Sharp Center Tip
+            - **Eliminated Flat Rectangle Masking:** Removed the opaque container background from `MuftaHeader` that previously obscured the transparent arch curves.
+            - **Perfect Ratio Texture:** Tuned `top_mufta.png` to exact reference proportions (`1440x841`) so the full multi-lobed curved arches and sharp center tip are 100% visible on screen without any clipping.
+            - **Elevated Controls:** Positioned the avatar, greeting ("Assalamu alaikum, Aminah"), notification bell, and theme toggle comfortably higher up near the status bar.
 
-            #### 🧩 Interlocking Mufta Cutout Clipper (`MuftaCutoutClipper`)
-            - **Puzzle-Fit Notch Architecture:** Sub-elements colliding with the header's protruding center tip (Next Prayer Card on Home, Last Read Card on Library) are clipped with a matching concave arch cradle.
-            - **Zero Element Collision:** The sharp tip nests cleanly into the cards below with beautiful ambient shadow styling.
-
-            #### 🎵 Golden Audio Wave & 3 Translation Modes in Reader
-            - Preserved the animated harmonic audio wave visualizer and 3 instant translation toggles (Arabic Only, English Only, Ar + En) comfortably positioned above the mufta dome tip.
+            #### 🧩 True Overlapping Architecture & Organic Notch
+            - **Underlapping Prayer Card:** Structured the Home Dashboard with a `Stack` where the Prayer Card starts smoothly beneath the Mufta dome.
+            - **Deep Organic Cradle (`MuftaCutoutClipper`):** Carved a 160px wide by 46px deep concave arch cradle so the protruding sharp tip nests cleanly over the card, matching the reference design.
+            - **Touch-Through Transparency (`IgnorePointer`):** Transparent areas of the Mufta arch allow touches and scrolls to pass seamlessly to the card beneath.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.7.0.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.7.1.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.7.0.apk
+            release-output/My-Quran-v1.7.1.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

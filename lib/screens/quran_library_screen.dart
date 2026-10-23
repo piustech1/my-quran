@@ -208,13 +208,13 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                           ),
                           ClipPath(
                             clipper: const MuftaCutoutClipper(
-                              notchWidth: 80.0,
-                              notchDepth: 20.0,
+                              notchWidth: 160.0,
+                              notchDepth: 42.0,
                               borderRadius: 28.0,
                             ),
                             child: Container(
-                              height: 172,
-                              padding: const EdgeInsets.fromLTRB(22, 22, 14, 18),
+                              height: 180,
+                              padding: const EdgeInsets.fromLTRB(22, 26, 14, 18),
                               color: AppColors.accentGold,
                   child: Row(
                     children: [

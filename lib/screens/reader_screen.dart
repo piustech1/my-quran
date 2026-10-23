@@ -400,10 +400,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
     return MuftaHeader(
       height: headerHeight,
       padding: EdgeInsets.only(
-        top: topPadding + 6,
+        top: topPadding + 4,
         left: 10,
         right: 10,
-        bottom: 24,
+        bottom: 20,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

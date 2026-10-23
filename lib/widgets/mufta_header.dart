@@ -19,7 +19,10 @@ class MuftaHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
-    final totalHeight = height ?? (topPadding + 136.0);
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Natural aspect ratio of 4K Mufta asset (1440 x 841 = 0.584)
+    final naturalHeight = screenWidth * 0.584;
+    final totalHeight = height ?? (naturalHeight + (topPadding > 24 ? (topPadding - 24) : 0));
 
     return SizedBox(
       width: double.infinity,
@@ -27,58 +30,51 @@ class MuftaHeader extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // 1. HD 4K Arabesque Mufta Background Image
+          // 1. Safe status bar fill at top edge ONLY (never behind transparent arch cutout)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            height: topPadding > 0 ? topPadding : 0,
+            child: Container(
+              color: AppColors.forestGreen,
+            ),
+          ),
+
+          // 2. HD 4K Arabesque Mufta Dome Image (Full curves with transparent arch cutout)
           Positioned(
             left: 0,
             right: 0,
             top: 0,
             bottom: 0,
-            child: Container(
-              color: AppColors.forestGreen,
+            child: IgnorePointer(
               child: Image.asset(
                 'assets/top_mufta.png',
                 width: double.infinity,
                 height: totalHeight,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 alignment: Alignment.topCenter,
+                filterQuality: FilterQuality.high,
                 errorBuilder: (context, error, stackTrace) => Container(
+                  height: totalHeight,
                   color: AppColors.forestGreen,
                 ),
               ),
             ),
           ),
 
-          // 2. Subtle ambient bottom drop shadow beneath the arch
+          // 3. Foreground Controls placed comfortably high up near status bar
           Positioned(
             left: 0,
             right: 0,
-            bottom: -6,
-            height: 16,
-            child: IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.18),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // 3. Foreground Controls placed safely above the arch curve
-          Positioned.fill(
+            top: 0,
             child: Padding(
               padding: padding ??
                   EdgeInsets.fromLTRB(
                     18,
-                    topPadding + 6,
+                    topPadding + 4,
                     18,
-                    24,
+                    8,
                   ),
               child: child,
             ),

@@ -146,108 +146,20 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
+    final topPadding = MediaQuery.of(context).padding.top;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final muftaHeight = (screenWidth * 0.584) + (topPadding > 24 ? (topPadding - 24) : 0);
+    final cardTopOffset = muftaHeight - 75.0;
+
     return Scaffold(
       backgroundColor: bg,
-      body: Column(
+      body: Stack(
         children: [
-          // 1. AI-Generated Islamic Mufta Dome Header (HD 4K texture, no outlines)
-          MuftaHeader(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    // Profile Avatar
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.18),
-                      ),
-                      child: const Icon(Icons.person_rounded, color: AppColors.warmGold, size: 26),
-                    ),
-                    const SizedBox(width: 12),
-
-                    // Greeting "Assalamu alaikum, Aminah ✎"
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Assalamu alaikum,",
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            color: AppColors.warmGold,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Aminah",
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            const Icon(Icons.edit_outlined, size: 14, color: AppColors.warmGold),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-
-                // Actions: Notification Bell + Theme Toggle Button
-                Row(
-                  children: [
-                    Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.15),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.notifications_outlined,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => _themeService.toggleTheme(),
-                      child: Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.warmGold.withOpacity(0.28),
-                        ),
-                        alignment: Alignment.center,
-                        child: Icon(
-                          isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                          color: AppColors.warmGold,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Scrollable Body Content
-          Expanded(
+          // 1. Scrollable Body Content (Starts smoothly under the Mufta arch)
+          Positioned.fill(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, cardTopOffset, 20, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -272,13 +184,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       // Card with custom cutout notch for the Mufta protruding sharp tip
                       ClipPath(
                         clipper: const MuftaCutoutClipper(
-                          notchWidth: 80.0,
-                          notchDepth: 22.0,
+                          notchWidth: 160.0,
+                          notchDepth: 46.0,
                           borderRadius: 28.0,
                         ),
                         child: Container(
-                          height: 172,
-                          padding: const EdgeInsets.fromLTRB(22, 20, 22, 16),
+                          height: 185,
+                          padding: const EdgeInsets.fromLTRB(22, 28, 22, 16),
                           color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
                           child: Row(
                             children: [
@@ -534,12 +446,116 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           ),
         ),
       ),
-    ],
-  ),
 
-  // Custom Floating Bottom Navigation Bar matching mockup
-  bottomNavigationBar: _buildBottomNav(isDark, cardBg, border, textPrimary, textSecondary),
-);
+      // 2. Fixed HD 4K Mufta Dome Header (Overlaps card with full curves & high controls)
+      Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: MuftaHeader(
+            height: muftaHeight,
+            padding: EdgeInsets.fromLTRB(18, topPadding + 4, 18, 8),
+            child: _buildHeaderRow(isDark),
+          ),
+        ),
+      ],
+    ),
+
+    // Custom Floating Bottom Navigation Bar matching mockup
+    bottomNavigationBar: _buildBottomNav(isDark, cardBg, border, textPrimary, textSecondary),
+  );
+}
+
+  Widget _buildHeaderRow(bool isDark) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          children: [
+            // Profile Avatar
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.18),
+              ),
+              child: const Icon(Icons.person_rounded, color: AppColors.warmGold, size: 24),
+            ),
+            const SizedBox(width: 10),
+
+            // Greeting "Assalamu alaikum, Aminah ✎"
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Assalamu alaikum,",
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    color: AppColors.warmGold,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "Aminah",
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    const Icon(Icons.edit_outlined, size: 14, color: AppColors.warmGold),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+
+        // Actions: Notification Bell + Theme Toggle Button
+        Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.15),
+              ),
+              alignment: Alignment.center,
+              child: const Icon(
+                Icons.notifications_outlined,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () => _themeService.toggleTheme(),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.warmGold.withOpacity(0.28),
+                ),
+                alignment: Alignment.center,
+                child: Icon(
+                  isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                  color: AppColors.warmGold,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   Widget _buildQuickActionItem({
