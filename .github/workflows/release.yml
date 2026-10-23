@@ -43,33 +43,39 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.7.1.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.0.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.7.1
-          name: "My Quran v1.7.1 - Full Mufta Arch Curves, Overlapping Dome & High-Positioned Controls"
+          tag_name: v1.8.0
+          name: "My Quran v1.8.0 - New Mufta Muqarnas Archway & Glassmorphic Nested Card UI"
           body: |
-            ### 📖 My Quran - Release v1.7.1
+            ### 📖 My Quran - Release v1.8.0
 
-            What's New in **v1.7.1**:
+            What's New in **v1.8.0**:
 
-            #### 🕌 Complete Arabesque Mufta Arch Curves & Sharp Center Tip
-            - **Eliminated Flat Rectangle Masking:** Removed the opaque container background from `MuftaHeader` that previously obscured the transparent arch curves.
-            - **Perfect Ratio Texture:** Tuned `top_mufta.png` to exact reference proportions (`1440x841`) so the full multi-lobed curved arches and sharp center tip are 100% visible on screen without any clipping.
-            - **Elevated Controls:** Positioned the avatar, greeting ("Assalamu alaikum, Aminah"), notification bell, and theme toggle comfortably higher up near the status bar.
+            #### 🕌 New Mufta Grand Muqarnas Archway
+            - **Islamic Vaulting & Arabesque Inlays:** Integrated the new grand Mufta muqarnas design (`new_mufta.jpg` & `new_mufta_4k.jpg`) featuring emerald-gold arabesque arches and celestial star ceilings.
+            - **No Flat Cutouts or Awkward Notches:** Cleanly replaced the old notch clipping system with a modern backdrop and floating cards.
 
-            #### 🧩 True Overlapping Architecture & Organic Notch
-            - **Underlapping Prayer Card:** Structured the Home Dashboard with a `Stack` where the Prayer Card starts smoothly beneath the Mufta dome.
-            - **Deep Organic Cradle (`MuftaCutoutClipper`):** Carved a 160px wide by 46px deep concave arch cradle so the protruding sharp tip nests cleanly over the card, matching the reference design.
-            - **Touch-Through Transparency (`IgnorePointer`):** Transparent areas of the Mufta arch allow touches and scrolls to pass seamlessly to the card beneath.
+            #### 📱 Floating Glassmorphic Top App Bar
+            - **Floating Frosted Capsule:** Top app bar floats smoothly over the Mufta backdrop with real-time backdrop blur (`ImageFilter.blur`).
+            - **Profile & Greeting with Waving Icon:** Features user avatar, `"Assalamu alaikum,"` accompanied by a refined waving hand icon (`Icons.waving_hand_rounded`), and `"Aminah"` with edit pencil.
+            - **Quick Actions:** Neatly styled circular notification bell and one-tap theme toggle.
+
+            #### ⏰ Main Prayer Card with Nested Inner Hour Card
+            - **Nested Dual-Surface Hierarchy:** In light mode (priority), the main card has a clean white surface (`borderRadius: 28`), nesting an independently styled inner hour card (`borderRadius: 20`, pale sage/off-white) on the left displaying `"DHUHR"`, `"12:16 PM"`, `"Now 12:13:10 PM"`, and `"Oct 23, 2026"`.
+            - **Weather Integration:** The right side houses the 3D sun/cloud weather graphic, `"27°"`, and `"Partly cloudy • Kampala"`.
+
+            #### 📚 Unified Rounded Cards Across Library & Reader
+            - Standardized rounded cards across the Quran Library and Reader screens without clipping collisions.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.7.1.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.0.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.7.1.apk
+            release-output/My-Quran-v1.8.0.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

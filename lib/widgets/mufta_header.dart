@@ -20,9 +20,12 @@ class MuftaHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
     final screenWidth = MediaQuery.of(context).size.width;
-    // Natural aspect ratio of 4K Mufta asset (1440 x 841 = 0.584)
-    final naturalHeight = screenWidth * 0.584;
-    final totalHeight = height ?? (naturalHeight + (topPadding > 24 ? (topPadding - 24) : 0));
+    // Aspect ratio of New Mufta muqarnas asset (1440 x 720 = 0.50)
+    final naturalHeight = screenWidth * 0.54 + topPadding;
+    final totalHeight = height ?? naturalHeight;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fadeColor = isDark ? AppColors.darkBackground : AppColors.lightBackground;
 
     return SizedBox(
       width: double.infinity,
@@ -30,18 +33,7 @@ class MuftaHeader extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // 1. Safe status bar fill at top edge ONLY (never behind transparent arch cutout)
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            height: topPadding > 0 ? topPadding : 0,
-            child: Container(
-              color: AppColors.forestGreen,
-            ),
-          ),
-
-          // 2. HD 4K Arabesque Mufta Dome Image (Full curves with transparent arch cutout)
+          // 1. New Mufta Islamic Grand Muqarnas Archway Image
           Positioned(
             left: 0,
             right: 0,
@@ -49,10 +41,10 @@ class MuftaHeader extends StatelessWidget {
             bottom: 0,
             child: IgnorePointer(
               child: Image.asset(
-                'assets/top_mufta.png',
+                'assets/new_mufta.jpg',
                 width: double.infinity,
                 height: totalHeight,
-                fit: BoxFit.fill,
+                fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
                 filterQuality: FilterQuality.high,
                 errorBuilder: (context, error, stackTrace) => Container(
@@ -63,7 +55,29 @@ class MuftaHeader extends StatelessWidget {
             ),
           ),
 
-          // 3. Foreground Controls placed comfortably high up near status bar
+          // 2. Subtle soft bottom fade blending gracefully into screen background
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 48,
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      fadeColor.withOpacity(0.0),
+                      fadeColor.withOpacity(0.92),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // 3. Foreground Controls (Floating glassmorphic top bar)
           Positioned(
             left: 0,
             right: 0,
@@ -72,9 +86,9 @@ class MuftaHeader extends StatelessWidget {
               padding: padding ??
                   EdgeInsets.fromLTRB(
                     18,
-                    topPadding + 4,
+                    topPadding + 6,
                     18,
-                    8,
+                    12,
                   ),
               child: child,
             ),

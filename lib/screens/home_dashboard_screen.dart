@@ -4,8 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../services/theme_service.dart';
 import '../widgets/dzikir_counter_dialog.dart';
-import '../widgets/mufta_cutout_clipper.dart';
-import '../widgets/mufta_header.dart';
 import 'quran_library_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
@@ -148,128 +146,174 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
     final topPadding = MediaQuery.of(context).padding.top;
     final screenWidth = MediaQuery.of(context).size.width;
-    final muftaHeight = (screenWidth * 0.584) + (topPadding > 24 ? (topPadding - 24) : 0);
-    final cardTopOffset = muftaHeight - 75.0;
+    final muftaHeight = screenWidth * 0.54 + topPadding;
 
     return Scaffold(
       backgroundColor: bg,
       body: Stack(
         children: [
-          // 1. Scrollable Body Content (Starts smoothly under the Mufta arch)
+          // 1. Mufta Backdrop at the top with gentle bottom fade
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: muftaHeight,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/new_mufta.jpg',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    filterQuality: FilterQuality.high,
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: 80,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            bg.withOpacity(0.0),
+                            bg.withOpacity(0.96),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 2. Scrollable Body Content (Starts smoothly under the floating top bar)
           Positioned.fill(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(20, cardTopOffset, 20, 24),
+              padding: EdgeInsets.fromLTRB(18, topPadding + 68.0, 18, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 2. Prayer Card with Mufta Cutout Cradle ("DHUHR 12:16 PM" with Sun/Cloud Illustration & Weather)
-                  Stack(
-                    children: [
-                      // Ambient drop shadow for the card
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
-                                blurRadius: 18,
-                                offset: const Offset(0, 6),
+                  // 2. Main Prayer Card with Nested Inner Hour Card
+                  Container(
+                    height: 172,
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkSurface : Colors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkBorder : Colors.black.withOpacity(0.04),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(isDark ? 0.35 : 0.06),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        // Left: The Nested Hour Card
+                        Expanded(
+                          flex: 11,
+                          child: Container(
+                            height: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF1E2220) : const Color(0xFFF1F5F3),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+                                width: 1,
                               ),
-                            ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'D H U H R',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 2.5,
+                                    color: AppColors.accentGold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '12:16 PM',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.w800,
+                                    color: textPrimary,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Now 12:13:10 PM',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    color: textSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Oct 23, 2026',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    color: textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      // Card with custom cutout notch for the Mufta protruding sharp tip
-                      ClipPath(
-                        clipper: const MuftaCutoutClipper(
-                          notchWidth: 160.0,
-                          notchDepth: 46.0,
-                          borderRadius: 28.0,
-                        ),
-                        child: Container(
-                          height: 185,
-                          padding: const EdgeInsets.fromLTRB(22, 28, 22, 16),
-                          color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                          child: Row(
+                        const SizedBox(width: 12),
+
+                        // Right: Sun/Cloud Graphic & Weather Info
+                        Expanded(
+                          flex: 9,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // Prayer Time Details
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'D H U H R',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 3.0,
-                                        color: AppColors.accentGold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      '12:16 PM',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w800,
-                                        color: textPrimary,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      'Now 11:20:51 PM',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 12,
-                                        color: textSecondary,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Oct 22, 2026',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        color: textSecondary,
-                                      ),
-                                    ),
-                                  ],
+                              _buildSunCloudIllustration(),
+                              const SizedBox(height: 6),
+                              Text(
+                                '27°',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: textPrimary,
                                 ),
                               ),
-
-                              // Sun Behind Cloud Illustration & Weather info (matching Image 2)
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  _buildSunCloudIllustration(),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '27°',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: textPrimary,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Partly cloudy • Kampala',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 11,
-                                      color: textSecondary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(height: 2),
+                              Text(
+                                'Partly cloudy • Kampala',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  color: textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-              const SizedBox(height: 22),
+                  const SizedBox(height: 22),
 
               // 3. Quick Action Cards: Qur'an, Zakat, Dzikir (Exact 3-card squircle row matching Image 2)
               Row(
@@ -447,114 +491,151 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
         ),
       ),
 
-      // 2. Fixed HD 4K Mufta Dome Header (Overlaps card with full curves & high controls)
-      Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: MuftaHeader(
-            height: muftaHeight,
-            padding: EdgeInsets.fromLTRB(18, topPadding + 4, 18, 8),
+          // 3. Floating Glassmorphic Top App Bar
+          Positioned(
+            top: topPadding + 6,
+            left: 18,
+            right: 18,
             child: _buildHeaderRow(isDark),
           ),
-        ),
-      ],
-    ),
+        ],
+      ),
 
-    // Custom Floating Bottom Navigation Bar matching mockup
-    bottomNavigationBar: _buildBottomNav(isDark, cardBg, border, textPrimary, textSecondary),
-  );
-}
+      // Custom Floating Bottom Navigation Bar matching mockup
+      bottomNavigationBar: _buildBottomNav(isDark, cardBg, border, textPrimary, textSecondary),
+    );
+  }
 
   Widget _buildHeaderRow(bool isDark) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            // Profile Avatar
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.18),
-              ),
-              child: const Icon(Icons.person_rounded, color: AppColors.warmGold, size: 24),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.black.withOpacity(0.55) : Colors.white.withOpacity(0.82),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: isDark ? Colors.white.withOpacity(0.12) : Colors.white.withOpacity(0.65),
+              width: 1.0,
             ),
-            const SizedBox(width: 10),
-
-            // Greeting "Assalamu alaikum, Aminah ✎"
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Assalamu alaikum,",
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    color: AppColors.warmGold,
-                    fontWeight: FontWeight.w600,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  // Profile Avatar
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.accentGold.withOpacity(0.25),
+                    ),
+                    child: const Icon(Icons.person_rounded, color: AppColors.accentGold, size: 22),
                   ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "Aminah",
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                  const SizedBox(width: 10),
+
+                  // Greeting "Assalamu alaikum," with waving hand icon & "Aminah" ✎
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Assalamu alaikum,",
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              color: isDark ? AppColors.warmGold : const Color(0xFF6B7280),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.waving_hand_rounded,
+                            size: 13,
+                            color: AppColors.accentGold,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 1),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Aminah",
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.white : AppColors.lightTextPrimary,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.edit_outlined,
+                            size: 13,
+                            color: isDark ? AppColors.warmGold : const Color(0xFF9CA3AF),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              // Actions: Notification Bell + Theme Toggle Button
+              Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.05),
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.notifications_outlined,
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => _themeService.toggleTheme(),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.accentGold.withOpacity(0.24),
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(
+                        isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                        color: AppColors.accentGold,
+                        size: 18,
                       ),
                     ),
-                    const SizedBox(width: 5),
-                    const Icon(Icons.edit_outlined, size: 14, color: AppColors.warmGold),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-
-        // Actions: Notification Bell + Theme Toggle Button
-        Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.15),
-              ),
-              alignment: Alignment.center,
-              child: const Icon(
-                Icons.notifications_outlined,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => _themeService.toggleTheme(),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.warmGold.withOpacity(0.28),
-                ),
-                alignment: Alignment.center,
-                child: Icon(
-                  isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                  color: AppColors.warmGold,
-                  size: 20,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 
