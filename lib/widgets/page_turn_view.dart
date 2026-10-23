@@ -76,7 +76,9 @@ class _PageTurnViewState extends State<PageTurnView> {
         _currentPage = page;
       });
       final pageIndex = page.round();
-      if ((page - pageIndex).abs() < 0.05 && pageIndex < _pages.length && _pages[pageIndex].isNotEmpty) {
+      if ((page - pageIndex).abs() < 0.05 &&
+          pageIndex < _pages.length &&
+          _pages[pageIndex].isNotEmpty) {
         final currentAyah = _pages[pageIndex].first;
         _storage.saveLastRead(
           surahNumber: widget.surahNumber,
@@ -125,7 +127,9 @@ class _PageTurnViewState extends State<PageTurnView> {
     // For longer chapters, divide by ~5 to 7 verses per page
     const int perPage = 6;
     for (int i = 0; i < widget.ayahs.length; i += perPage) {
-      final end = (i + perPage < widget.ayahs.length) ? i + perPage : widget.ayahs.length;
+      final end = (i + perPage < widget.ayahs.length)
+          ? i + perPage
+          : widget.ayahs.length;
       _pages.add(widget.ayahs.sublist(i, end));
     }
   }
@@ -149,7 +153,8 @@ class _PageTurnViewState extends State<PageTurnView> {
   @override
   Widget build(BuildContext context) {
     if (_pages.isEmpty || widget.ayahs.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.accentGold));
+      return const Center(
+          child: CircularProgressIndicator(color: AppColors.accentGold));
     }
 
     return Column(
@@ -173,8 +178,11 @@ class _PageTurnViewState extends State<PageTurnView> {
                     transform: Matrix4.identity()
                       ..setEntry(3, 2, 0.0014) // 3D depth perspective
                       ..rotateY(rotationY),
-                    alignment: isLeaving ? Alignment.centerRight : Alignment.centerLeft,
-                    child: _buildMushafManuscriptPage(index, _pages[index], playingAyah),
+                    alignment: isLeaving
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: _buildMushafManuscriptPage(
+                        index, _pages[index], playingAyah),
                   );
                 },
               );
@@ -187,7 +195,8 @@ class _PageTurnViewState extends State<PageTurnView> {
   }
 
   /// Builds a manuscript page with iOS-style liquid glassmorphism and 4-corner ornaments
-  Widget _buildMushafManuscriptPage(int pageIndex, List<Ayah> pageAyahs, int? playingAyah) {
+  Widget _buildMushafManuscriptPage(
+      int pageIndex, List<Ayah> pageAyahs, int? playingAyah) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final glassBg = isDark
         ? const Color(0xFF1B2228).withOpacity(0.85)
@@ -319,16 +328,21 @@ class _PageTurnViewState extends State<PageTurnView> {
                     // Crisp high-visibility bottom page number
                     Center(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 4),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.05),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.08)
+                              : Colors.black.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Text(
                           '•  ${pageIndex + 1}  •',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
-                            color: isDark ? AppColors.warmGold : AppColors.forestGreen,
+                            color: isDark
+                                ? AppColors.warmGold
+                                : AppColors.forestGreen,
                             letterSpacing: 2.5,
                             fontWeight: FontWeight.w800,
                           ),
@@ -392,7 +406,8 @@ class _PageTurnViewState extends State<PageTurnView> {
   /// 1. Arabic-Only Mode: Pure Mushaf Sacred Arabic Scripture
   Widget _buildFlowingArabicVerses(List<Ayah> pageAyahs, int? playingAyah) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary = isDark ? const Color(0xFFEDE8D0) : const Color(0xFF161C24);
+    final textPrimary =
+        isDark ? const Color(0xFFEDE8D0) : const Color(0xFF161C24);
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -406,7 +421,9 @@ class _PageTurnViewState extends State<PageTurnView> {
                   fontSize: widget.arabicFontSize,
                   fontWeight: FontWeight.w700,
                   color: (playingAyah == ayah.verse)
-                      ? (isDark ? const Color(0xFFFFD54F) : const Color(0xFF8C5300))
+                      ? (isDark
+                          ? const Color(0xFFFFD54F)
+                          : const Color(0xFF8C5300))
                       : textPrimary,
                   backgroundColor: (playingAyah == ayah.verse)
                       ? AppColors.warmGold.withOpacity(isDark ? 0.35 : 0.22)
@@ -414,13 +431,15 @@ class _PageTurnViewState extends State<PageTurnView> {
                   height: 2.1,
                   letterSpacing: 0.1,
                 ),
-                recognizer: TapGestureRecognizer()..onTap = () => _handleAyahTap(ayah),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => _handleAyahTap(ayah),
               ),
               WidgetSpan(
                 alignment: PlaceholderAlignment.middle,
                 child: GestureDetector(
                   onTap: () => _handleAyahTap(ayah),
-                  child: _buildAyahEndMedallion(ayah.verse, playingAyah == ayah.verse),
+                  child: _buildAyahEndMedallion(
+                      ayah.verse, playingAyah == ayah.verse),
                 ),
               ),
               const TextSpan(text: ' '),
@@ -436,7 +455,8 @@ class _PageTurnViewState extends State<PageTurnView> {
   /// 2. English-Only Mode: Quran in English with identical typography and page structure
   Widget _buildFlowingEnglishVerses(List<Ayah> pageAyahs, int? playingAyah) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary = isDark ? const Color(0xFFEDE8D0) : const Color(0xFF161C24);
+    final textPrimary =
+        isDark ? const Color(0xFFEDE8D0) : const Color(0xFF161C24);
 
     return Text.rich(
       TextSpan(
@@ -448,7 +468,9 @@ class _PageTurnViewState extends State<PageTurnView> {
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
                 color: (playingAyah == ayah.verse)
-                    ? (isDark ? const Color(0xFFFFD54F) : const Color(0xFF8C5300))
+                    ? (isDark
+                        ? const Color(0xFFFFD54F)
+                        : const Color(0xFF8C5300))
                     : textPrimary,
                 backgroundColor: (playingAyah == ayah.verse)
                     ? AppColors.warmGold.withOpacity(isDark ? 0.35 : 0.22)
@@ -456,13 +478,15 @@ class _PageTurnViewState extends State<PageTurnView> {
                 height: 1.85,
                 letterSpacing: 0.15,
               ),
-              recognizer: TapGestureRecognizer()..onTap = () => _handleAyahTap(ayah),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => _handleAyahTap(ayah),
             ),
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: GestureDetector(
                 onTap: () => _handleAyahTap(ayah),
-                child: _buildEnglishAyahMedallion(ayah.verse, playingAyah == ayah.verse),
+                child: _buildEnglishAyahMedallion(
+                    ayah.verse, playingAyah == ayah.verse),
               ),
             ),
             const TextSpan(text: ' '),
@@ -476,7 +500,8 @@ class _PageTurnViewState extends State<PageTurnView> {
   /// 3. Arabic + English Interlinear Mode: Verse-by-verse glassmorphic translation
   Widget _buildInterlinearVerses(List<Ayah> pageAyahs, int? playingAyah) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final arabicPrimary = isDark ? const Color(0xFFEDE8D0) : const Color(0xFF161C24);
+    final arabicPrimary =
+        isDark ? const Color(0xFFEDE8D0) : const Color(0xFF161C24);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -499,14 +524,18 @@ class _PageTurnViewState extends State<PageTurnView> {
                           fontSize: widget.arabicFontSize,
                           fontWeight: FontWeight.w700,
                           color: isPlaying
-                              ? (isDark ? const Color(0xFFFFD54F) : const Color(0xFF8C5300))
+                              ? (isDark
+                                  ? const Color(0xFFFFD54F)
+                                  : const Color(0xFF8C5300))
                               : arabicPrimary,
                           backgroundColor: isPlaying
-                              ? AppColors.warmGold.withOpacity(isDark ? 0.35 : 0.22)
+                              ? AppColors.warmGold
+                                  .withOpacity(isDark ? 0.35 : 0.22)
                               : Colors.transparent,
                           height: 1.9,
                         ),
-                        recognizer: TapGestureRecognizer()..onTap = () => _handleAyahTap(ayah),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => _handleAyahTap(ayah),
                       ),
                       WidgetSpan(
                         alignment: PlaceholderAlignment.middle,
@@ -525,7 +554,8 @@ class _PageTurnViewState extends State<PageTurnView> {
 
               // Glassmorphic borderless English translation container
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
                   color: isDark
                       ? Colors.white.withOpacity(0.06)
@@ -538,7 +568,9 @@ class _PageTurnViewState extends State<PageTurnView> {
                     fontSize: 13,
                     fontWeight: isPlaying ? FontWeight.w700 : FontWeight.w500,
                     color: isPlaying
-                        ? (isDark ? const Color(0xFFFFD54F) : const Color(0xFF8C5300))
+                        ? (isDark
+                            ? const Color(0xFFFFD54F)
+                            : const Color(0xFF8C5300))
                         : (isDark ? Colors.white70 : const Color(0xFF2D3748)),
                     height: 1.45,
                   ),
@@ -617,8 +649,10 @@ class _PageTurnViewState extends State<PageTurnView> {
   void _handleAyahTap(Ayah ayah) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     showModalBottomSheet(
       context: context,
@@ -646,7 +680,8 @@ class _PageTurnViewState extends State<PageTurnView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppColors.accentGold.withOpacity(0.18),
                       borderRadius: BorderRadius.circular(12),
@@ -694,7 +729,9 @@ class _PageTurnViewState extends State<PageTurnView> {
               ),
               const SizedBox(height: 4),
               Text(
-                ayah.translation.isNotEmpty ? ayah.translation : 'No translation available.',
+                ayah.translation.isNotEmpty
+                    ? ayah.translation
+                    : 'No translation available.',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
                   color: textPrimary,
@@ -709,7 +746,8 @@ class _PageTurnViewState extends State<PageTurnView> {
                   backgroundColor: AppColors.accentGold,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
                 icon: const Icon(Icons.play_arrow_rounded, size: 22),
                 label: Text(

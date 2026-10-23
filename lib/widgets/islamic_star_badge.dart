@@ -20,9 +20,10 @@ class IslamicStarBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveColor = color ?? AppColors.accentGold;
-    final effectiveTextColor = textColor ?? (Theme.of(context).brightness == Brightness.dark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary);
+    final effectiveTextColor = textColor ??
+        (Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkTextPrimary
+            : AppColors.lightTextPrimary);
 
     return SizedBox(
       width: size,

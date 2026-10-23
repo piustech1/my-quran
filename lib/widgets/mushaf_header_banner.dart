@@ -156,7 +156,8 @@ class MushafHeaderBanner extends StatelessWidget {
               style: GoogleFonts.amiri(
                 fontSize: 19,
                 fontWeight: FontWeight.bold,
-                color: isDark ? const Color(0xFFE8D5A3) : const Color(0xFF1E242B),
+                color:
+                    isDark ? const Color(0xFFE8D5A3) : const Color(0xFF1E242B),
                 height: 1.4,
               ),
             ),

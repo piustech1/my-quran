@@ -43,40 +43,34 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.1.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.2.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.1
-          name: "My Quran v1.8.1 - Liquid Glass UI, Collapsible Mufta Header & Modern Islamic Tabs"
+          tag_name: v1.8.2
+          name: "My Quran v1.8.2 - Noor Islamic Redesign, Floating Nav Dock & Ustadha Aisha Guide"
           body: |
-            ### 📖 My Quran - Release v1.8.1
+            ### 📖 My Quran - Release v1.8.2
 
-            What's New in **v1.8.1**:
+            What's New in **v1.8.2**:
 
-            #### 🕌 Authentic Mufta Archway Curves (No Gradient Fade)
-            - **Pure Arabesque Vaulting:** Completely removed artificial gradient overlays and fades on both Home and Quran Library screens. The grand Mufta muqarnas dome arches naturally and sharply behind foreground elements.
-            - **Expanded Mufta Height:** Mufta backdrop extends downward so the muqarnas relief carvings and emerald vaulting sit directly behind the floating prayer card.
+            #### 🕌 Authentic Noor Islamic Redesign
+            - **Harmonized Color Palette:** Midnight Navy (`#171F2D`), Quran Gold (`#F5CE63`), and Deep Emerald (`#103C30`) across all views.
+            - **Floating Glassmorphic Bottom Nav Dock:** Detached pill dock with backdrop blur, active tab indicators, and an elevated tilted 45° gold diamond center button for instant Quran search.
+            - **Floating Ustadha Aisha AI Guide:** Interactive Quran study assistant bubble and bottom sheet guidance.
+            - **Re-engineered Prayer & Library Cards:** Perfectly proportioned nested hour cards and Deep Emerald gradient Last Read banner.
 
-            #### 💎 Liquid Glass Dashboard & Rectangular Prayer Card
-            - **True Liquid Glass Top Bar:** Ultra-crisp translucent frosted glass top app bar allowing the Mufta dome to show through with `ImageFilter.blur`.
-            - **Expanded Vertical Spacing:** Greatly increased breathing room between top floating bar and main prayer card matching modern reference specs.
-            - **Wider Rectangular Inner Hour Card:** Reshaped the inner hour card from a square into a balanced rectangle with pure white text and golden typography.
-
-            #### 📜 Collapsible Quran Library Header
-            - **Interactive Scroll Collapse:** Scrolling through Surahs dynamically collapses the golden Last Read card upwards into the pinned liquid glass bar, shrinking the Mufta dome to maximize screen area for reciting Surahs.
-            - **Smooth Spring Expansion:** Scrolling back down gently reveals the Last Read card and Mufta dome.
-            - **Instant Ayah Resume:** Tapping "Back to reading" restores your exact reading position (e.g. Al-Baqarah, Ayah 152) in both 3D page turn and study modes.
-
-            #### 📿 Modern Islamic Segmented Capsule Tabs
-            - **Luxury Islamic Capsule:** Redesigned Surah, Para, Page, and Hizb tabs with a tactile rounded capsule container and emerald green / gold active pill indicator.
+            #### 📜 Complete Quran Integrity & Offline Reader
+            - Preserved all 114 Surahs, 30 Juz, 604 Pages, and 60 Hizbs with offline caching.
+            - Dual reading modes: 3D authentic Page Turn and Study Mode.
+            - Real-time EveryAyah audio streaming and instant recitation.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.1.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.2.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.1.apk
+            release-output/My-Quran-v1.8.2.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

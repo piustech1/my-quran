@@ -9,19 +9,19 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.lightBackground,
-      primaryColor: AppColors.accentGold,
+      primaryColor: AppColors.quranGold,
       colorScheme: const ColorScheme.light(
-        primary: AppColors.accentGold,
-        secondary: AppColors.accentGoldDark,
+        primary: AppColors.quranGold,
+        secondary: AppColors.deepEmerald,
         surface: AppColors.lightSurface,
-        onPrimary: AppColors.lightPillButton,
+        onPrimary: AppColors.midnightNavy,
         onSurface: AppColors.lightTextPrimary,
       ),
       cardTheme: CardTheme(
         color: AppColors.lightSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           side: const BorderSide(color: AppColors.lightBorder, width: 1),
         ),
       ),
@@ -66,25 +66,25 @@ class AppTheme {
     );
   }
 
-  // 2. Dark Theme (Switchable)
+  // 2. Dark Theme (Noor Luxury Mode)
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: AppColors.darkBackground,
-      primaryColor: AppColors.accentGold,
+      scaffoldBackgroundColor: AppColors.darkCanvas,
+      primaryColor: AppColors.quranGold,
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.accentGold,
-        secondary: AppColors.accentGoldDark,
-        surface: AppColors.darkSurface,
-        onPrimary: AppColors.darkPillButton,
+        primary: AppColors.quranGold,
+        secondary: AppColors.deepEmerald,
+        surface: AppColors.darkCard,
+        onPrimary: AppColors.midnightNavy,
         onSurface: AppColors.darkTextPrimary,
       ),
       cardTheme: CardTheme(
-        color: AppColors.darkSurface,
+        color: AppColors.darkCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           side: const BorderSide(color: AppColors.darkBorder, width: 1),
         ),
       ),

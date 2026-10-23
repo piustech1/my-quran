@@ -5,7 +5,8 @@ import 'package:my_quran/widgets/islamic_star_badge.dart';
 import 'package:my_quran/widgets/mushaf_header_banner.dart';
 
 void main() {
-  testWidgets('MyQuranApp smoke test and splash transition to HomeDashboard', (WidgetTester tester) async {
+  testWidgets('MyQuranApp smoke test and splash transition to HomeDashboard',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const MyQuranApp());
     expect(find.byType(MyQuranApp), findsOneWidget);
 
@@ -19,7 +20,8 @@ void main() {
     expect(find.text('Featured'), findsOneWidget);
   });
 
-  testWidgets('IslamicStarBadge renders number properly', (WidgetTester tester) async {
+  testWidgets('IslamicStarBadge renders number properly',
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
@@ -30,7 +32,8 @@ void main() {
     expect(find.text('7'), findsOneWidget);
   });
 
-  testWidgets('MushafHeaderBanner renders Surah title and Arabic digits', (WidgetTester tester) async {
+  testWidgets('MushafHeaderBanner renders Surah title and Arabic digits',
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(

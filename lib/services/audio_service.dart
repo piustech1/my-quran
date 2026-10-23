@@ -64,8 +64,9 @@ class QuranAudioService {
   void _initAudioPlayer() {
     _playerStateSubscription = _player.playerStateStream.listen((state) {
       isPlayingNotifier.value = state.playing;
-      isLoadingNotifier.value = state.processingState == ProcessingState.buffering ||
-          state.processingState == ProcessingState.loading;
+      isLoadingNotifier.value =
+          state.processingState == ProcessingState.buffering ||
+              state.processingState == ProcessingState.loading;
 
       if (state.processingState == ProcessingState.completed) {
         _handleAyahCompleted();
@@ -127,7 +128,9 @@ class QuranAudioService {
   }
 
   Future<void> playNextAyah() async {
-    if (currentPlayingSurah.value == null || currentPlayingAyah.value == null) return;
+    if (currentPlayingSurah.value == null || currentPlayingAyah.value == null) {
+      return;
+    }
     final nextAyah = currentPlayingAyah.value! + 1;
     if (nextAyah <= _maxVersesInCurrentSurah) {
       await playAyah(
@@ -141,7 +144,9 @@ class QuranAudioService {
   }
 
   Future<void> playPreviousAyah() async {
-    if (currentPlayingSurah.value == null || currentPlayingAyah.value == null) return;
+    if (currentPlayingSurah.value == null || currentPlayingAyah.value == null) {
+      return;
+    }
     final prevAyah = currentPlayingAyah.value! - 1;
     if (prevAyah >= 1) {
       await playAyah(

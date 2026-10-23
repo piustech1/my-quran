@@ -27,8 +27,10 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final effectiveBorderColor = borderColor ?? (isDark ? AppColors.darkBorder : AppColors.lightBorder);
-    final effectiveColor = color ?? (isDark ? AppColors.darkSurface : AppColors.lightSurface);
+    final effectiveBorderColor =
+        borderColor ?? (isDark ? AppColors.darkBorder : AppColors.lightBorder);
+    final effectiveColor =
+        color ?? (isDark ? AppColors.darkSurface : AppColors.lightSurface);
 
     Widget card = Container(
       margin: margin,

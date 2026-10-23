@@ -85,7 +85,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
     if (mounted) {
       setState(() {
         _arabicFontSize = size;
-        _translationMode = translation ? TranslationMode.arabicAndEnglish : TranslationMode.arabicOnly;
+        _translationMode = translation
+            ? TranslationMode.arabicAndEnglish
+            : TranslationMode.arabicOnly;
         _isBookmarked = bookmarked;
       });
     }
@@ -114,10 +116,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
         if (widget.initialAyah != null && widget.initialAyah! > 1) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_readerMode == ReaderMode.verseList && _scrollController.hasClients) {
+            if (_readerMode == ReaderMode.verseList &&
+                _scrollController.hasClients) {
               final targetOffset = ((widget.initialAyah! - 1) * 190.0);
               _scrollController.animateTo(
-                targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+                targetOffset.clamp(
+                    0.0, _scrollController.position.maxScrollExtent),
                 duration: const Duration(milliseconds: 600),
                 curve: Curves.easeOutCubic,
               );
@@ -129,7 +133,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Could not load verses. Check your internet connection.';
+          _errorMessage =
+              'Could not load verses. Check your internet connection.';
         });
       }
     }
@@ -138,8 +143,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void _showReciterSelectionModal() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
     final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
     showModalBottomSheet(
@@ -179,7 +186,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
               ),
               const SizedBox(height: 12),
               ...QuranAudioService.availableReciters.map((reciter) {
-                final isSelected = _audioService.selectedReciter.id == reciter.id;
+                final isSelected =
+                    _audioService.selectedReciter.id == reciter.id;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: InkWell(
@@ -190,11 +198,14 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.warmGold.withOpacity(0.18)
-                            : (isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle),
+                            : (isDark
+                                ? AppColors.darkSurfaceSubtle
+                                : AppColors.lightSurfaceSubtle),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -209,7 +220,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
                               errorBuilder: (_, __, ___) => const CircleAvatar(
                                 radius: 21,
                                 backgroundColor: AppColors.forestGreen,
-                                child: Icon(Icons.mic_rounded, color: Colors.white, size: 20),
+                                child: Icon(Icons.mic_rounded,
+                                    color: Colors.white, size: 20),
                               ),
                             ),
                           ),
@@ -223,7 +235,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: isSelected ? AppColors.accentGoldDark : textPrimary,
+                                    color: isSelected
+                                        ? AppColors.accentGoldDark
+                                        : textPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -238,7 +252,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             ),
                           ),
                           if (isSelected)
-                            const Icon(Icons.check_circle_rounded, color: AppColors.accentGold, size: 22),
+                            const Icon(Icons.check_circle_rounded,
+                                color: AppColors.accentGold, size: 22),
                         ],
                       ),
                     ),
@@ -255,8 +270,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void _showSettingsModal() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
     final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
     showModalBottomSheet(
@@ -342,7 +359,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         value: _translationMode != TranslationMode.arabicOnly,
                         activeColor: AppColors.accentGold,
                         onChanged: (val) {
-                          final newMode = val ? TranslationMode.arabicAndEnglish : TranslationMode.arabicOnly;
+                          final newMode = val
+                              ? TranslationMode.arabicAndEnglish
+                              : TranslationMode.arabicOnly;
                           setModalState(() => _translationMode = newMode);
                           setState(() => _translationMode = newMode);
                           _storage.saveShowTranslation(val);
@@ -433,7 +452,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Colors.white),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    size: 20, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),
               ),
 
@@ -493,7 +513,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.warmGold, width: 1.5),
+                          border:
+                              Border.all(color: AppColors.warmGold, width: 1.5),
                         ),
                         child: ClipOval(
                           child: Image.asset(
@@ -504,7 +525,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             errorBuilder: (_, __, ___) => const CircleAvatar(
                               radius: 14,
                               backgroundColor: AppColors.forestGreenSurface,
-                              child: Icon(Icons.person, size: 16, color: Colors.white),
+                              child: Icon(Icons.person,
+                                  size: 16, color: Colors.white),
                             ),
                           ),
                         ),
@@ -521,7 +543,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                 builder: (context, isPlaying, _) {
                   return IconButton(
                     icon: Icon(
-                      isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_filled_rounded,
+                      isPlaying
+                          ? Icons.pause_circle_filled_rounded
+                          : Icons.play_circle_filled_rounded,
                       color: AppColors.warmGold,
                       size: 28,
                     ),
@@ -573,11 +597,14 @@ class _ReaderScreenState extends State<ReaderScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildTranslationSegment('Arabic Only', TranslationMode.arabicOnly),
+              _buildTranslationSegment(
+                  'Arabic Only', TranslationMode.arabicOnly),
               const SizedBox(width: 8),
-              _buildTranslationSegment('English Only', TranslationMode.englishOnly),
+              _buildTranslationSegment(
+                  'English Only', TranslationMode.englishOnly),
               const SizedBox(width: 8),
-              _buildTranslationSegment('Ar + En', TranslationMode.arabicAndEnglish),
+              _buildTranslationSegment(
+                  'Ar + En', TranslationMode.arabicAndEnglish),
             ],
           ),
         ],
@@ -593,9 +620,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
-          color: isActive
-              ? AppColors.warmGold
-              : Colors.white.withOpacity(0.12),
+          color: isActive ? AppColors.warmGold : Colors.white.withOpacity(0.12),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
@@ -618,8 +643,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void _showReaderOptionsMenu() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     showModalBottomSheet(
       context: context,
@@ -663,16 +690,24 @@ class _ReaderScreenState extends State<ReaderScreen> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(
-                  _readerMode == ReaderMode.pageTurn ? Icons.menu_book_rounded : Icons.view_headline_rounded,
+                  _readerMode == ReaderMode.pageTurn
+                      ? Icons.menu_book_rounded
+                      : Icons.view_headline_rounded,
                   color: AppColors.warmGold,
                 ),
                 title: Text(
-                  _readerMode == ReaderMode.pageTurn ? 'Switch to Vertical Study List' : 'Switch to 3D Mushaf Page Turn',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: textPrimary),
+                  _readerMode == ReaderMode.pageTurn
+                      ? 'Switch to Vertical Study List'
+                      : 'Switch to 3D Mushaf Page Turn',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w600, color: textPrimary),
                 ),
                 subtitle: Text(
-                  _readerMode == ReaderMode.pageTurn ? 'Currently in authentic 3D Mushaf Book' : 'Currently in vertical list mode',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: textSecondary),
+                  _readerMode == ReaderMode.pageTurn
+                      ? 'Currently in authentic 3D Mushaf Book'
+                      : 'Currently in vertical list mode',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12, color: textSecondary),
                 ),
                 onTap: () {
                   setState(() {
@@ -688,15 +723,19 @@ class _ReaderScreenState extends State<ReaderScreen> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(
-                  _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                  _isBookmarked
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
                   color: AppColors.warmGold,
                 ),
                 title: Text(
                   _isBookmarked ? 'Remove Bookmark' : 'Bookmark this Surah',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: textPrimary),
+                  style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w600, color: textPrimary),
                 ),
                 onTap: () async {
-                  final newStatus = await _storage.toggleBookmark(widget.surah.number);
+                  final newStatus =
+                      await _storage.toggleBookmark(widget.surah.number);
                   setState(() => _isBookmarked = newStatus);
                   if (context.mounted) Navigator.of(context).pop();
                 },
@@ -705,9 +744,14 @@ class _ReaderScreenState extends State<ReaderScreen> {
               // Reciter selection
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.record_voice_over_rounded, color: AppColors.warmGold),
-                title: Text('Change Reciter (Qari)', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: textPrimary)),
-                subtitle: Text(_audioService.selectedReciter.name, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: textSecondary)),
+                leading: const Icon(Icons.record_voice_over_rounded,
+                    color: AppColors.warmGold),
+                title: Text('Change Reciter (Qari)',
+                    style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w600, color: textPrimary)),
+                subtitle: Text(_audioService.selectedReciter.name,
+                    style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12, color: textSecondary)),
                 onTap: () {
                   Navigator.of(context).pop();
                   _showReciterSelectionModal();
@@ -717,8 +761,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
               // Font & Audio Preferences
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.tune_rounded, color: AppColors.warmGold),
-                title: Text('Font Size & Recitation Prefs', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: textPrimary)),
+                leading:
+                    const Icon(Icons.tune_rounded, color: AppColors.warmGold),
+                title: Text('Font Size & Recitation Prefs',
+                    style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w600, color: textPrimary)),
                 onTap: () {
                   Navigator.of(context).pop();
                   _showSettingsModal();
@@ -760,7 +807,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_off_rounded, size: 48, color: AppColors.accentGold),
+              const Icon(Icons.cloud_off_rounded,
+                  size: 48, color: AppColors.accentGold),
               const SizedBox(height: 12),
               Text(
                 _errorMessage!,

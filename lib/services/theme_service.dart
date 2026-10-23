@@ -9,7 +9,8 @@ class ThemeService {
   static const String _keyThemeMode = 'app_theme_mode';
 
   // Light theme is the primary default
-  final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier<ThemeMode>(ThemeMode.light);
+  final ValueNotifier<ThemeMode> themeModeNotifier =
+      ValueNotifier<ThemeMode>(ThemeMode.light);
 
   bool get isDarkMode => themeModeNotifier.value == ThemeMode.dark;
 
@@ -33,6 +34,7 @@ class ThemeService {
   Future<void> setTheme(ThemeMode mode) async {
     themeModeNotifier.value = mode;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyThemeMode, mode == ThemeMode.dark ? 'dark' : 'light');
+    await prefs.setString(
+        _keyThemeMode, mode == ThemeMode.dark ? 'dark' : 'light');
   }
 }

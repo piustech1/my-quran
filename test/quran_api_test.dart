@@ -42,7 +42,8 @@ void main() {
       expect(ayah.chapter, 1);
       expect(ayah.verse, 1);
       expect(ayah.arabicText, 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ');
-      expect(ayah.translation, 'In the name of God, the Lord of Mercy, the Giver of Mercy');
+      expect(ayah.translation,
+          'In the name of God, the Lord of Mercy, the Giver of Mercy');
 
       final map = ayah.toMap();
       final fromMap = Ayah.fromMap(map);
@@ -58,7 +59,8 @@ void main() {
       expect(url, 'https://everyayah.com/data/Alafasy_128kbps/001001.mp3');
 
       final urlSurah114Ayah6 = audioService.getAyahAudioUrl(114, 6);
-      expect(urlSurah114Ayah6, 'https://everyayah.com/data/Alafasy_128kbps/114006.mp3');
+      expect(urlSurah114Ayah6,
+          'https://everyayah.com/data/Alafasy_128kbps/114006.mp3');
     });
   });
 }

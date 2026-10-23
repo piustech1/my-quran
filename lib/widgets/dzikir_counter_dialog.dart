@@ -19,8 +19,14 @@ class _DzikirCounterDialogState extends State<DzikirCounterDialog> {
     {'ar': 'سُبْحَانَ اللَّهِ', 'en': 'SubhanAllah (Glory be to Allah)'},
     {'ar': 'الْحَمْدُ لِلَّهِ', 'en': 'Alhamdulillah (Praise be to Allah)'},
     {'ar': 'اللَّهُ أَكْبَرُ', 'en': 'Allahu Akbar (Allah is the Greatest)'},
-    {'ar': 'لَا إِلَٰهَ إِلَّا اللَّهُ', 'en': 'La ilaha illallah (None worthy of worship but Allah)'},
-    {'ar': 'أَسْتَغْفِرُ اللَّهَ', 'en': 'Astaghfirullah (I seek forgiveness from Allah)'},
+    {
+      'ar': 'لَا إِلَٰهَ إِلَّا اللَّهُ',
+      'en': 'La ilaha illallah (None worthy of worship but Allah)'
+    },
+    {
+      'ar': 'أَسْتَغْفِرُ اللَّهَ',
+      'en': 'Astaghfirullah (I seek forgiveness from Allah)'
+    },
   ];
 
   void _increment() {
@@ -44,8 +50,10 @@ class _DzikirCounterDialogState extends State<DzikirCounterDialog> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     final currentPhrase = _phrases[_phraseIndex];
 
@@ -62,7 +70,8 @@ class _DzikirCounterDialogState extends State<DzikirCounterDialog> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.circle_outlined, color: AppColors.accentGold, size: 20),
+                    const Icon(Icons.circle_outlined,
+                        color: AppColors.accentGold, size: 20),
                     const SizedBox(width: 8),
                     Text(
                       'Dzikir & Tasbih',
@@ -165,7 +174,8 @@ class _DzikirCounterDialogState extends State<DzikirCounterDialog> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton.icon(
-                  icon: const Icon(Icons.refresh_rounded, size: 16, color: AppColors.accentGold),
+                  icon: const Icon(Icons.refresh_rounded,
+                      size: 16, color: AppColors.accentGold),
                   label: Text(
                     'Reset Counter',
                     style: GoogleFonts.plusJakartaSans(

@@ -24,9 +24,6 @@ class MuftaHeader extends StatelessWidget {
     final naturalHeight = screenWidth * 0.54 + topPadding;
     final totalHeight = height ?? naturalHeight;
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fadeColor = isDark ? AppColors.darkBackground : AppColors.lightBackground;
-
     return SizedBox(
       width: double.infinity,
       height: totalHeight,
@@ -54,7 +51,6 @@ class MuftaHeader extends StatelessWidget {
               ),
             ),
           ),
-
 
           // 3. Foreground Controls (Floating glassmorphic top bar)
           Positioned(

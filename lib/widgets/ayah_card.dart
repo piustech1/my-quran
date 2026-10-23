@@ -33,8 +33,10 @@ class AyahCard extends StatelessWidget {
     final border = isPlaying
         ? AppColors.accentGold
         : (isDark ? AppColors.darkBorder : AppColors.lightBorder);
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -62,7 +64,8 @@ class AyahCard extends StatelessWidget {
               children: [
                 // Ayah Badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.accentGold.withOpacity(0.16),
                     borderRadius: BorderRadius.circular(12),
@@ -75,7 +78,8 @@ class AyahCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isPlaying) ...[
-                        const Icon(Icons.volume_up_rounded, size: 14, color: AppColors.accentGold),
+                        const Icon(Icons.volume_up_rounded,
+                            size: 14, color: AppColors.accentGold),
                         const SizedBox(width: 4),
                       ],
                       Text(
@@ -95,9 +99,13 @@ class AyahCard extends StatelessWidget {
                 if (onPlay != null)
                   IconButton(
                     icon: Icon(
-                      isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
+                      isPlaying
+                          ? Icons.pause_circle_filled_rounded
+                          : Icons.play_circle_fill_rounded,
                       size: 24,
-                      color: isPlaying ? AppColors.accentGold : AppColors.accentGold.withOpacity(0.85),
+                      color: isPlaying
+                          ? AppColors.accentGold
+                          : AppColors.accentGold.withOpacity(0.85),
                     ),
                     tooltip: isPlaying ? 'Pause Audio' : 'Play Ayah Recitation',
                     onPressed: onPlay,
@@ -109,7 +117,8 @@ class AyahCard extends StatelessWidget {
                   color: textSecondary,
                   tooltip: 'Copy Ayah',
                   onPressed: () {
-                    final text = '${ayah.arabicText}\n\n${ayah.translation} [Quran ${ayah.chapter}:${ayah.verse}]';
+                    final text =
+                        '${ayah.arabicText}\n\n${ayah.translation} [Quran ${ayah.chapter}:${ayah.verse}]';
                     Clipboard.setData(ClipboardData(text: text));
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -125,9 +134,12 @@ class AyahCard extends StatelessWidget {
                 if (onBookmarkToggle != null)
                   IconButton(
                     icon: Icon(
-                      isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                      isBookmarked
+                          ? Icons.bookmark_rounded
+                          : Icons.bookmark_border_rounded,
                       size: 20,
-                      color: isBookmarked ? AppColors.accentGold : textSecondary,
+                      color:
+                          isBookmarked ? AppColors.accentGold : textSecondary,
                     ),
                     onPressed: onBookmarkToggle,
                   ),
@@ -152,7 +164,8 @@ class AyahCard extends StatelessWidget {
             if (showTranslation && ayah.translation.isNotEmpty) ...[
               const SizedBox(height: 14),
               Divider(
-                color: isPlaying ? AppColors.accentGold.withOpacity(0.35) : border,
+                color:
+                    isPlaying ? AppColors.accentGold.withOpacity(0.35) : border,
                 height: 1,
               ),
               const SizedBox(height: 12),

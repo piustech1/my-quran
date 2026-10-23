@@ -7,7 +7,6 @@ import '../services/audio_service.dart';
 import '../services/storage_service.dart';
 import '../widgets/audio_player_bar.dart';
 import '../widgets/islamic_star_badge.dart';
-import '../widgets/mufta_header.dart';
 import '../widgets/quran_3d_graphic.dart';
 import 'reader_screen.dart';
 
@@ -62,11 +61,14 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
   }
 
   void _openReader(SurahMeta surah, {int? initialAyah}) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ReaderScreen(surah: surah, initialAyah: initialAyah),
-      ),
-    ).then((_) => _loadLastRead());
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) =>
+                ReaderScreen(surah: surah, initialAyah: initialAyah),
+          ),
+        )
+        .then((_) => _loadLastRead());
   }
 
   @override
@@ -80,11 +82,14 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     final lastReadSurahNum = _lastRead?['surah'] as int? ?? 1;
-    final lastReadSurahName = _lastRead?['surahName'] as String? ?? 'Al - Fatihah';
+    final lastReadSurahName =
+        _lastRead?['surahName'] as String? ?? 'Al - Fatihah';
     final lastReadAyah = _lastRead?['ayah'] as int? ?? 1;
     final lastReadMeta = kAllSurahs.firstWhere(
       (s) => s.number == lastReadSurahNum,
@@ -118,7 +123,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           // 2. Main Collapsible Scroll Body: Last Read card scrolls up reducing Mufta dome size
           Positioned.fill(
             child: NestedScrollView(
-              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
                 return [
                   // Pinned Top Bar (Back button, QUR'AN / Search field, Search button)
                   SliverAppBar(
@@ -128,7 +134,10 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                     toolbarHeight: 56,
                     automaticallyImplyLeading: false,
                     backgroundColor: innerBoxIsScrolled
-                        ? (isDark ? AppColors.darkBackground : AppColors.lightBackground).withOpacity(0.96)
+                        ? (isDark
+                                ? AppColors.darkBackground
+                                : AppColors.lightBackground)
+                            .withOpacity(0.96)
                         : Colors.transparent,
                     title: _buildTopBarRow(context, isDark),
                   ),
@@ -137,7 +146,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                      child: _buildLastReadCard(lastReadMeta, lastReadSurahName, lastReadAyah),
+                      child: _buildLastReadCard(
+                          lastReadMeta, lastReadSurahName, lastReadAyah),
                     ),
                   ),
 
@@ -147,7 +157,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                     delegate: _ModernTabBarDelegate(
                       height: 56.0,
                       backgroundColor: bg,
-                      child: _buildModernTabBar(isDark, textPrimary, textSecondary),
+                      child: _buildModernTabBar(
+                          isDark, textPrimary, textSecondary),
                     ),
                   ),
                 ];
@@ -197,7 +208,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
               color: Colors.white.withOpacity(0.20),
             ),
             alignment: Alignment.center,
-            child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white),
+            child: const Icon(Icons.arrow_back_ios_new_rounded,
+                size: 16, color: Colors.white),
           ),
         ),
         const SizedBox(width: 12),
@@ -217,7 +229,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                   cursorColor: AppColors.accentGold,
                   decoration: InputDecoration(
                     hintText: 'Search Surah...',
-                    hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white70),
+                    hintStyle:
+                        GoogleFonts.plusJakartaSans(color: Colors.white70),
                     border: InputBorder.none,
                   ),
                 )
@@ -265,16 +278,29 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
     );
   }
 
-  Widget _buildLastReadCard(SurahMeta lastReadMeta, String lastReadSurahName, int lastReadAyah) {
+  Widget _buildLastReadCard(
+      SurahMeta lastReadMeta, String lastReadSurahName, int lastReadAyah) {
     return Container(
-      height: 180,
-      padding: const EdgeInsets.fromLTRB(22, 20, 14, 18),
+      height: 196,
+      padding: const EdgeInsets.fromLTRB(20, 16, 14, 16),
       decoration: BoxDecoration(
-        color: AppColors.accentGold,
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF164738),
+            AppColors.deepEmerald,
+            Color(0xFF092019),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: AppColors.quranGold.withOpacity(0.3),
+          width: 1.0,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.accentGold.withOpacity(0.38),
+            color: AppColors.deepEmerald.withOpacity(0.40),
             blurRadius: 20,
             offset: const Offset(0, 6),
           ),
@@ -293,7 +319,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                     const Icon(
                       Icons.menu_book_rounded,
                       size: 15,
-                      color: Color(0xFF4A3812),
+                      color: AppColors.quranGold,
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -301,7 +327,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF4A3812),
+                        color: AppColors.quranGold,
                       ),
                     ),
                   ],
@@ -311,7 +337,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                   'Surah',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
-                    color: const Color(0xFF634D1C),
+                    color: Colors.white70,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -321,7 +347,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF1F1705),
+                    color: Colors.white,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -332,36 +358,45 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF4A3812),
+                    color: AppColors.quranGoldLight,
                   ),
                 ),
                 const SizedBox(height: 12),
 
-                // Pill button: "Back to reading >" (Takes user directly back to where they stopped)
+                // Pill button: "Continue Reading" with Quran Gold fill
                 GestureDetector(
-                  onTap: () => _openReader(lastReadMeta, initialAyah: lastReadAyah),
+                  onTap: () =>
+                      _openReader(lastReadMeta, initialAyah: lastReadAyah),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 6.5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF14171A),
-                      borderRadius: BorderRadius.circular(20),
+                      color: AppColors.quranGold,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Back to reading',
+                          'Continue Reading',
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
+                            fontSize: 11.5,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.midnightNavy,
                           ),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 3),
                         const Icon(
                           Icons.chevron_right_rounded,
                           size: 15,
-                          color: Colors.white,
+                          color: AppColors.midnightNavy,
                         ),
                       ],
                     ),
@@ -374,27 +409,28 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           // Right 3D Book Graphic from user assets
           Image.asset(
             'assets/quran asset.png',
-            width: 120,
-            height: 140,
+            width: 105,
+            height: 125,
             fit: BoxFit.contain,
             errorBuilder: (context, error, stackTrace) =>
-                const Quran3DGraphic(width: 100, height: 125),
+                const Quran3DGraphic(width: 95, height: 120),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildModernTabBar(bool isDark, Color textPrimary, Color textSecondary) {
+  Widget _buildModernTabBar(
+      bool isDark, Color textPrimary, Color textSecondary) {
     return Container(
       height: 46,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E2220) : const Color(0xFFF0F4F2),
+        color: isDark ? AppColors.darkCard : const Color(0xFFF0F4F2),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
+          color: isDark ? AppColors.darkBorder : Colors.black.withOpacity(0.04),
         ),
       ),
       child: TabBar(
@@ -402,18 +438,23 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
         dividerColor: Colors.transparent,
         indicatorSize: TabBarIndicatorSize.tab,
         indicator: BoxDecoration(
-          color: isDark ? AppColors.accentGold : const Color(0xFF1C4431),
+          color: isDark ? AppColors.deepEmerald : AppColors.deepEmerald,
           borderRadius: BorderRadius.circular(20),
+          border: isDark
+              ? Border.all(
+                  color: AppColors.quranGold.withOpacity(0.5), width: 1)
+              : null,
           boxShadow: [
             BoxShadow(
-              color: (isDark ? AppColors.accentGold : const Color(0xFF1C4431)).withOpacity(0.28),
+              color: AppColors.deepEmerald.withOpacity(0.35),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
           ],
         ),
-        labelColor: Colors.white,
-        unselectedLabelColor: isDark ? Colors.white60 : const Color(0xFF6B7280),
+        labelColor: isDark ? AppColors.quranGold : Colors.white,
+        unselectedLabelColor:
+            isDark ? AppColors.darkTextSecondary : const Color(0xFF6B7280),
         labelStyle: GoogleFonts.plusJakartaSans(
           fontWeight: FontWeight.w700,
           fontSize: 14,
@@ -432,7 +473,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
     );
   }
 
-  Widget _buildSurahListView(Color textPrimary, Color textSecondary, bool isDark) {
+  Widget _buildSurahListView(
+      Color textPrimary, Color textSecondary, bool isDark) {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.only(top: 8, bottom: 90, left: 16, right: 16),
@@ -465,7 +507,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                     height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.accentGold.withOpacity(isDark ? 0.18 : 0.12),
+                      color: AppColors.accentGold
+                          .withOpacity(isDark ? 0.18 : 0.12),
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -558,7 +601,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
     );
   }
 
-  Widget _buildParaListView(Color textPrimary, Color textSecondary, bool isDark) {
+  Widget _buildParaListView(
+      Color textPrimary, Color textSecondary, bool isDark) {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.only(top: 8, bottom: 90, left: 16, right: 16),
@@ -595,7 +639,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                     height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.accentGold.withOpacity(isDark ? 0.18 : 0.12),
+                      color: AppColors.accentGold
+                          .withOpacity(isDark ? 0.18 : 0.12),
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -646,7 +691,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.accentGold),
+                  const Icon(Icons.arrow_forward_ios_rounded,
+                      size: 14, color: AppColors.accentGold),
                 ],
               ),
             ),
@@ -656,7 +702,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
     );
   }
 
-  Widget _buildPageListView(Color textPrimary, Color textSecondary, bool isDark) {
+  Widget _buildPageListView(
+      Color textPrimary, Color textSecondary, bool isDark) {
     // 604 standard pages of the Medina Mushaf
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
@@ -665,7 +712,9 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
       itemBuilder: (context, index) {
         final pageNum = index + 1;
         final approxSurahNum = ((pageNum / 604) * 114).clamp(1, 114).toInt();
-        final surahMeta = kAllSurahs.firstWhere((s) => s.number == approxSurahNum, orElse: () => kAllSurahs.first);
+        final surahMeta = kAllSurahs.firstWhere(
+            (s) => s.number == approxSurahNum,
+            orElse: () => kAllSurahs.first);
 
         return Container(
           margin: const EdgeInsets.only(bottom: 10),
@@ -682,7 +731,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           ),
           child: ListTile(
             dense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
             leading: IslamicStarBadge(number: pageNum, size: 34),
             title: Text(
               'Page $pageNum',
@@ -694,9 +744,11 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
             ),
             subtitle: Text(
               'Near Surah ${surahMeta.englishName}',
-              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: textSecondary),
+              style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11, color: textSecondary),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.accentGold),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded,
+                size: 14, color: AppColors.accentGold),
             onTap: () => _openReader(surahMeta),
           ),
         );
@@ -704,7 +756,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
     );
   }
 
-  Widget _buildHizbListView(Color textPrimary, Color textSecondary, bool isDark) {
+  Widget _buildHizbListView(
+      Color textPrimary, Color textSecondary, bool isDark) {
     // 60 Hizbs in the Quran
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
@@ -713,7 +766,9 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
       itemBuilder: (context, index) {
         final hizbNum = index + 1;
         final approxSurahNum = ((hizbNum / 60) * 114).clamp(1, 114).toInt();
-        final surahMeta = kAllSurahs.firstWhere((s) => s.number == approxSurahNum, orElse: () => kAllSurahs.first);
+        final surahMeta = kAllSurahs.firstWhere(
+            (s) => s.number == approxSurahNum,
+            orElse: () => kAllSurahs.first);
 
         return Container(
           margin: const EdgeInsets.only(bottom: 10),
@@ -730,7 +785,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
           ),
           child: ListTile(
             dense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
             leading: IslamicStarBadge(number: hizbNum, size: 34),
             title: Text(
               'Hizb $hizbNum',
@@ -742,9 +798,11 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen>
             ),
             subtitle: Text(
               'In Surah ${surahMeta.englishName}',
-              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: textSecondary),
+              style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11, color: textSecondary),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.accentGold),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded,
+                size: 14, color: AppColors.accentGold),
             onTap: () => _openReader(surahMeta),
           ),
         );
@@ -771,7 +829,8 @@ class _ModernTabBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: backgroundColor,
       alignment: Alignment.center,

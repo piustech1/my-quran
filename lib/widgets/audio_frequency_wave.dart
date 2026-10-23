@@ -76,7 +76,8 @@ class _AudioFrequencyWaveState extends State<AudioFrequencyWave>
                       // Active recitation indicator / Ayah count
                       if (isPlaying && playingAyah != null) ...[
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: AppColors.warmGold.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),

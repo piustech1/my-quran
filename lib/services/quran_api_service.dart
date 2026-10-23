@@ -24,7 +24,9 @@ class QuranApiService {
     if (cached != null) {
       try {
         final List<dynamic> list = jsonDecode(cached);
-        return list.map((e) => Ayah.fromMap(e as Map<String, dynamic>)).toList();
+        return list
+            .map((e) => Ayah.fromMap(e as Map<String, dynamic>))
+            .toList();
       } catch (_) {
         // Corrupted cache, will refetch
       }
@@ -48,8 +50,9 @@ class QuranApiService {
       final List<Ayah> ayahs = [];
       for (int i = 0; i < arabicVerses.length; i++) {
         final a = arabicVerses[i] as Map<String, dynamic>;
-        final Map<String, dynamic>? e =
-            i < englishVerses.length ? englishVerses[i] as Map<String, dynamic> : null;
+        final Map<String, dynamic>? e = i < englishVerses.length
+            ? englishVerses[i] as Map<String, dynamic>
+            : null;
 
         ayahs.add(Ayah.fromJson(
           arabicJson: a,
@@ -103,7 +106,8 @@ class QuranApiService {
         chapter: 1,
         verse: 1,
         arabicText: "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ",
-        translation: "In the name of God, the Lord of Mercy, the Giver of Mercy",
+        translation:
+            "In the name of God, the Lord of Mercy, the Giver of Mercy",
       ),
       Ayah(
         chapter: 1,
