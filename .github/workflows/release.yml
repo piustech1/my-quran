@@ -43,41 +43,34 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.4.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.5.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.4
-          name: "My Quran v1.8.4 - Islamic Bento Grid, Live Clock & Active Prayer Times API"
+          tag_name: v1.8.5
+          name: "My Quran v1.8.5 - Daily Ayah Experience, Multilingual Translations & Audio Reciter"
           body: |
-            ### 📖 My Quran - Release v1.8.4
+            ### 📖 My Quran - Release v1.8.5
 
-            What's New in **v1.8.4**:
+            What's New in **v1.8.5**:
 
-            #### 🍱 Edge-to-Edge Islamic Bento Grid
-            - **Edge-to-Edge Thematic Imagery:** Replaced standard quick action cards with seamless Bento cards covered in full artwork for **Qur'an**, **Zakat**, and **Dzikir**.
-            - **Pure Borderless Surfaces:** Zero outline borders with smooth `26px` corner curvature.
-            - **Frosted Glass Tags:** Bottom glassmorphic pill badges with real-time blur (`sigma: 10`) displaying titles and active counter stats.
-
-            #### ⏰ Real Prayer Times & Live Ticking Clock
-            - **Global Aladhan API:** Automatic calculation of the 5 Muslim daily prayers (Fajr, Dhuhr, Asr, Maghrib, Isha) tailored to user coordinates.
-            - **Dynamic Upcoming Prayer:** Smart countdown and auto-detection of current and upcoming prayer with midnight crossover support.
-            - **Live Ticking Clock:** Second-by-second ticking digital clock on the prayer card (`Now HH:MM:SS AM/PM`).
-            - **Offline Cache:** Cached locally via SharedPreferences for instant, seamless offline startup.
-
-            #### 🌤️ Live Weather & Geolocation
-            - **Real Temperature & Weather:** Integrated Open-Meteo API returning live temperature and conditions.
-            - **IP Geolocation:** Auto-detects user city without intrusive GPS permissions, with Kampala fallback.
-
-            #### 🧹 Clean Dashboard
-            - **Removed Bottom Artifact:** Eliminated the peeking circular avatar and arrow widget from the dashboard.
+            #### 🕊️ Daily Ayah Experience ("Food of the Soul · Make your day")
+            - **Dedicated Daily Ayah Screen:** iOS-inspired liquid interface with pure borderless calm surfaces, generous typography, and serene aesthetics.
+            - **Deterministic Verse of the Day:** Date-seeded selection across curated inspiring Quranic verses (Ash-Sharh, Ad-Duhaa, Al-Baqarah, Ar-Rahman, etc.) ensuring all users receive the same uplifting verse on any given calendar day.
+            - **AI-Generated Thematic Artwork:** Serene, ultra-high-resolution Moorish architectural visual (`assets/daily_ayah_visual.jpg`) with tap-to-expand interactive zoom dialog.
+            - **In-App Audio Recitation Player:** Integrated multi-reciter audio playback (Mishary Alafasy, Abdul Basit, Abu Bakr Ash-Shatri) with auto-play on screen mount, interactive seek slider, live position/duration timestamps, and playback speed selector (1.0x / 1.25x / 1.5x).
+            - **Dynamic Multilingual Translations:** Directly switch translation languages on the fly across verified editions (English Abdel Haleem, Sahih International, French Rashid Maash, Indonesian Kemenag, Turkish Diyanet, Urdu Maududi, and English Transliteration) powered by CDN API with local SharedPreferences caching.
+            - **Authentic Arabic Typography:** Rendered in `Amiri` font with RTL alignment, Quranic verse end symbols, and dynamic font sizing (`A-` / `A+`).
+            - **Classical Tafsir Commentary:** "Understanding this ayah" section featuring insightful context grounded in classical exegesis (Ibn Kathir and As-Sa'di).
+            - **Quick Actions:** Instant one-tap copying with toast confirmation, persistent verse bookmarking, and formatted Islamic quotation sharing.
+            - **Dashboard Rebranding:** Redesigned featured card into clean borderless Daily Ayah preview with quote snippet and direct navigation.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.4.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.5.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.4.apk
+            release-output/My-Quran-v1.8.5.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

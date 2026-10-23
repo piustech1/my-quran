@@ -67,6 +67,38 @@ class StorageService {
     await prefs.setDouble(_keyArabicFontSize, size);
   }
 
+  Future<bool> toggleDailyAyahBookmark(int chapter, int verse) async {
+    final prefs = await SharedPreferences.getInstance();
+    const key = 'saved_daily_ayah_bookmarks';
+    final list = prefs.getStringList(key) ?? [];
+    final id = '$chapter:$verse';
+    final exists = list.contains(id);
+    if (exists) {
+      list.remove(id);
+    } else {
+      list.add(id);
+    }
+    await prefs.setStringList(key, list);
+    return !exists;
+  }
+
+  Future<bool> isDailyAyahBookmarked(int chapter, int verse) async {
+    final prefs = await SharedPreferences.getInstance();
+    const key = 'saved_daily_ayah_bookmarks';
+    final list = prefs.getStringList(key) ?? [];
+    return list.contains('$chapter:$verse');
+  }
+
+  Future<double> getDailyAyahFontSize() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble('daily_ayah_font_size') ?? 26.0;
+  }
+
+  Future<void> saveDailyAyahFontSize(double size) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('daily_ayah_font_size', size);
+  }
+
   Future<bool> getShowTranslation() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyShowTranslation) ?? false;
@@ -77,3 +109,4 @@ class StorageService {
     await prefs.setBool(_keyShowTranslation, value);
   }
 }
+

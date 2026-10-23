@@ -3,11 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import '../services/daily_ayah_service.dart';
 import '../services/location_weather_service.dart';
 import '../services/prayer_time_service.dart';
 import '../services/theme_service.dart';
 import '../widgets/dzikir_counter_dialog.dart';
 import '../widgets/floating_nav_dock.dart';
+import 'daily_ayah_screen.dart';
 import 'quran_library_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
@@ -21,6 +23,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   final ThemeService _themeService = ThemeService();
   final PrayerTimeService _prayerService = PrayerTimeService();
   final LocationWeatherService _weatherService = LocationWeatherService();
+  final DailyAyahService _dailyAyahService = DailyAyahService();
 
   int _selectedNavIndex = 0;
   PrayerSchedule? _prayerSchedule;
@@ -255,6 +258,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
         isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final textSecondary =
         isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
+    final dailyAyah = _dailyAyahService.getDailyAyah();
 
     final topPadding = MediaQuery.of(context).padding.top;
     final headerHeight = topPadding + 265.0;
@@ -528,111 +533,166 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  // 5. Featured Card: Ramadan Study / Daily Dakwah (Exact proportions of reference)
-                  Container(
-                    height: 175,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFFE6BA54),
-                          Color(0xFFD49E31),
+                  // 5. Featured Card: Rebranded to Daily Ayah (Clean, borderless, zero gradients)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const DailyAyahScreen()),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? AppColors.darkCard
+                            : AppColors.lightSurfaceSubtle,
+                        borderRadius: BorderRadius.circular(28),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Colors.black.withOpacity(isDark ? 0.35 : 0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 6),
+                          ),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFD49E31).withOpacity(0.38),
-                          blurRadius: 22,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        // Left Text Column
-                        Expanded(
-                          flex: 12,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xFF38290B).withOpacity(0.18),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  'DAILY DAKWAH',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.8,
-                                    color: const Color(0xFF38290B),
+                      child: Row(
+                        children: [
+                          // Left Text Column
+                          Expanded(
+                            flex: 13,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? AppColors.darkInnerCard
+                                        : AppColors.accentGold
+                                            .withOpacity(0.22),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Ramadan Study',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF14171A),
-                                  height: 1.15,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              Row(
-                                children: [
-                                  ClipOval(
-                                    child: Image.asset(
-                                      'assets/aminah.png',
-                                      width: 28,
-                                      height: 28,
-                                      fit: BoxFit.cover,
+                                  child: Text(
+                                    'DAILY AYAH',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1.0,
+                                      color: isDark
+                                          ? AppColors.quranGold
+                                          : const Color(0xFF9E7728),
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'With',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                          color: const Color(0xFF4A3812),
-                                        ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Daily Ayah',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                    color: textPrimary,
+                                    height: 1.15,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Food of the Soul · Make your day',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.accentGoldDark,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '“${dailyAyah.defaultTranslation}”',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12.5,
+                                    fontStyle: FontStyle.italic,
+                                    color: textPrimary.withOpacity(0.85),
+                                    height: 1.35,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Text(
+                                      dailyAyah.reference,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: textSecondary,
                                       ),
-                                      Text(
-                                        'Ustd. Hanan',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF14171A),
-                                        ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      size: 13,
+                                      color: AppColors.accentGoldDark,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+
+                          // Right: Thematic Visual Thumbnail with Play Badge
+                          Expanded(
+                            flex: 8,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Image.asset(
+                                    dailyAyah.imageAsset,
+                                    height: 116,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Container(
+                                    height: 116,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          Colors.black.withOpacity(0.40),
+                                        ],
                                       ),
-                                    ],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.black.withOpacity(0.45),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.35),
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.play_arrow_rounded,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-
-                        // Right: 3D Desk Calendar Graphic from user assets
-                        Expanded(
-                          flex: 10,
-                          child: _build3DCalendarGraphic(),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -1003,48 +1063,5 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
       ),
     );
   }
-
-  Widget _build3DCalendarGraphic() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Image.asset(
-          'assets/calender assets.png',
-          width: 125,
-          height: 125,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) => const SizedBox(
-            width: 125,
-            height: 125,
-            child: Icon(Icons.calendar_month_rounded,
-                color: Colors.white, size: 50),
-          ),
-        ),
-        Positioned(
-          bottom: 2,
-          child: Container(
-            width: 32,
-            height: 16,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
-                  blurRadius: 4,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.keyboard_arrow_up_rounded,
-              size: 14,
-              color: Color(0xFFB8934A),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
+
