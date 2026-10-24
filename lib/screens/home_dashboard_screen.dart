@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import '../constants/surah_data.dart';
+import '../services/audio_service.dart';
 import '../services/daily_ayah_service.dart';
 import '../services/location_weather_service.dart';
 import '../services/prayer_time_service.dart';
@@ -11,6 +14,7 @@ import '../widgets/dzikir_counter_dialog.dart';
 import '../widgets/floating_nav_dock.dart';
 import 'daily_ayah_screen.dart';
 import 'quran_library_screen.dart';
+import 'reader_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   const HomeDashboardScreen({super.key});
@@ -24,6 +28,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   final PrayerTimeService _prayerService = PrayerTimeService();
   final LocationWeatherService _weatherService = LocationWeatherService();
   final DailyAyahService _dailyAyahService = DailyAyahService();
+  final QuranAudioService _audioService = QuranAudioService();
 
   int _selectedNavIndex = 0;
   PrayerSchedule? _prayerSchedule;
@@ -430,15 +435,50 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                     );
                                   },
                                 ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  'Now ${_formatLiveClock(_currentTime)}',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 12,
+                                const SizedBox(height: 7),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
                                     color: isDark
-                                        ? Colors.white54
-                                        : AppColors.lightTextSecondary,
-                                    fontWeight: FontWeight.w500,
+                                        ? Colors.white.withOpacity(0.08)
+                                        : const Color(0xFF103C30).withOpacity(0.06),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 5,
+                                        height: 5,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color(0xFFB8934A),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        'NOW',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 1.0,
+                                          color: const Color(0xFFB8934A),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        _formatLiveClock(_currentTime),
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: isDark
+                                              ? Colors.white
+                                              : AppColors.lightTextPrimary,
+                                          letterSpacing: 0.2,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -706,6 +746,41 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
             left: 18,
             right: 18,
             child: _buildHeaderRow(isDark),
+          ),
+
+          // 4. Backgroundless Golden Frequency Waves (Seen between top app bar & prayer card when reciting)
+          Positioned(
+            top: topPadding + 84,
+            left: 0,
+            right: 0,
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _audioService.isPlayingNotifier,
+              builder: (context, isPlaying, _) {
+                if (!isPlaying) return const SizedBox.shrink();
+                return Center(
+                  child: _FloatingGoldenFrequencyBars(
+                    onTap: () {
+                      final surahNum = _audioService.currentPlayingSurah.value;
+                      if (surahNum != null) {
+                        final surahMeta = kAllSurahs.firstWhere(
+                          (s) => s.number == surahNum,
+                          orElse: () => kAllSurahs.first,
+                        );
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ReaderScreen(
+                              surah: surahMeta,
+                              initialAyah:
+                                  _audioService.currentPlayingAyah.value ?? 1,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -1064,4 +1139,94 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     );
   }
 }
+
+class _FloatingGoldenFrequencyBars extends StatefulWidget {
+  final VoidCallback? onTap;
+  const _FloatingGoldenFrequencyBars({this.onTap});
+
+  @override
+  State<_FloatingGoldenFrequencyBars> createState() =>
+      _FloatingGoldenFrequencyBarsState();
+}
+
+class _FloatingGoldenFrequencyBarsState
+    extends State<_FloatingGoldenFrequencyBars>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return CustomPaint(
+            size: const Size(190, 24),
+            painter: _GoldenWavePainter(progress: _controller.value),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _GoldenWavePainter extends CustomPainter {
+  final double progress;
+  _GoldenWavePainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFFF5CE63)
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.fill;
+
+    const count = 30;
+    final spacing = size.width / count;
+    final mid = size.height / 2;
+
+    for (int i = 0; i < count; i++) {
+      final t = (i / count);
+      final wave1 =
+          math.sin((t * 4 * math.pi) + (progress * 2 * math.pi)).abs();
+      final wave2 =
+          math.cos((t * 2 * math.pi) - (progress * math.pi)).abs();
+      final barHeight =
+          (4.0 + (wave1 * 0.6 + wave2 * 0.4) * (size.height - 4))
+              .clamp(3.0, size.height);
+
+      final x = i * spacing + spacing / 2;
+      final yTop = mid - barHeight / 2;
+      final yBottom = mid + barHeight / 2;
+
+      final rrect = RRect.fromRectAndRadius(
+        Rect.fromLTRB(x - 1.5, yTop, x + 1.5, yBottom),
+        const Radius.circular(2),
+      );
+      canvas.drawRRect(rrect, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _GoldenWavePainter oldDelegate) =>
+      oldDelegate.progress != progress;
+}
+
 

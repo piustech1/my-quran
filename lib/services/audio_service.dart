@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import '../constants/surah_data.dart';
 
 class Reciter {
   final String id;
@@ -55,11 +56,13 @@ class QuranAudioService {
   final ValueNotifier<int?> currentPlayingSurah = ValueNotifier<int?>(null);
   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier<bool>(false);
   final ValueNotifier<bool> isLoadingNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<double> ayahPlaybackProgress = ValueNotifier<double>(0.0);
 
   int _maxVersesInCurrentSurah = 7;
   bool autoPlayNext = true;
 
   StreamSubscription<PlayerState>? _playerStateSubscription;
+  StreamSubscription<Duration>? _positionSubscription;
 
   void _initAudioPlayer() {
     _playerStateSubscription = _player.playerStateStream.listen((state) {
@@ -70,6 +73,16 @@ class QuranAudioService {
 
       if (state.processingState == ProcessingState.completed) {
         _handleAyahCompleted();
+      }
+    });
+
+    _positionSubscription = _player.positionStream.listen((pos) {
+      final dur = _player.duration;
+      if (dur != null && dur.inMilliseconds > 0) {
+        ayahPlaybackProgress.value =
+            (pos.inMilliseconds / dur.inMilliseconds).clamp(0.0, 1.0);
+      } else {
+        ayahPlaybackProgress.value = 0.0;
       }
     });
   }
@@ -100,6 +113,7 @@ class QuranAudioService {
     _maxVersesInCurrentSurah = maxVerses;
     currentPlayingSurah.value = surahNumber;
     currentPlayingAyah.value = ayahNumber;
+    ayahPlaybackProgress.value = 0.0;
 
     final url = getAyahAudioUrl(surahNumber, ayahNumber);
     try {
@@ -124,6 +138,7 @@ class QuranAudioService {
     await _player.stop();
     currentPlayingAyah.value = null;
     currentPlayingSurah.value = null;
+    ayahPlaybackProgress.value = 0.0;
     isPlayingNotifier.value = false;
   }
 
@@ -139,7 +154,22 @@ class QuranAudioService {
         maxVerses: _maxVersesInCurrentSurah,
       );
     } else {
-      await stop();
+      // Seamlessly advance to the next Surah!
+      final currentSurah = currentPlayingSurah.value!;
+      if (currentSurah < 114) {
+        final nextSurahNum = currentSurah + 1;
+        final nextSurahMeta = kAllSurahs.firstWhere(
+          (s) => s.number == nextSurahNum,
+          orElse: () => kAllSurahs[nextSurahNum - 1],
+        );
+        await playAyah(
+          surahNumber: nextSurahNum,
+          ayahNumber: 1,
+          maxVerses: nextSurahMeta.numberOfAyahs,
+        );
+      } else {
+        await stop();
+      }
     }
   }
 
@@ -154,6 +184,21 @@ class QuranAudioService {
         ayahNumber: prevAyah,
         maxVerses: _maxVersesInCurrentSurah,
       );
+    } else {
+      // If at Ayah 1 and previous is pressed, move to previous Surah's last Ayah if available
+      final currentSurah = currentPlayingSurah.value!;
+      if (currentSurah > 1) {
+        final prevSurahNum = currentSurah - 1;
+        final prevSurahMeta = kAllSurahs.firstWhere(
+          (s) => s.number == prevSurahNum,
+          orElse: () => kAllSurahs[prevSurahNum - 1],
+        );
+        await playAyah(
+          surahNumber: prevSurahNum,
+          ayahNumber: prevSurahMeta.numberOfAyahs,
+          maxVerses: prevSurahMeta.numberOfAyahs,
+        );
+      }
     }
   }
 
@@ -167,6 +212,7 @@ class QuranAudioService {
 
   void dispose() {
     _playerStateSubscription?.cancel();
+    _positionSubscription?.cancel();
     _player.dispose();
   }
 }

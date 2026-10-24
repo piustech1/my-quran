@@ -37,7 +37,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  ReaderMode _readerMode = ReaderMode.pageTurn;
+  ReaderMode _readerMode = ReaderMode.verseList;
   double _arabicFontSize = 24.0;
   TranslationMode _translationMode = TranslationMode.arabicOnly;
   bool _isBookmarked = false;
@@ -407,26 +407,45 @@ class _ReaderScreenState extends State<ReaderScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
     final topPadding = MediaQuery.of(context).padding.top;
-    final headerHeight = topPadding + 148.0;
+    final headerHeight = topPadding + 154.0;
 
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: const Color(0xFF0D2F1F),
       body: Stack(
         children: [
-          // Main Reader Body (takes full height with zero bottom obstruction)
-          Positioned.fill(
-            child: Padding(
-              padding: EdgeInsets.only(top: headerHeight - 4, bottom: 8),
-              child: _buildBody(),
-            ),
-          ),
-
-          // HD 4K Arabesque Mufta Dome Header with Golden Audio Frequency Wave
+          // 1. HD 4K Arabesque Mufta Dome Header with Golden Audio Frequency Wave
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: _buildCurvedHeader(context),
+          ),
+
+          // 2. Main Reader Body with Curved Top Arch (curves over Mufta backdrop)
+          Positioned.fill(
+            child: Padding(
+              padding: EdgeInsets.only(top: headerHeight - 14),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: bg,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(32),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.40 : 0.12),
+                      blurRadius: 16,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: _buildBody(),
+                ),
+              ),
+            ),
           ),
         ],
       ),

@@ -8,7 +8,6 @@ import '../models/juz.dart';
 import '../models/quran_navigation_data.dart';
 import '../services/audio_service.dart';
 import '../services/storage_service.dart';
-import '../widgets/audio_player_bar.dart';
 import '../widgets/islamic_star_badge.dart';
 import '../widgets/quran_3d_graphic.dart';
 import 'reader_screen.dart';
@@ -117,67 +116,87 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
     final textSecondary =
         isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
-    final screenWidth = MediaQuery.of(context).size.width;
     final topPadding = MediaQuery.of(context).padding.top;
-    final muftaHeight = screenWidth * 0.58 + topPadding;
+    final headerTopOffset = topPadding + 318.0;
 
     return Scaffold(
       backgroundColor: bg,
       body: Stack(
         children: [
-          // 1. Natural Unified CustomScrollView
-          // Everything (Mufta, Main Card, Tabs) scrolls smoothly away as user scrolls
-          CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              // Header Sliver containing Mufta Backdrop, Top Bar, Main Card & TabBar
-              SliverToBoxAdapter(
+          // 1. Scrollable List of Cards (Slides smoothly behind/underneath the pinned header)
+          Positioned.fill(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: SizedBox(height: headerTopOffset),
+                ),
+                _buildActiveTabSliver(isDark, textPrimary, textSecondary),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 48),
+                ),
+              ],
+            ),
+          ),
+
+          // 2. Pinned Top Section (Mufta backdrop, Top Bar, Main Card & TabBar kept fixed in position)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(36),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(isDark ? 0.45 : 0.16),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(36),
+                ),
                 child: Stack(
                   children: [
-                    // A. Mufta Backdrop with Organic Curved Bottom
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: SizedBox(
-                        height: muftaHeight,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                            bottom: Radius.circular(40),
+                    // A. Mufta Backdrop
+                    Positioned.fill(
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Container(color: const Color(0xFF0D2F1F)),
+                          Image.asset(
+                            'assets/new_mufta.jpg',
+                            fit: BoxFit.cover,
+                            alignment: Alignment.topCenter,
+                            filterQuality: FilterQuality.high,
                           ),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              Container(color: const Color(0xFF0D2F1F)),
-                              Image.asset(
-                                'assets/new_mufta.jpg',
-                                fit: BoxFit.cover,
-                                alignment: Alignment.topCenter,
-                                filterQuality: FilterQuality.high,
+                          Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Color(0x450D2F1F),
+                                  Color(0x150D2F1F),
+                                  Color(0x950D2F1F),
+                                ],
                               ),
-                              Container(
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Color(0x400D2F1F),
-                                      Color(0x100D2F1F),
-                                      Color(0x800D2F1F),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
 
-                    // B. Foreground Content: Top Bar + Main Card + Segmented TabBar
+                    // B. Foreground Pinned Content: Top Bar + Main Card + Segmented TabBar
                     SafeArea(
                       bottom: false,
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // 1. Top Bar
@@ -187,7 +206,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
                             child: _buildTopBarRow(context, isDark),
                           ),
 
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 6),
 
                           // 2. Main Card ("Last Read" or "Now Playing" with backgroundless frequency wave)
                           Padding(
@@ -195,12 +214,13 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
                             child: _buildMainHeroCard(isDark),
                           ),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 14),
 
                           // 3. Segmented TabBar with Unique Islamic Icons
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: _buildSegmentedTabBar(isDark, textPrimary, textSecondary),
+                            child: _buildSegmentedTabBar(
+                                isDark, textPrimary, textSecondary),
                           ),
 
                           const SizedBox(height: 12),
@@ -210,23 +230,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
                   ],
                 ),
               ),
-
-              // Active Tab Content Items
-              _buildActiveTabSliver(isDark, textPrimary, textSecondary),
-
-              // Bottom Padding for Dock / Floating Audio
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 100),
-              ),
-            ],
-          ),
-
-          // 2. Floating Audio Player at bottom if recitation is active
-          const Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: AudioPlayerBar(totalVerses: 114),
+            ),
           ),
         ],
       ),
@@ -397,7 +401,7 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
             // Determine active surah meta
             final lastReadSurahNum = _lastRead?['surah'] as int? ?? 1;
             final lastReadAyah = _lastRead?['ayah'] as int? ?? 1;
-            final isAudioActive = isPlaying && playingSurahNum != null;
+            final isAudioActive = playingSurahNum != null;
 
             final activeSurahNum =
                 isAudioActive ? playingSurahNum : lastReadSurahNum;
@@ -529,9 +533,15 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
                               Row(
                                 children: [
                                   if (isAudioActive) ...[
-                                    // Pause button
+                                    // Play / Pause toggle button
                                     GestureDetector(
-                                      onTap: () => _audioService.pause(),
+                                      onTap: () {
+                                        if (isPlaying) {
+                                          _audioService.pause();
+                                        } else {
+                                          _audioService.resume();
+                                        }
+                                      },
                                       child: Container(
                                         width: 32,
                                         height: 32,
@@ -539,8 +549,10 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
                                           shape: BoxShape.circle,
                                           color: AppColors.quranGold,
                                         ),
-                                        child: const Icon(
-                                          Icons.pause_rounded,
+                                        child: Icon(
+                                          isPlaying
+                                              ? Icons.pause_rounded
+                                              : Icons.play_arrow_rounded,
                                           size: 18,
                                           color: AppColors.midnightNavy,
                                         ),
@@ -549,8 +561,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
                                     const SizedBox(width: 10),
 
                                     // PURE BACKGROUNDLESS FREQUENCY BARS
-                                    const _BackgroundlessFrequencyWave(
-                                      isPlaying: true,
+                                    _BackgroundlessFrequencyWave(
+                                      isPlaying: isPlaying,
                                       barColor: AppColors.quranGold,
                                     ),
 
