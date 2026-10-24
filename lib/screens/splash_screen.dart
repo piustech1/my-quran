@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../widgets/quran_3d_graphic.dart';
-import 'home_dashboard_screen.dart';
+import 'main_navigation_shell.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -36,12 +36,12 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate to Home Dashboard Screen after 2.4s
+    // Navigate to Main Navigation Shell after 2.4s
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const HomeDashboardScreen(),
+            pageBuilder: (_, __, ___) => const MainNavigationShell(),
             transitionsBuilder: (_, animation, __, child) {
               return FadeTransition(opacity: animation, child: child);
             },

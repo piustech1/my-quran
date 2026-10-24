@@ -10,8 +10,15 @@ import '../services/storage_service.dart';
 
 class DailyAyahScreen extends StatefulWidget {
   final DateTime? date;
+  final bool isEmbeddedInShell;
+  final ValueChanged<int>? onNavigateTab;
 
-  const DailyAyahScreen({super.key, this.date});
+  const DailyAyahScreen({
+    super.key,
+    this.date,
+    this.isEmbeddedInShell = false,
+    this.onNavigateTab,
+  });
 
   @override
   State<DailyAyahScreen> createState() => _DailyAyahScreenState();
@@ -293,7 +300,7 @@ Shared via My Quran
                         // E. Quick Actions Bar
                         _buildQuickActionsBar(isDark, surface, textPrimary, textSecondary),
 
-                        const SizedBox(height: 36),
+                        SizedBox(height: widget.isEmbeddedInShell ? 120 : 36),
                       ],
                     ),
                   ),
@@ -316,7 +323,13 @@ Shared via My Quran
           // Back button with liquid glass blur
           _buildLiquidGlassCircleButton(
             isDark: isDark,
-            onTap: () => Navigator.of(context).pop(),
+            onTap: () {
+              if (widget.isEmbeddedInShell) {
+                widget.onNavigateTab?.call(0);
+              } else if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              }
+            },
             child: Icon(
               Icons.arrow_back_ios_new_rounded,
               size: 17,

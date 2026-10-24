@@ -38,6 +38,45 @@ class WeatherData {
     required this.city,
   });
 
+  /// Dynamically detects and returns the corresponding 3D weather asset path
+  String get weatherAssetPath {
+    final cond = condition.toLowerCase();
+
+    // 1. Thunderstorm / Storm
+    if ((weatherCode >= 95 && weatherCode <= 99) ||
+        cond.contains('storm') ||
+        cond.contains('thunder') ||
+        cond.contains('lightning')) {
+      return 'assets/weather/storm.png';
+    }
+
+    // 2. Raining / Drizzle / Showers
+    if ((weatherCode >= 51 && weatherCode <= 67) ||
+        (weatherCode >= 80 && weatherCode <= 82) ||
+        cond.contains('rain') ||
+        cond.contains('drizzle') ||
+        cond.contains('shower')) {
+      return 'assets/weather/rain.png';
+    }
+
+    // 3. Winter / Snow / Freezing / Low temperature (<= 15°C)
+    if ((weatherCode >= 71 && weatherCode <= 77) ||
+        weatherCode == 85 ||
+        weatherCode == 86 ||
+        temperature <= 15 ||
+        cond.contains('snow') ||
+        cond.contains('winter') ||
+        cond.contains('frost') ||
+        cond.contains('freeze') ||
+        cond.contains('cold') ||
+        cond.contains('sleet')) {
+      return 'assets/weather/winter.png';
+    }
+
+    // 4. Default: Sunny / Clear / Partly Cloudy / Warm
+    return 'assets/weather/sun.png';
+  }
+
   static WeatherData defaultFallback() {
     return WeatherData(
       temperature: 27,

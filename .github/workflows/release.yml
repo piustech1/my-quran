@@ -43,40 +43,41 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.10.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.11.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.10
-          name: "My Quran v1.8.10 - Real-Time Consecutive Ayah Recitation & Seamless Auto-Progression"
+          tag_name: v1.8.11
+          name: "My Quran v1.8.11 - Dynamic Weather 3D Assets & Floating Liquid Glass Bottom Navigation Dock"
           body: |
-            ### 📖 My Quran - Release v1.8.10
+            ### 📖 My Quran - Release v1.8.11
 
-            What's New in **v1.8.10**:
+            What's New in **v1.8.11**:
 
-            #### 🎧 Real-Time Consecutive Ayah Recitation
-            - **Seamless Consecutive Playback Restored:** Fixed the issue where audio playback would halt after the first verse. Audio now flows seamlessly and consecutively from Ayah to Ayah and Surah to Surah in real-time.
-            - **Non-blocking Play Initiation:** Fixed `play()` execution by removing the blocking await and eliminating deadlocking transition mutexes, ensuring immediate verse loading and gapless transition.
-            - **Per-Ayah Completion Deduplication:** Added rigorous Surah/Ayah deduplication with debounce to guarantee zero verse skips and zero premature halts.
-            - **Accurate Frequency Wave State:** Synchronized frequency wave animation directly to actual audio playback so waveforms accurately stop when audio concludes.
+            #### ⛅ Dynamic Weather 3D Illustration Detection
+            - **Intelligent Meteorological Mapping:** Automatically detects ambient atmospheric conditions and temperature via Open-Meteo API.
+            - **Adaptive 3D Visuals:** Seamlessly switches between high-fidelity 3D assets: **Sun** (`sun.png`), **Rain** (`rain.png`), **Storm** (`storm.png`), and **Winter/Cold** (`winter.png` when $\le 15^\circ\text{C}$ or snowing) with smooth cross-fade animation.
 
-            #### 🔒 True Background Audio & Android Foreground Service
-            - **Continuous Background Playback:** Supported by Android `MediaBrowserService` foreground service so Quran recitation continues uninterrupted when minimizing the app, turning off the screen, or switching apps.
-            - **Rich Notification & Lock Screen Controls:** Real-time lock screen controls with Surah name, reciter artwork, play/pause, next/previous controls.
+            #### 🫧 Ultra-Modern Floating Liquid Glass Bottom Navigation Dock
+            - **Floating Island Capsule:** Elevated dock hovering cleanly above the bottom edge with a high-blur frosted liquid glass finish (`sigma: 20`).
+            - **Active Rounded Pill Indicator:** Selected tab transitions into a high-contrast pill `[ 🏠 Home ]` with smooth physics-based fluid spring animation.
+            - **Elevated Companion Action Button:** Circular companion button with `+` opening instant quick Islamic actions (Digital Tasbih, Daily Ayah, Quran Search, Bookmarks).
 
-            #### 📖 Mushaf 3D Page-Turn Priority
-            - **Default View Priority:** Opening any Surah opens immediately in the authentic **3D Mushaf Page Turn Mode** with lifelike page curling and Arabic typography.
+            #### 📱 Persistent App Navigation Shell
+            - **Seamless Cross-Page Persistence:** Bottom dock persists across **Home**, **Qur'an Library**, **Daily Ayah**, and **Prayers & Dhikr**.
+            - **Distraction-Free Mushaf Priority:** Full-screen Mushaf reading mode immersively hides the navigation dock and restores it instantly upon returning.
 
-            #### 🕌 High-Contrast Study Mode & Vibrant Mufta Arch
-            - **Rich Islamic Corner Motifs:** Crisp, luxurious corner ornaments with high contrast.
-            - **Curved Mufta Arch:** High-contrast 36px curved bottom with atmospheric emerald gradient overlay and hairline golden accent.
+            #### 📿 Dedicated Prayers & Digital Tasbih Screen
+            - **Real-Time Prayer Countdown:** Live countdown timer to the upcoming prayer.
+            - **Complete Prayer Schedule:** All 5 daily prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) tailored to current geolocation.
+            - **Interactive Digital Tasbih:** Tactile counter with haptic feedback and target loop celebration.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.10.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.11.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.10.apk
+            release-output/My-Quran-v1.8.11.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

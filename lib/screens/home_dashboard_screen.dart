@@ -13,11 +13,19 @@ import '../services/theme_service.dart';
 import '../widgets/dzikir_counter_dialog.dart';
 import '../widgets/floating_nav_dock.dart';
 import 'daily_ayah_screen.dart';
+import 'prayers_screen.dart';
 import 'quran_library_screen.dart';
 import 'reader_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
-  const HomeDashboardScreen({super.key});
+  final bool isEmbeddedInShell;
+  final ValueChanged<int>? onNavigateTab;
+
+  const HomeDashboardScreen({
+    super.key,
+    this.isEmbeddedInShell = false,
+    this.onNavigateTab,
+  });
 
   @override
   State<HomeDashboardScreen> createState() => _HomeDashboardScreenState();
@@ -555,10 +563,14 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (_) => const QuranLibraryScreen()),
-                          );
+                          if (widget.onNavigateTab != null) {
+                            widget.onNavigateTab!(1);
+                          } else {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) => const QuranLibraryScreen()),
+                            );
+                          }
                         },
                         child: Text(
                           'View all',
@@ -576,10 +588,14 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   // 5. Featured Card: Rebranded to Daily Ayah (Clean, borderless, zero gradients)
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const DailyAyahScreen()),
-                      );
+                      if (widget.onNavigateTab != null) {
+                        widget.onNavigateTab!(2);
+                      } else {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (_) => const DailyAyahScreen()),
+                        );
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.all(20),
@@ -735,6 +751,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       ),
                     ),
                   ),
+                  SizedBox(height: widget.isEmbeddedInShell ? 120 : 36),
                 ],
               ),
             ),
@@ -785,27 +802,31 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
         ],
       ),
 
-      // Custom Floating Bottom Navigation Bar matching reference
-      bottomNavigationBar: FloatingNavDock(
-        currentIndex: _selectedNavIndex,
-        onTabSelected: (index) {
-          setState(() => _selectedNavIndex = index);
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
-            );
-          } else if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
-            );
-          }
-        },
-        onSearchPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
-          );
-        },
-      ),
+      // Custom Floating Bottom Navigation Bar matching reference (omitted if embedded in shell)
+      bottomNavigationBar: widget.isEmbeddedInShell
+          ? null
+          : FloatingNavDock(
+              currentIndex: _selectedNavIndex,
+              onTabSelected: (index) {
+                setState(() => _selectedNavIndex = index);
+                if (index == 1) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (_) => const QuranLibraryScreen()),
+                  );
+                } else if (index == 2) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (_) => const DailyAyahScreen()),
+                  );
+                } else if (index == 3) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (_) => const PrayersScreen()),
+                  );
+                }
+              },
+            ),
     );
   }
 
@@ -949,9 +970,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           icon: Icons.menu_book_rounded,
           isDark: isDark,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
-            );
+            if (widget.onNavigateTab != null) {
+              widget.onNavigateTab!(1);
+            } else {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const QuranLibraryScreen()),
+              );
+            }
           },
         ),
         const SizedBox(width: 12),
@@ -1126,15 +1151,30 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   }
 
   Widget _buildSunCloudIllustration() {
-    return Image.asset(
-      'assets/sun asset.png',
-      width: 72,
-      height: 72,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) => const SizedBox(
-        width: 72,
-        height: 72,
-        child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFBBF24), size: 40),
+    final assetPath = _weatherData?.weatherAssetPath ?? 'assets/weather/sun.png';
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 600),
+      transitionBuilder: (child, animation) =>
+          FadeTransition(opacity: animation, child: child),
+      child: Image.asset(
+        assetPath,
+        key: ValueKey<String>(assetPath),
+        width: 76,
+        height: 76,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) => Image.asset(
+          'assets/sun asset.png',
+          width: 76,
+          height: 76,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const SizedBox(
+            width: 76,
+            height: 76,
+            child: Icon(Icons.wb_sunny_rounded,
+                color: Color(0xFFFBBF24), size: 42),
+          ),
+        ),
       ),
     );
   }

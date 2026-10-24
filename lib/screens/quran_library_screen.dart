@@ -13,7 +13,14 @@ import '../widgets/quran_3d_graphic.dart';
 import 'reader_screen.dart';
 
 class QuranLibraryScreen extends StatefulWidget {
-  const QuranLibraryScreen({super.key});
+  final bool isEmbeddedInShell;
+  final ValueChanged<int>? onNavigateTab;
+
+  const QuranLibraryScreen({
+    super.key,
+    this.isEmbeddedInShell = false,
+    this.onNavigateTab,
+  });
 
   @override
   State<QuranLibraryScreen> createState() => _QuranLibraryScreenState();
@@ -132,8 +139,8 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
                   child: SizedBox(height: headerTopOffset),
                 ),
                 _buildActiveTabSliver(isDark, textPrimary, textSecondary),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 48),
+                SliverToBoxAdapter(
+                  child: SizedBox(height: widget.isEmbeddedInShell ? 120 : 48),
                 ),
               ],
             ),
@@ -243,7 +250,13 @@ class _QuranLibraryScreenState extends State<QuranLibraryScreen> {
       children: [
         // Circular Back Button
         GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () {
+            if (widget.isEmbeddedInShell) {
+              widget.onNavigateTab?.call(0);
+            } else if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: BackdropFilter(
