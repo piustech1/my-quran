@@ -43,41 +43,39 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.7.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.8.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.7
-          name: "My Quran v1.8.7 - Background Audio, Auto Surah Progression, Pinned Quran Header & Reader Redesign"
+          tag_name: v1.8.8
+          name: "My Quran v1.8.8 - True Background Audio, Mushaf Priority, High-Contrast UI & Surah Vocal Recognition"
           body: |
-            ### 📖 My Quran - Release v1.8.7
+            ### 📖 My Quran - Release v1.8.8
 
-            What's New in **v1.8.7**:
+            What's New in **v1.8.8**:
 
-            #### 🎧 Background Audio & Auto Surah Progression
-            - **Background Audio Playing:** Audio recitation continues seamlessly when leaving/minimizing the application or locking the device with Android `WAKE_LOCK`, `FOREGROUND_SERVICE`, and `FOREGROUND_SERVICE_MEDIA_PLAYBACK`.
-            - **Seamless Surah Progression:** When the final Ayah of a Surah completes, recitation automatically advances to the first Ayah of the next Surah without stopping.
+            #### 🎧 True Background Audio & Android Foreground Service
+            - **Uninterrupted Background Playback:** Fully integrated `just_audio_background` with `AudioServiceActivity` and Android `MediaBrowserService` foreground service so Quran recitation continues uninterrupted when minimizing the app, turning off the screen, or switching apps.
+            - **Rich Notification & Lock Screen Controls:** Real-time lock screen controls with Surah name, reciter artwork, play/pause, next/previous controls.
 
-            #### 🌊 Home Dashboard Floating Audio Waves & Prominent Live Clock
-            - **Backgroundless Frequency Waveforms:** Active golden sound waves float directly between the top user capsule bar and prayer card when reciting (zero container box, zero outline).
-            - **High-Contrast `NOW` Clock:** Prominent live clock badge with golden indicator dot, bold `NOW` tag, and high-contrast digital time clearly distinguished from prayer countdowns.
+            #### 📖 Mushaf 3D Page-Turn Priority
+            - **Default View Priority:** Opening any Surah now opens immediately in the authentic **3D Mushaf Page Turn Mode** with lifelike page curling and Arabic typography.
 
-            #### 📌 Pinned Quran Library Header & Bottom Player Removal
-            - **Pinned Top Section:** Top bar, curved Mufta backdrop, Main Card, and 4-segment TabBar remain fixed at the top while the list of cards glides smoothly behind/underneath them.
-            - **Removed Bottom Player:** Completely eliminated the floating bottom audio bar for an unconstrained reading experience; all recitation controls now reside directly in the Main Card.
+            #### 🕌 High-Contrast Study Mode & Vibrant Mufta Arch
+            - **Rich Islamic Corner Motifs:** Increased corner ornament opacity and tint so borders and motifs are crisp, prominent, and luxurious.
+            - **Curved Mufta Arch:** High-contrast 36px curved bottom with atmospheric emerald gradient overlay and hairline golden accent, matching the home screen look.
+            - **Deep Card Contrast:** Solid card background and richer drop shadows, eliminating faintness and washed-out glassmorphism.
 
-            #### 🕌 Reader Screen Redesign & Real-Time Word Highlighting
-            - **Curved Top Container:** White reading sheet features smooth curved top corners (`BorderRadius.vertical(top: Radius.circular(32))`) meeting the Mufta arch.
-            - **Deep Forest Green Bismillah Card:** Rebranded to emerald `#0F3E30` with radiant gold Arabic script, bold white translation, and corner Islamic motifs.
-            - **Borderless Ayah Cards with Corner Motifs:** Clean borderless cards with authentic Islamic corner motifs (`assets/corner_asset.png`).
-            - **Real-Time Word Recitation Highlighting:** Arabic words light up progressively in glowing gold synchronized with the audio stream as the Qari recites.
+            #### 🎙️ Surah Vocal Recognition & Auto-Progression
+            - **Vocal Surah Announcement:** Voice recognition announces the Surah name before reciting verse 1 using text-to-speech engine.
+            - **Reactive Reader Header:** Top reader header dynamically updates Surah name, Arabic calligraphy, and metadata when auto-progressing between Surahs, triggering 3D page curl transition.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.7.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.8.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.7.apk
+            release-output/My-Quran-v1.8.8.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

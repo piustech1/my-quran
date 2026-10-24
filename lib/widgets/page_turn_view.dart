@@ -137,8 +137,17 @@ class _PageTurnViewState extends State<PageTurnView> {
   @override
   void didUpdateWidget(covariant PageTurnView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.ayahs != widget.ayahs) {
+    if (oldWidget.surahNumber != widget.surahNumber ||
+        oldWidget.ayahs != widget.ayahs) {
       _chunkAyahsIntoPages();
+      _currentPage = 0.0;
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          0,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOutCubic,
+        );
+      }
     }
   }
 

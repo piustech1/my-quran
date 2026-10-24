@@ -37,27 +37,47 @@ class _ReaderScreenState extends State<ReaderScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  ReaderMode _readerMode = ReaderMode.verseList;
+  ReaderMode _readerMode = ReaderMode.pageTurn;
   double _arabicFontSize = 24.0;
   TranslationMode _translationMode = TranslationMode.arabicOnly;
   bool _isBookmarked = false;
+  late SurahMeta _activeSurah;
 
   @override
   void initState() {
     super.initState();
+    _activeSurah = widget.surah;
     _loadPreferences();
     _fetchAyahs();
 
     // Auto-scroll to active playing ayah when in verse list mode
     _audioService.currentPlayingAyah.addListener(_handleAudioAyahChange);
+    // Listen to Surah changes when continuous recitation advances to next Surah
+    _audioService.currentPlayingSurah.addListener(_handleAudioSurahChange);
+  }
+
+  void _handleAudioSurahChange() {
+    final playingSurahNum = _audioService.currentPlayingSurah.value;
+    if (playingSurahNum != null && playingSurahNum != _activeSurah.number) {
+      final newSurah = kAllSurahs.firstWhere(
+        (s) => s.number == playingSurahNum,
+        orElse: () => kAllSurahs[playingSurahNum - 1],
+      );
+      if (mounted) {
+        setState(() {
+          _activeSurah = newSurah;
+        });
+        _fetchAyahs(newSurah.number);
+      }
+    }
   }
 
   void _handleAudioAyahChange() {
     final playingAyah = _audioService.currentPlayingAyah.value;
     if (playingAyah != null) {
       _storage.saveLastRead(
-        surahNumber: widget.surah.number,
-        surahName: widget.surah.englishName,
+        surahNumber: _activeSurah.number,
+        surahName: _activeSurah.englishName,
         ayahNumber: playingAyah,
       );
       if (_readerMode == ReaderMode.verseList && _scrollController.hasClients) {
@@ -74,6 +94,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   @override
   void dispose() {
     _audioService.currentPlayingAyah.removeListener(_handleAudioAyahChange);
+    _audioService.currentPlayingSurah.removeListener(_handleAudioSurahChange);
     _scrollController.dispose();
     super.dispose();
   }
@@ -81,7 +102,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   Future<void> _loadPreferences() async {
     final size = await _storage.getArabicFontSize();
     final translation = await _storage.getShowTranslation();
-    final bookmarked = await _storage.isBookmarked(widget.surah.number);
+    final bookmarked = await _storage.isBookmarked(_activeSurah.number);
     if (mounted) {
       setState(() {
         _arabicFontSize = size;
@@ -94,20 +115,21 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
     // Save as last read with initial ayah position
     await _storage.saveLastRead(
-      surahNumber: widget.surah.number,
-      surahName: widget.surah.englishName,
+      surahNumber: _activeSurah.number,
+      surahName: _activeSurah.englishName,
       ayahNumber: widget.initialAyah ?? 1,
     );
   }
 
-  Future<void> _fetchAyahs() async {
+  Future<void> _fetchAyahs([int? targetSurahNumber]) async {
+    final surahNum = targetSurahNumber ?? _activeSurah.number;
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      final data = await _apiService.getChapterAyahs(widget.surah.number);
+      final data = await _apiService.getChapterAyahs(surahNum);
       if (mounted) {
         setState(() {
           _ayahs = data;
@@ -486,7 +508,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                       children: [
                         Flexible(
                           child: Text(
-                            widget.surah.englishName,
+                            _activeSurah.englishName,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -497,7 +519,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          widget.surah.name,
+                          _activeSurah.name,
                           style: GoogleFonts.amiri(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -508,7 +530,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${widget.surah.revelationType} • ${widget.surah.numberOfAyahs} Ayahs',
+                      '${_activeSurah.revelationType} • ${_activeSurah.numberOfAyahs} Ayahs',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
                         color: Colors.white.withOpacity(0.8),
@@ -574,9 +596,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         _audioService.player.pause();
                       } else {
                         _audioService.playAyah(
-                          surahNumber: widget.surah.number,
+                          surahNumber: _activeSurah.number,
                           ayahNumber: 1,
-                          maxVerses: widget.surah.numberOfAyahs,
+                          maxVerses: _activeSurah.numberOfAyahs,
+                          announce: true,
                         );
                       }
                     },
@@ -608,7 +631,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
           const SizedBox(height: 6),
 
           // 2. Audio Frequency Visualizer Wave in golden curves (animates when reciting)
-          AudioFrequencyWave(totalVerses: widget.surah.numberOfAyahs),
+          AudioFrequencyWave(totalVerses: _activeSurah.numberOfAyahs),
 
           const SizedBox(height: 8),
 
@@ -806,7 +829,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
             const CircularProgressIndicator(color: AppColors.accentGold),
             const SizedBox(height: 16),
             Text(
-              'Loading Surah ${widget.surah.englishName}...',
+              'Loading Surah ${_activeSurah.englishName}...',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14,
                 color: Theme.of(context).brightness == Brightness.dark
@@ -854,10 +877,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
     if (_readerMode == ReaderMode.pageTurn) {
       return PageTurnView(
         ayahs: _ayahs,
-        surahNameArabic: widget.surah.name,
-        surahNameEnglish: widget.surah.englishName,
-        surahNumber: widget.surah.number,
-        numberOfAyahs: widget.surah.numberOfAyahs,
+        surahNameArabic: _activeSurah.name,
+        surahNameEnglish: _activeSurah.englishName,
+        surahNumber: _activeSurah.number,
+        numberOfAyahs: _activeSurah.numberOfAyahs,
         arabicFontSize: _arabicFontSize,
         translationMode: _translationMode,
         initialAyah: widget.initialAyah,
@@ -875,7 +898,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
           itemCount: _ayahs.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
-              return BismillahBanner(surahNumber: widget.surah.number);
+              return BismillahBanner(surahNumber: _activeSurah.number);
             }
 
             final ayah = _ayahs[index - 1];
@@ -891,9 +914,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   _audioService.pause();
                 } else {
                   _audioService.playAyah(
-                    surahNumber: widget.surah.number,
+                    surahNumber: _activeSurah.number,
                     ayahNumber: ayah.verse,
-                    maxVerses: widget.surah.numberOfAyahs,
+                    maxVerses: _activeSurah.numberOfAyahs,
                   );
                 }
               },

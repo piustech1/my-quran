@@ -48,9 +48,11 @@ class AyahCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: isPlaying
-                  ? const Color(0x35EAB34D)
-                  : Colors.black.withOpacity(isDark ? 0.25 : 0.05),
-              blurRadius: isPlaying ? 16 : 10,
+                  ? const Color(0x40EAB34D)
+                  : (isDark
+                      ? Colors.black.withOpacity(0.38)
+                      : const Color(0x1A0D2F1F)),
+              blurRadius: isPlaying ? 16 : 12,
               offset: const Offset(0, 4),
             ),
           ],
@@ -63,11 +65,11 @@ class AyahCard extends StatelessWidget {
               Positioned(
                 top: 0,
                 left: 0,
-                width: 38,
-                height: 26,
+                width: 44,
+                height: 30,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: isDark ? 0.25 : 0.35,
+                    opacity: isDark ? 0.65 : 0.75,
                     child: Transform.flip(
                       flipX: true,
                       flipY: true,
@@ -85,11 +87,11 @@ class AyahCard extends StatelessWidget {
               Positioned(
                 top: 0,
                 right: 0,
-                width: 38,
-                height: 26,
+                width: 44,
+                height: 30,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: isDark ? 0.25 : 0.35,
+                    opacity: isDark ? 0.65 : 0.75,
                     child: Transform.flip(
                       flipY: true,
                       child: Image.asset(
@@ -106,11 +108,11 @@ class AyahCard extends StatelessWidget {
               Positioned(
                 bottom: 0,
                 left: 0,
-                width: 38,
-                height: 26,
+                width: 44,
+                height: 30,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: isDark ? 0.25 : 0.35,
+                    opacity: isDark ? 0.65 : 0.75,
                     child: Transform.flip(
                       flipX: true,
                       child: Image.asset(
@@ -127,11 +129,11 @@ class AyahCard extends StatelessWidget {
               Positioned(
                 bottom: 0,
                 right: 0,
-                width: 38,
-                height: 26,
+                width: 44,
+                height: 30,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: isDark ? 0.25 : 0.35,
+                    opacity: isDark ? 0.65 : 0.75,
                     child: Image.asset(
                       'assets/corner_asset.png',
                       fit: BoxFit.fill,

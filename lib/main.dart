@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'screens/splash_screen.dart';
 import 'services/theme_service.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.piustech.my_quran.channel.audio',
+    androidNotificationChannelName: 'Quran Recitation',
+    androidNotificationOngoing: true,
+    androidStopForegroundOnPause: false,
+  );
+
   final themeService = ThemeService();
   await themeService.init();
 

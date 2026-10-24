@@ -30,29 +30,75 @@ class MuftaHeader extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // 1. New Mufta Islamic Grand Muqarnas Archway Image
+          // 1. Curved Mufta Dome with Deep Emerald Base & Gold Trim
           Positioned(
             left: 0,
             right: 0,
             top: 0,
             bottom: 0,
-            child: IgnorePointer(
-              child: Image.asset(
-                'assets/new_mufta.jpg',
-                width: double.infinity,
-                height: totalHeight,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                filterQuality: FilterQuality.high,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: totalHeight,
-                  color: AppColors.forestGreen,
-                ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(36),
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Deep forest green base
+                  Container(color: const Color(0xFF0D2F1F)),
+
+                  // New Mufta Islamic Grand Muqarnas Archway Image
+                  Image.asset(
+                    'assets/new_mufta.jpg',
+                    width: double.infinity,
+                    height: totalHeight,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    filterQuality: FilterQuality.high,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: totalHeight,
+                      color: AppColors.forestGreen,
+                    ),
+                  ),
+
+                  // Atmospheric gradient overlay for rich contrast & readability
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0x750D2F1F),
+                          Color(0x200D2F1F),
+                          Color(0x8A0D2F1F),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Subtle hairline gold accent line at curved bottom
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 1.5,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Color(0x77F5CE63),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
 
-          // 3. Foreground Controls (Floating glassmorphic top bar)
+          // 2. Foreground Controls (Floating glassmorphic top bar)
           Positioned(
             left: 0,
             right: 0,

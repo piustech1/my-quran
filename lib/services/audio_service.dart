@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import '../constants/surah_data.dart';
 
 class Reciter {
@@ -22,10 +24,12 @@ class QuranAudioService {
   factory QuranAudioService() => _instance;
   QuranAudioService._internal() {
     _initAudioPlayer();
+    _initTts();
   }
 
   final AudioPlayer _player = AudioPlayer();
   AudioPlayer get player => _player;
+  FlutterTts? _tts;
 
   static const List<Reciter> availableReciters = [
     Reciter(
@@ -63,6 +67,31 @@ class QuranAudioService {
 
   StreamSubscription<PlayerState>? _playerStateSubscription;
   StreamSubscription<Duration>? _positionSubscription;
+
+  Future<void> _initTts() async {
+    try {
+      _tts = FlutterTts();
+      await _tts?.setLanguage('en-US');
+      await _tts?.setSpeechRate(0.48);
+      await _tts?.setPitch(1.0);
+    } catch (e) {
+      debugPrint('TTS initialization notice: $e');
+    }
+  }
+
+  /// Announces the name of the Surah before reciting its first Ayah
+  Future<void> announceSurah(String surahName) async {
+    try {
+      if (_tts == null) {
+        await _initTts();
+      }
+      await _tts?.stop();
+      await _tts?.speak('Surah $surahName');
+      await Future.delayed(const Duration(milliseconds: 1400));
+    } catch (e) {
+      debugPrint('Error speaking Surah name: $e');
+    }
+  }
 
   void _initAudioPlayer() {
     _playerStateSubscription = _player.playerStateStream.listen((state) {
@@ -109,16 +138,39 @@ class QuranAudioService {
     required int surahNumber,
     required int ayahNumber,
     required int maxVerses,
+    bool announce = false,
   }) async {
     _maxVersesInCurrentSurah = maxVerses;
     currentPlayingSurah.value = surahNumber;
     currentPlayingAyah.value = ayahNumber;
     ayahPlaybackProgress.value = 0.0;
 
+    final surahMeta = kAllSurahs.firstWhere(
+      (s) => s.number == surahNumber,
+      orElse: () =>
+          kAllSurahs[(surahNumber - 1).clamp(0, kAllSurahs.length - 1)],
+    );
+
+    if (announce) {
+      await announceSurah(surahMeta.englishName);
+    }
+
     final url = getAyahAudioUrl(surahNumber, ayahNumber);
     try {
       isLoadingNotifier.value = true;
-      await _player.setUrl(url);
+      final audioSource = AudioSource.uri(
+        Uri.parse(url),
+        tag: MediaItem(
+          id: '${surahNumber}_$ayahNumber',
+          album: 'Holy Quran',
+          title:
+              '${surahMeta.englishName} (${surahMeta.name}) • Verse $ayahNumber',
+          artist: selectedReciter.name,
+          artUri: Uri.parse(
+              'https://raw.githubusercontent.com/piustech1/my-quran/main/assets/images/app_logo.png'),
+        ),
+      );
+      await _player.setAudioSource(audioSource);
       await _player.play();
     } catch (e) {
       isLoadingNotifier.value = false;
@@ -154,7 +206,7 @@ class QuranAudioService {
         maxVerses: _maxVersesInCurrentSurah,
       );
     } else {
-      // Seamlessly advance to the next Surah!
+      // Seamlessly advance to the next Surah with voice announcement!
       final currentSurah = currentPlayingSurah.value!;
       if (currentSurah < 114) {
         final nextSurahNum = currentSurah + 1;
@@ -166,6 +218,7 @@ class QuranAudioService {
           surahNumber: nextSurahNum,
           ayahNumber: 1,
           maxVerses: nextSurahMeta.numberOfAyahs,
+          announce: true,
         );
       } else {
         await stop();

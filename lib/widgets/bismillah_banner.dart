@@ -52,7 +52,7 @@ class BismillahBanner extends StatelessWidget {
                 height: 32,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: 0.35,
+                    opacity: 0.70,
                     child: Transform.flip(
                       flipX: true,
                       flipY: true,
@@ -72,7 +72,7 @@ class BismillahBanner extends StatelessWidget {
                 height: 32,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: 0.35,
+                    opacity: 0.70,
                     child: Transform.flip(
                       flipY: true,
                       child: Image.asset(
@@ -91,7 +91,7 @@ class BismillahBanner extends StatelessWidget {
                 height: 32,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: 0.35,
+                    opacity: 0.70,
                     child: Transform.flip(
                       flipX: true,
                       child: Image.asset(
@@ -110,7 +110,7 @@ class BismillahBanner extends StatelessWidget {
                 height: 32,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: 0.35,
+                    opacity: 0.70,
                     child: Image.asset(
                       'assets/corner_asset.png',
                       fit: BoxFit.fill,
