@@ -40,7 +40,7 @@ dependencies:
   shared_preferences: ^2.3.2
   just_audio: ^0.9.46
   just_audio_background: ^0.0.1-beta.15
-  flutter_tts: ^4.2.5
+  flutter_tts: 4.2.2
 
 dev_dependencies:
   flutter_test:
