@@ -694,31 +694,11 @@ Shared via My Quran
     Color textPrimary,
     Color textSecondary,
   ) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.48),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.24),
-              width: 0.9,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.35),
-                blurRadius: 18,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // A. Reciter Profile Image with Tap-to-Change Popup Menu
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // A. Reciter Profile Image with Tap-to-Change Popup Menu
               ValueListenableBuilder<Reciter>(
                 valueListenable: _audioService.selectedReciterNotifier,
                 builder: (context, reciter, _) {
@@ -955,10 +935,7 @@ Shared via My Quran
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   /// Subtle Bottom Progress Bar and Duration Timestamps inside Image

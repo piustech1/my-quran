@@ -43,34 +43,45 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.5.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.6.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.5
-          name: "My Quran v1.8.5 - Daily Ayah Experience, Multilingual Translations & Audio Reciter"
+          tag_name: v1.8.6
+          name: "My Quran v1.8.6 - Quran Page Redesign, Curved Mufta, Rub-el-Hizb Badges & Islamic TabBar"
           body: |
-            ### 📖 My Quran - Release v1.8.5
+            ### 📖 My Quran - Release v1.8.6
 
-            What's New in **v1.8.5**:
+            What's New in **v1.8.6**:
 
-            #### 🕊️ Daily Ayah Experience ("Food of the Soul · Make your day")
-            - **Dedicated Daily Ayah Screen:** iOS-inspired liquid interface with pure borderless calm surfaces, generous typography, and serene aesthetics.
-            - **Deterministic Verse of the Day:** Date-seeded selection across curated inspiring Quranic verses (Ash-Sharh, Ad-Duhaa, Al-Baqarah, Ar-Rahman, etc.) ensuring all users receive the same uplifting verse on any given calendar day.
-            - **AI-Generated Thematic Artwork:** Serene, ultra-high-resolution Moorish architectural visual (`assets/daily_ayah_visual.jpg`) with tap-to-expand interactive zoom dialog.
-            - **In-App Audio Recitation Player:** Integrated multi-reciter audio playback (Mishary Alafasy, Abdul Basit, Abu Bakr Ash-Shatri) with auto-play on screen mount, interactive seek slider, live position/duration timestamps, and playback speed selector (1.0x / 1.25x / 1.5x).
-            - **Dynamic Multilingual Translations:** Directly switch translation languages on the fly across verified editions (English Abdel Haleem, Sahih International, French Rashid Maash, Indonesian Kemenag, Turkish Diyanet, Urdu Maududi, and English Transliteration) powered by CDN API with local SharedPreferences caching.
-            - **Authentic Arabic Typography:** Rendered in `Amiri` font with RTL alignment, Quranic verse end symbols, and dynamic font sizing (`A-` / `A+`).
-            - **Classical Tafsir Commentary:** "Understanding this ayah" section featuring insightful context grounded in classical exegesis (Ibn Kathir and As-Sa'di).
-            - **Quick Actions:** Instant one-tap copying with toast confirmation, persistent verse bookmarking, and formatted Islamic quotation sharing.
-            - **Dashboard Rebranding:** Redesigned featured card into clean borderless Daily Ayah preview with quote snippet and direct navigation.
+            #### 🕌 Signature Curved Mufta Backdrop
+            - **Organic Archway Curvature:** Wrapped top Mufta dome background in `BorderRadius.vertical(bottom: Radius.circular(40))` matching the homepage archway curves.
+
+            #### 🌟 Authentic Rub-el-Hizb Star Badges
+            - **Islamic Geometric Numbers:** Replaced plain circles with authentic 8-point Rub-el-Hizb star medallions (`IslamicStarBadge`) in rich gold with high-contrast numerals.
+
+            #### 📋 Segmented TabBar with Unique Icons & Real Data
+            - **Unique Category Icons:**
+              - **Surah**: `menu_book` → 114 Surahs with Arabic calligraphy, translation, ayat count, and in-place play.
+              - **Para**: `auto_stories` → 30 Juzs with Arabic Juz titles and starting Surah references.
+              - **Page**: `library_books` → 604 Madani Mushaf standard pages with real Surah & Ayah span mapping.
+              - **Hizb**: `stars` → 60 Hizbs with half/quarter indication and Surah citations.
+            - **Categorical Search:** Search dynamically filters within the active tab.
+
+            #### 🎴 Borderless Liquid Glass Main Card
+            - **Zero Outline Borders:** Clean, modern, borderless surface with smooth `28px` corner radius.
+            - **Deep Emerald Glass:** Translucent `#103C30` liquid glass surface with enlarged 3D Holy Quran asset.
+            - **Backgroundless Frequency Waveforms:** In-place Surah playback shows pure gold animated equalizer bars with no background box or outline.
+
+            #### 📜 Natural Unified Scrolling
+            - Eliminated awkward jumping collapsing headers; everything scrolls smoothly together for an expansive reading experience.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.5.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.6.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.5.apk
+            release-output/My-Quran-v1.8.6.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

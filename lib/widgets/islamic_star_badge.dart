@@ -8,6 +8,7 @@ class IslamicStarBadge extends StatelessWidget {
   final double size;
   final Color? color;
   final Color? textColor;
+  final Color? backgroundColor;
 
   const IslamicStarBadge({
     super.key,
@@ -15,15 +16,19 @@ class IslamicStarBadge extends StatelessWidget {
     this.size = 36.0,
     this.color,
     this.textColor,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = color ?? AppColors.accentGold;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final effectiveColor = color ?? AppColors.accentGoldDark;
     final effectiveTextColor = textColor ??
-        (Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkTextPrimary
-            : AppColors.lightTextPrimary);
+        (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary);
+    final effectiveBg = backgroundColor ??
+        (isDark
+            ? AppColors.quranGold.withOpacity(0.08)
+            : const Color(0xFFF7F3EB));
 
     return SizedBox(
       width: size,
@@ -31,14 +36,25 @@ class IslamicStarBadge extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // Soft decorative background
+          Container(
+            width: size * 0.92,
+            height: size * 0.92,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: effectiveBg,
+            ),
+          ),
+          // Geometric Rub-el-Hizb 8-pointed Star
           CustomPaint(
             size: Size(size, size),
             painter: _RubElHizbPainter(color: effectiveColor),
           ),
+          // Centered Number
           Text(
             '$number',
             style: GoogleFonts.plusJakartaSans(
-              fontSize: size * 0.38,
+              fontSize: size * 0.36,
               fontWeight: FontWeight.bold,
               color: effectiveTextColor,
             ),
@@ -59,7 +75,7 @@ class _RubElHizbPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
+      ..strokeWidth = 1.35;
 
     final center = Offset(size.width / 2, size.height / 2);
     final radius = (size.width / 2) * 0.88;
@@ -79,7 +95,7 @@ class _RubElHizbPainter extends CustomPainter {
     path1.close();
     canvas.drawPath(path1, paint);
 
-    // Second square rotated by 45 degrees (pi / 4)
+    // Second square rotated by 45 degrees
     final path2 = Path();
     for (int i = 0; i < 4; i++) {
       final angle = i * math.pi / 2;
@@ -94,11 +110,11 @@ class _RubElHizbPainter extends CustomPainter {
     path2.close();
     canvas.drawPath(path2, paint);
 
-    // Inner subtle circle
+    // Inner delicate Islamic circle
     final innerCirclePaint = Paint()
       ..color = color.withOpacity(0.35)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = 0.9;
     canvas.drawCircle(center, radius * 0.65, innerCirclePaint);
   }
 
