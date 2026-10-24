@@ -599,7 +599,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
                           surahNumber: _activeSurah.number,
                           ayahNumber: 1,
                           maxVerses: _activeSurah.numberOfAyahs,
-                          announce: true,
                         );
                       }
                     },

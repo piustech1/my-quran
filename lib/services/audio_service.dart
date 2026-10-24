@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import '../constants/surah_data.dart';
@@ -24,12 +23,10 @@ class QuranAudioService {
   factory QuranAudioService() => _instance;
   QuranAudioService._internal() {
     _initAudioPlayer();
-    _initTts();
   }
 
   final AudioPlayer _player = AudioPlayer();
   AudioPlayer get player => _player;
-  FlutterTts? _tts;
 
   static const List<Reciter> availableReciters = [
     Reciter(
@@ -64,34 +61,11 @@ class QuranAudioService {
 
   int _maxVersesInCurrentSurah = 7;
   bool autoPlayNext = true;
+  bool _isTransitioning = false;
+  DateTime _lastCompletionTime = DateTime.fromMillisecondsSinceEpoch(0);
 
   StreamSubscription<PlayerState>? _playerStateSubscription;
   StreamSubscription<Duration>? _positionSubscription;
-
-  Future<void> _initTts() async {
-    try {
-      _tts = FlutterTts();
-      await _tts?.setLanguage('en-US');
-      await _tts?.setSpeechRate(0.48);
-      await _tts?.setPitch(1.0);
-    } catch (e) {
-      debugPrint('TTS initialization notice: $e');
-    }
-  }
-
-  /// Announces the name of the Surah before reciting its first Ayah
-  Future<void> announceSurah(String surahName) async {
-    try {
-      if (_tts == null) {
-        await _initTts();
-      }
-      await _tts?.stop();
-      await _tts?.speak('Surah $surahName');
-      await Future.delayed(const Duration(milliseconds: 1400));
-    } catch (e) {
-      debugPrint('Error speaking Surah name: $e');
-    }
-  }
 
   void _initAudioPlayer() {
     _playerStateSubscription = _player.playerStateStream.listen((state) {
@@ -100,7 +74,9 @@ class QuranAudioService {
           state.processingState == ProcessingState.buffering ||
               state.processingState == ProcessingState.loading;
 
-      if (state.processingState == ProcessingState.completed) {
+      if (state.processingState == ProcessingState.completed &&
+          !_isTransitioning &&
+          state.playing) {
         _handleAyahCompleted();
       }
     });
@@ -138,8 +114,10 @@ class QuranAudioService {
     required int surahNumber,
     required int ayahNumber,
     required int maxVerses,
-    bool announce = false,
   }) async {
+    if (_isTransitioning) return;
+    _isTransitioning = true;
+
     _maxVersesInCurrentSurah = maxVerses;
     currentPlayingSurah.value = surahNumber;
     currentPlayingAyah.value = ayahNumber;
@@ -150,10 +128,6 @@ class QuranAudioService {
       orElse: () =>
           kAllSurahs[(surahNumber - 1).clamp(0, kAllSurahs.length - 1)],
     );
-
-    if (announce) {
-      await announceSurah(surahMeta.englishName);
-    }
 
     final url = getAyahAudioUrl(surahNumber, ayahNumber);
     try {
@@ -175,6 +149,11 @@ class QuranAudioService {
     } catch (e) {
       isLoadingNotifier.value = false;
       isPlayingNotifier.value = false;
+    } finally {
+      // Guard against duplicate triggers during audio source load
+      Future.delayed(const Duration(milliseconds: 600), () {
+        _isTransitioning = false;
+      });
     }
   }
 
@@ -187,6 +166,7 @@ class QuranAudioService {
   }
 
   Future<void> stop() async {
+    _isTransitioning = false;
     await _player.stop();
     currentPlayingAyah.value = null;
     currentPlayingSurah.value = null;
@@ -206,7 +186,7 @@ class QuranAudioService {
         maxVerses: _maxVersesInCurrentSurah,
       );
     } else {
-      // Seamlessly advance to the next Surah with voice announcement!
+      // Seamlessly advance to the next Surah!
       final currentSurah = currentPlayingSurah.value!;
       if (currentSurah < 114) {
         final nextSurahNum = currentSurah + 1;
@@ -218,7 +198,6 @@ class QuranAudioService {
           surahNumber: nextSurahNum,
           ayahNumber: 1,
           maxVerses: nextSurahMeta.numberOfAyahs,
-          announce: true,
         );
       } else {
         await stop();
@@ -256,6 +235,12 @@ class QuranAudioService {
   }
 
   void _handleAyahCompleted() {
+    final now = DateTime.now();
+    if (now.difference(_lastCompletionTime).inMilliseconds < 800) {
+      return;
+    }
+    _lastCompletionTime = now;
+
     if (autoPlayNext) {
       playNextAyah();
     } else {

@@ -43,21 +43,25 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.8.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.9.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.8
-          name: "My Quran v1.8.8 - True Background Audio, Mushaf Priority, High-Contrast UI & Surah Vocal Recognition"
+          tag_name: v1.8.9
+          name: "My Quran v1.8.9 - Fixed Verse Skipping, Seamless Continuous Recitation & True Background Audio"
           body: |
-            ### 📖 My Quran - Release v1.8.8
+            ### 📖 My Quran - Release v1.8.9
 
-            What's New in **v1.8.8**:
+            What's New in **v1.8.9**:
 
-            #### 🎧 True Background Audio & Android Foreground Service
-            - **Uninterrupted Background Playback:** Fully integrated `just_audio_background` with `AudioServiceActivity` and Android `MediaBrowserService` foreground service so Quran recitation continues uninterrupted when minimizing the app, turning off the screen, or switching apps.
+            #### 🎧 Fixed Verse Skipping & Seamless Recitation
+            - **No More Skipped Verses:** Eliminated the verse-skipping issue by removing the TTS vocal announcement and adding concurrency transition mutex guards and completion debouncing to the audio engine.
+            - **Seamless Auto-Play Progression:** Recitation moves smoothly from Ayah to Ayah and Surah to Surah with zero skips and zero delays.
+
+            #### 🔒 True Background Audio & Android Foreground Service
+            - **Continuous Background Playback:** Fully integrated `just_audio_background` with `AudioServiceActivity` and Android `MediaBrowserService` foreground service so Quran recitation continues uninterrupted when minimizing the app, turning off the screen, or switching apps.
             - **Rich Notification & Lock Screen Controls:** Real-time lock screen controls with Surah name, reciter artwork, play/pause, next/previous controls.
 
             #### 📖 Mushaf 3D Page-Turn Priority
@@ -68,14 +72,10 @@ jobs:
             - **Curved Mufta Arch:** High-contrast 36px curved bottom with atmospheric emerald gradient overlay and hairline golden accent, matching the home screen look.
             - **Deep Card Contrast:** Solid card background and richer drop shadows, eliminating faintness and washed-out glassmorphism.
 
-            #### 🎙️ Surah Vocal Recognition & Auto-Progression
-            - **Vocal Surah Announcement:** Voice recognition announces the Surah name before reciting verse 1 using text-to-speech engine.
-            - **Reactive Reader Header:** Top reader header dynamically updates Surah name, Arabic calligraphy, and metadata when auto-progressing between Surahs, triggering 3D page curl transition.
-
             #### 📲 Installation
-            Download **`My-Quran-v1.8.8.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.9.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.8.apk
+            release-output/My-Quran-v1.8.9.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false
