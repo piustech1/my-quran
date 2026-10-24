@@ -43,43 +43,39 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.12.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.13.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.12
-          name: "My Quran v1.8.12 - Mosque Finder (Google Maps UX), Zakat Orientation & Prayers Visual Redesign"
+          tag_name: v1.8.13
+          name: "My Quran v1.8.13 - Interactive Zoomable Mosque Map, Live Directions & Single-Screen Zakat Redesign"
           body: |
-            ### 📖 My Quran - Release v1.8.12
+            ### 📖 My Quran - Release v1.8.13
 
-            What's New in **v1.8.12**:
+            What's New in **v1.8.13**:
 
-            #### 🕌 Mosque Finder Screen (Google Maps UX & MosqueAPI Integration)
-            - **MosqueAPI Integration:** Implemented client protocol based on `https://github.com/ummahbuild/mosqueAPI.git` (`/api/mosques/nearby`, `/api/mosques/search`) with live OpenStreetMap Overpass fallback.
-            - **Google Maps Visual Replica:** Vector map canvas with custom emerald & gold mosque minaret pins, user GPS location beacon, roads, parks, and water bodies.
-            - **Interactive Place Carousel:** Horizontally sliding cards displaying mosque name, distance in km, rating, facilities (Parking, Wheelchair, Wudu, Women's Section), and next Jamaat time.
-            - **Direct Turn-by-Turn Directions:** 1-tap launcher seamlessly opening Google Maps navigation directly to the selected mosque coordinates.
+            #### 🕌 Interactive Zoomable Mosque Map & Live Directions
+            - **Interactive Touch & Zoom Canvas:** Fully interactive `InteractiveViewer` with smooth 2D panning, pinch-to-zoom (0.5x to 4.5x), floating zoom in/out (`+` / `-`) buttons, and instant recenter on user beacon (`🎯`).
+            - **Live Fly-To Camera Animation:** Searching or selecting any mosque automatically animates the map camera directly onto that mosque's location with a pulsing golden marker halo.
+            - **In-App Directions Route & Travel Time:** Renders a luminous direction polyline trajectory connecting your location beacon to the selected mosque, displaying estimated travel time (`🚗 ~X min drive • 🚶 ~Y min walk`) and distance.
+            - **Direct Google Maps Navigation Intent:** Configured Android package visibility `<queries>` for `google.navigation`, `geo:`, and `https:` to seamlessly launch turn-by-turn driving directions in Google Maps.
+            - **Strict Nearest-First Sorting:** Geolocation upgraded to secure HTTPS `ipwho.is` with Nominatim OpenStreetMap queries, displaying true immediate neighborhood mosques (0.3 km, 0.7 km, 1.2 km...).
 
-            #### 💰 Dedicated Zakat Screen & Calculator (3rd Pillar of Islam)
-            - **Islamic Orientation:** In-depth guide to Zakat based on Surah At-Tawbah 9:103 with Nisab threshold criteria (Gold 87.48g & Silver 612.36g).
-            - **Live Reactive Calculator:** Instant 2.5% calculation on total eligible savings/wealth.
-            - **8 Quranic Beneficiary Categories:** Visual cards detailing all 8 recipient categories prescribed in Surah At-Tawbah 9:60.
-            - **Google Play In-App Donation Trigger:** Secure contribution sheet powered by Google Play Billing API with instant receipt dialog.
-
-            #### 🌅 Prayers Page Visual Redesign & Artwork
-            - **Crisp High-Contrast UI:** Completely removed frosted glass/blur in favor of solid, high-contrast Islamic emerald and gold cards.
-            - **Authentic Astronomical Artwork:** Custom high-fidelity illustrations representing each prayer's celestial state: Fajr (first dawn light), Sunrise (golden cresting sun), Dhuhr (midday zenith), Asr (late afternoon shadows), Maghrib (crimson dusk), and Isha (deep nocturnal sky).
-            - **Prominent Mosque Launcher:** Dedicated banner directly on the Prayers page to locate nearby mosques for congregational prayer.
-
-            #### 🧼 Digital Tasbih Removal
-            - Completely removed local digital tasbih counters across the app (in accordance with user requirement for API-backed Islamic data).
+            #### 💰 Single-Screen Zakat Page Redesign
+            - **Zero Endless Scrolling:** Re-architected into a compact single-screen graphic dashboard that presents all vital information at a glance.
+            - **Modern Graphic Surfaces:** Removed all card outlines/borders and frosted glass blur in favor of deep Islamic emerald graphic surfaces with soft ambient depth.
+            - **Modern Drop-down Menus:** Secondary information tucked neatly into elegant dropdown selectors:
+              - *Who Receives Zakat? (8 Quranic Categories from Surah 9:60)*
+              - *Nisab Guidelines & Deduction Rules (Gold $7,200 & Silver $610 criteria)*
+            - **Live Reactive 2.5% Calculator:** Clean, large numeric input with instant calculation and dynamic eligibility status badge.
+            - **Persistent Bottom Navigation Dock:** Embedded `FloatingNavDock` at the bottom of the screen ensuring continuous navigation access.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.12.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.13.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.12.apk
+            release-output/My-Quran-v1.8.13.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

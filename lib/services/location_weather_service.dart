@@ -88,26 +88,28 @@ class WeatherData {
 }
 
 class LocationWeatherService {
-  static const String _ipApiUrl = 'http://ip-api.com/json';
+  static const String _ipWhoIsUrl = 'https://ipwho.is/';
+  static const String _freeIpApiUrl = 'https://freeipapi.com/api/json';
   static const String _openMeteoUrl = 'https://api.open-meteo.com/v1/forecast';
 
-  /// Auto-detects user city & coordinates without requiring GPS permissions
+  /// Auto-detects user city & coordinates using secure HTTPS IP geolocation
   Future<UserLocation> detectLocation() async {
     final prefs = await SharedPreferences.getInstance();
 
+    // 1. Try ipwho.is (HTTPS, highly accurate coordinates, free)
     try {
       final response = await http
-          .get(Uri.parse(_ipApiUrl))
-          .timeout(const Duration(seconds: 5));
+          .get(Uri.parse(_ipWhoIsUrl))
+          .timeout(const Duration(seconds: 4));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        if (data['status'] == 'success') {
+        if (data['success'] == true) {
           final loc = UserLocation(
             city: data['city'] ?? 'Kampala',
             country: data['country'] ?? 'Uganda',
-            lat: (data['lat'] as num?)?.toDouble() ?? 0.3476,
-            lon: (data['lon'] as num?)?.toDouble() ?? 32.5825,
+            lat: (data['latitude'] as num?)?.toDouble() ?? 0.3163,
+            lon: (data['longitude'] as num?)?.toDouble() ?? 32.5822,
           );
 
           await prefs.setString('cached_user_city', loc.city);
@@ -117,9 +119,34 @@ class LocationWeatherService {
           return loc;
         }
       }
-    } catch (_) {
-      // Offline fallback: try reading cached location
-    }
+    } catch (_) {}
+
+    // 2. Try freeipapi.com (HTTPS fallback)
+    try {
+      final response = await http
+          .get(Uri.parse(_freeIpApiUrl))
+          .timeout(const Duration(seconds: 4));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final lat = (data['latitude'] as num?)?.toDouble();
+        final lon = (data['longitude'] as num?)?.toDouble();
+        if (lat != null && lon != null) {
+          final loc = UserLocation(
+            city: data['cityName'] ?? 'Kampala',
+            country: data['countryName'] ?? 'Uganda',
+            lat: lat,
+            lon: lon,
+          );
+
+          await prefs.setString('cached_user_city', loc.city);
+          await prefs.setString('cached_user_country', loc.country);
+          await prefs.setDouble('cached_user_lat', loc.lat);
+          await prefs.setDouble('cached_user_lon', loc.lon);
+          return loc;
+        }
+      }
+    } catch (_) {}
 
     final cachedCity = prefs.getString('cached_user_city');
     final cachedCountry = prefs.getString('cached_user_country');
