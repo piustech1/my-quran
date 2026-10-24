@@ -43,41 +43,43 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.11.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.12.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.11
-          name: "My Quran v1.8.11 - Dynamic Weather 3D Assets & Floating Liquid Glass Bottom Navigation Dock"
+          tag_name: v1.8.12
+          name: "My Quran v1.8.12 - Mosque Finder (Google Maps UX), Zakat Orientation & Prayers Visual Redesign"
           body: |
-            ### 📖 My Quran - Release v1.8.11
+            ### 📖 My Quran - Release v1.8.12
 
-            What's New in **v1.8.11**:
+            What's New in **v1.8.12**:
 
-            #### ⛅ Dynamic Weather 3D Illustration Detection
-            - **Intelligent Meteorological Mapping:** Automatically detects ambient atmospheric conditions and temperature via Open-Meteo API.
-            - **Adaptive 3D Visuals:** Seamlessly switches between high-fidelity 3D assets: **Sun** (`sun.png`), **Rain** (`rain.png`), **Storm** (`storm.png`), and **Winter/Cold** (`winter.png` when $\le 15^\circ\text{C}$ or snowing) with smooth cross-fade animation.
+            #### 🕌 Mosque Finder Screen (Google Maps UX & MosqueAPI Integration)
+            - **MosqueAPI Integration:** Implemented client protocol based on `https://github.com/ummahbuild/mosqueAPI.git` (`/api/mosques/nearby`, `/api/mosques/search`) with live OpenStreetMap Overpass fallback.
+            - **Google Maps Visual Replica:** Vector map canvas with custom emerald & gold mosque minaret pins, user GPS location beacon, roads, parks, and water bodies.
+            - **Interactive Place Carousel:** Horizontally sliding cards displaying mosque name, distance in km, rating, facilities (Parking, Wheelchair, Wudu, Women's Section), and next Jamaat time.
+            - **Direct Turn-by-Turn Directions:** 1-tap launcher seamlessly opening Google Maps navigation directly to the selected mosque coordinates.
 
-            #### 🫧 Ultra-Modern Floating Liquid Glass Bottom Navigation Dock
-            - **Floating Island Capsule:** Elevated dock hovering cleanly above the bottom edge with a high-blur frosted liquid glass finish (`sigma: 20`).
-            - **Active Rounded Pill Indicator:** Selected tab transitions into a high-contrast pill `[ 🏠 Home ]` with smooth physics-based fluid spring animation.
-            - **Elevated Companion Action Button:** Circular companion button with `+` opening instant quick Islamic actions (Digital Tasbih, Daily Ayah, Quran Search, Bookmarks).
+            #### 💰 Dedicated Zakat Screen & Calculator (3rd Pillar of Islam)
+            - **Islamic Orientation:** In-depth guide to Zakat based on Surah At-Tawbah 9:103 with Nisab threshold criteria (Gold 87.48g & Silver 612.36g).
+            - **Live Reactive Calculator:** Instant 2.5% calculation on total eligible savings/wealth.
+            - **8 Quranic Beneficiary Categories:** Visual cards detailing all 8 recipient categories prescribed in Surah At-Tawbah 9:60.
+            - **Google Play In-App Donation Trigger:** Secure contribution sheet powered by Google Play Billing API with instant receipt dialog.
 
-            #### 📱 Persistent App Navigation Shell
-            - **Seamless Cross-Page Persistence:** Bottom dock persists across **Home**, **Qur'an Library**, **Daily Ayah**, and **Prayers & Dhikr**.
-            - **Distraction-Free Mushaf Priority:** Full-screen Mushaf reading mode immersively hides the navigation dock and restores it instantly upon returning.
+            #### 🌅 Prayers Page Visual Redesign & Artwork
+            - **Crisp High-Contrast UI:** Completely removed frosted glass/blur in favor of solid, high-contrast Islamic emerald and gold cards.
+            - **Authentic Astronomical Artwork:** Custom high-fidelity illustrations representing each prayer's celestial state: Fajr (first dawn light), Sunrise (golden cresting sun), Dhuhr (midday zenith), Asr (late afternoon shadows), Maghrib (crimson dusk), and Isha (deep nocturnal sky).
+            - **Prominent Mosque Launcher:** Dedicated banner directly on the Prayers page to locate nearby mosques for congregational prayer.
 
-            #### 📿 Dedicated Prayers & Digital Tasbih Screen
-            - **Real-Time Prayer Countdown:** Live countdown timer to the upcoming prayer.
-            - **Complete Prayer Schedule:** All 5 daily prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) tailored to current geolocation.
-            - **Interactive Digital Tasbih:** Tactile counter with haptic feedback and target loop celebration.
+            #### 🧼 Digital Tasbih Removal
+            - Completely removed local digital tasbih counters across the app (in accordance with user requirement for API-backed Islamic data).
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.11.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.12.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.11.apk
+            release-output/My-Quran-v1.8.12.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

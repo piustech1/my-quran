@@ -4,16 +4,21 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../services/prayer_time_service.dart';
+import 'mosque_finder_screen.dart';
 
 class PrayerRowData {
   final String name;
+  final String arabicName;
   final String time;
+  final String imageAsset;
   final bool isNext;
   final bool isPast;
 
   const PrayerRowData({
     required this.name,
+    required this.arabicName,
     required this.time,
+    required this.imageAsset,
     required this.isNext,
     required this.isPast,
   });
@@ -32,17 +37,6 @@ class _PrayersScreenState extends State<PrayersScreen> {
   UpcomingPrayer? _upcomingPrayer;
   Timer? _ticker;
   DateTime _now = DateTime.now();
-
-  // Tasbih state
-  int _tasbihCount = 0;
-  int _selectedDhikrIndex = 0;
-  final List<String> _dhikrPhrases = [
-    'سُبْحَانَ اللَّهِ (SubhanAllah)',
-    'الْحَمْدُ لِلَّهِ (Alhamdulillah)',
-    'اللَّهُ أَكْبَرُ (Allahu Akbar)',
-    'أَسْتَغْفِرُ اللَّهَ (Astaghfirullah)',
-    'لَا إِلَٰهَ إِلَّا اللَّهُ (La ilaha illallah)',
-  ];
 
   @override
   void initState() {
@@ -74,20 +68,6 @@ class _PrayersScreenState extends State<PrayersScreen> {
   void dispose() {
     _ticker?.cancel();
     super.dispose();
-  }
-
-  void _incrementTasbih() {
-    HapticFeedback.selectionClick();
-    setState(() {
-      _tasbihCount++;
-    });
-  }
-
-  void _resetTasbih() {
-    HapticFeedback.mediumImpact();
-    setState(() {
-      _tasbihCount = 0;
-    });
   }
 
   String _formatCountdown(Duration d) {
@@ -126,24 +106,58 @@ class _PrayersScreenState extends State<PrayersScreen> {
   List<PrayerRowData> _getPrayerRows() {
     final sched = _schedule ?? PrayerSchedule.fallbackDefault();
     final list = [
-      {'name': 'Fajr', 'time': sched.fajr},
-      {'name': 'Sunrise', 'time': sched.sunrise},
-      {'name': 'Dhuhr', 'time': sched.dhuhr},
-      {'name': 'Asr', 'time': sched.asr},
-      {'name': 'Maghrib', 'time': sched.maghrib},
-      {'name': 'Isha', 'time': sched.isha},
+      {
+        'name': 'Fajr',
+        'arabic': 'الفجر',
+        'time': sched.fajr,
+        'image': 'assets/prayers/fajr.jpg',
+      },
+      {
+        'name': 'Sunrise',
+        'arabic': 'الشروق',
+        'time': sched.sunrise,
+        'image': 'assets/prayers/sunrise.jpg',
+      },
+      {
+        'name': 'Dhuhr',
+        'arabic': 'الظهر',
+        'time': sched.dhuhr,
+        'image': 'assets/prayers/dhuhr.jpg',
+      },
+      {
+        'name': 'Asr',
+        'arabic': 'العصر',
+        'time': sched.asr,
+        'image': 'assets/prayers/asr.jpg',
+      },
+      {
+        'name': 'Maghrib',
+        'arabic': 'المغرب',
+        'time': sched.maghrib,
+        'image': 'assets/prayers/maghrib.jpg',
+      },
+      {
+        'name': 'Isha',
+        'arabic': 'العشاء',
+        'time': sched.isha,
+        'image': 'assets/prayers/isha.jpg',
+      },
     ];
 
     return list.map((item) {
       final name = item['name']!;
+      final arabic = item['arabic']!;
       final timeStr = item['time']!;
+      final image = item['image']!;
       final isNext = _upcomingPrayer != null &&
           _upcomingPrayer!.name.toUpperCase() == name.toUpperCase();
       final dt = _parseToday(timeStr);
       final isPast = _now.isAfter(dt) && !isNext;
       return PrayerRowData(
         name: name,
+        arabicName: arabic,
         time: _format12Hour(timeStr),
+        imageAsset: image,
         isNext: isNext,
         isPast: isPast,
       );
@@ -166,15 +180,23 @@ class _PrayersScreenState extends State<PrayersScreen> {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // 1. Signature Emerald Curved Mufta Header
+          // 1. Signature Emerald Solid Curved Mufta Header (No Frost, crisp solid depth)
           SliverToBoxAdapter(
             child: _buildMuftaHeader(isDark, _upcomingPrayer, countdown),
           ),
 
-          // 2. Prayer Schedule Timetable
+          // 2. Mosque Finder Action Banner
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 20, 18, 12),
+              padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
+              child: _buildMosqueFinderBanner(isDark),
+            ),
+          ),
+
+          // 3. Today's Prayer Schedule Timetable (Solid high-contrast cards, authentic artwork, no frost)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 14, 18, 120), // Bottom clearance for dock
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -208,14 +230,6 @@ class _PrayersScreenState extends State<PrayersScreen> {
               ),
             ),
           ),
-
-          // 3. Digital Interactive Tasbih Counter
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 14, 18, 120), // Bottom padding for floating dock
-              child: _buildTasbihSection(isDark, textPrimary, textSecondary),
-            ),
-          ),
         ],
       ),
     );
@@ -234,7 +248,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(36)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.black38,
             blurRadius: 18,
             offset: Offset(0, 8),
           ),
@@ -243,7 +257,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
-          // Background Mufta
+          // Background Mufta Arch
           Positioned.fill(
             child: Image.asset(
               'assets/new_mufta.jpg',
@@ -252,14 +266,14 @@ class _PrayersScreenState extends State<PrayersScreen> {
             ),
           ),
 
-          // Emerald overlay
+          // Solid Emerald Gradient Overlay (Zero frost blur)
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF0D2F1F).withOpacity(0.85),
-                    const Color(0xFF13422C).withOpacity(0.92),
+                    Color(0xDF0D2F1F),
+                    Color(0xF0103A26),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -268,7 +282,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
             ),
           ),
 
-          // Content
+          // Header Content
           Padding(
             padding: EdgeInsets.fromLTRB(20, topPadding + 14, 20, 26),
             child: Column(
@@ -281,7 +295,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'PRAYERS & DHIKR',
+                          'DAILY DEVOTION',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -291,9 +305,9 @@ class _PrayersScreenState extends State<PrayersScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Daily Devotion',
+                          'Prayer Times',
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 22,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -301,11 +315,11 @@ class _PrayersScreenState extends State<PrayersScreen> {
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.12),
+                        color: const Color(0xFF163E2B),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white24, width: 0.8),
+                        border: Border.all(color: AppColors.accentGold.withOpacity(0.5), width: 1),
                       ),
                       child: Row(
                         children: [
@@ -314,7 +328,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                           Text(
                             _formatClockTime(_now),
                             style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
+                              fontSize: 12.5,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -324,15 +338,22 @@ class _PrayersScreenState extends State<PrayersScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 22),
+                const SizedBox(height: 20),
 
-                // Next Prayer Highlight Banner
+                // Next Prayer Solid Highlight Card
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
+                    color: const Color(0xFF143827),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white.withOpacity(0.18), width: 1),
+                    border: Border.all(color: AppColors.accentGold.withOpacity(0.4), width: 1.2),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black38,
+                        blurRadius: 14,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -408,6 +429,119 @@ class _PrayersScreenState extends State<PrayersScreen> {
     );
   }
 
+  Widget _buildMosqueFinderBanner(bool isDark) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const MosqueFinderScreen()),
+        );
+      },
+      child: Container(
+        height: 96,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.45 : 0.12),
+              blurRadius: 16,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            Image.asset(
+              'assets/mosque_finder_hero.jpg',
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    const Color(0xF00D281C),
+                    const Color(0xD00D281C),
+                    Colors.black.withOpacity(0.35),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_rounded, color: AppColors.accentGold, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            'MOSQUE FINDER',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                              color: AppColors.accentGold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Find Nearby Mosques',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        'Map navigation, Jamaat times & directions',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.accentGold,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.accentGold.withOpacity(0.4),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Color(0xFF132B1F),
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPrayerScheduleCard(
     bool isDark,
     Color textPrimary,
@@ -420,12 +554,12 @@ class _PrayersScreenState extends State<PrayersScreen> {
         color: isDark ? const Color(0xFF13281E) : Colors.white,
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.08) : AppColors.lightBorder,
-          width: 1,
+          color: isDark ? Colors.white.withOpacity(0.09) : AppColors.lightBorder,
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.35 : 0.06),
+            color: Colors.black.withOpacity(isDark ? 0.40 : 0.08),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -438,10 +572,10 @@ class _PrayersScreenState extends State<PrayersScreen> {
           final isPast = p.isPast;
 
           return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: isNext
-                  ? AppColors.accentGold.withOpacity(isDark ? 0.15 : 0.12)
+                  ? AppColors.accentGold.withOpacity(isDark ? 0.16 : 0.12)
                   : Colors.transparent,
               border: i < prayers.length - 1
                   ? Border(
@@ -454,38 +588,46 @@ class _PrayersScreenState extends State<PrayersScreen> {
             ),
             child: Row(
               children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isNext
-                        ? AppColors.accentGold
-                        : (isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04)),
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(
-                    _getPrayerIcon(p.name),
-                    size: 18,
-                    color: isNext
-                        ? const Color(0xFF132B1F)
-                        : (isPast ? textSecondary.withOpacity(0.5) : textPrimary),
+                // Authentic Prayer Artwork Thumbnail
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.asset(
+                    p.imageAsset,
+                    width: 46,
+                    height: 46,
+                    fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(width: 14),
+
+                // Name & Arabic Name
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        p.name,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 15,
-                          fontWeight: isNext ? FontWeight.bold : FontWeight.w600,
-                          color: isNext
-                              ? (isDark ? AppColors.accentGold : const Color(0xFFB58428))
-                              : (isPast ? textSecondary.withOpacity(0.5) : textPrimary),
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            p.name,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 15.5,
+                              fontWeight: isNext ? FontWeight.bold : FontWeight.w600,
+                              color: isNext
+                                  ? (isDark ? AppColors.accentGold : const Color(0xFFB58428))
+                                  : (isPast ? textSecondary.withOpacity(0.45) : textPrimary),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            p.arabicName,
+                            style: GoogleFonts.amiri(
+                              fontSize: 14,
+                              color: isNext
+                                  ? AppColors.accentGold
+                                  : (isDark ? Colors.white54 : Colors.black45),
+                            ),
+                          ),
+                        ],
                       ),
                       if (isNext && _upcomingPrayer != null)
                         Text(
@@ -493,20 +635,33 @@ class _PrayersScreenState extends State<PrayersScreen> {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 11,
                             color: isDark ? AppColors.accentGold : const Color(0xFFB58428),
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                     ],
                   ),
                 ),
-                Text(
-                  p.time,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 15,
-                    fontWeight: isNext ? FontWeight.bold : FontWeight.w600,
-                    color: isNext
-                        ? (isDark ? AppColors.accentGold : const Color(0xFFB58428))
-                        : (isPast ? textSecondary.withOpacity(0.5) : textPrimary),
+
+                // Prayer Time
+                Container(
+                  padding: isNext
+                      ? const EdgeInsets.symmetric(horizontal: 10, vertical: 4)
+                      : EdgeInsets.zero,
+                  decoration: isNext
+                      ? BoxDecoration(
+                          color: AppColors.accentGold,
+                          borderRadius: BorderRadius.circular(12),
+                        )
+                      : null,
+                  child: Text(
+                    p.time,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: isNext ? FontWeight.bold : FontWeight.w600,
+                      color: isNext
+                          ? const Color(0xFF132B1F)
+                          : (isPast ? textSecondary.withOpacity(0.45) : textPrimary),
+                    ),
                   ),
                 ),
               ],
@@ -515,183 +670,6 @@ class _PrayersScreenState extends State<PrayersScreen> {
         }),
       ),
     );
-  }
-
-  Widget _buildTasbihSection(
-    bool isDark,
-    Color textPrimary,
-    Color textSecondary,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF13281E) : Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.08) : AppColors.lightBorder,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.35 : 0.06),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.fingerprint_rounded, color: AppColors.accentGold, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'DIGITAL TASBIH',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                      color: AppColors.accentGold,
-                    ),
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: const Icon(Icons.refresh_rounded, size: 20),
-                color: textSecondary,
-                tooltip: 'Reset counter',
-                onPressed: _resetTasbih,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Dhikr Selector Dropdown Capsule
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<int>(
-                value: _selectedDhikrIndex,
-                isExpanded: true,
-                dropdownColor: isDark ? const Color(0xFF1B382B) : Colors.white,
-                icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.accentGold),
-                items: List.generate(_dhikrPhrases.length, (i) {
-                  return DropdownMenuItem<int>(
-                    value: i,
-                    child: Text(
-                      _dhikrPhrases[i],
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                        color: textPrimary,
-                      ),
-                    ),
-                  );
-                }),
-                onChanged: (val) {
-                  if (val != null) {
-                    setState(() {
-                      _selectedDhikrIndex = val;
-                      _tasbihCount = 0;
-                    });
-                  }
-                },
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Large Interactive Counter Bead Button
-          GestureDetector(
-            onTap: _incrementTasbih,
-            child: Container(
-              width: 140,
-              height: 140,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [
-                    AppColors.accentGold,
-                    Color(0xFFCCA035),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.accentGold.withOpacity(0.40),
-                    blurRadius: 28,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.8),
-                  width: 3,
-                ),
-              ),
-              alignment: Alignment.center,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '$_tasbihCount',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF132B1F),
-                    ),
-                  ),
-                  Text(
-                    'TAP TO COUNT',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                      color: const Color(0xFF132B1F).withOpacity(0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Target: 33 / 100 repeats',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              color: textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  IconData _getPrayerIcon(String name) {
-    switch (name.toLowerCase()) {
-      case 'fajr':
-        return Icons.wb_twilight_rounded;
-      case 'sunrise':
-        return Icons.wb_sunny_rounded;
-      case 'dhuhr':
-        return Icons.wb_sunny_outlined;
-      case 'asr':
-        return Icons.cloud_outlined;
-      case 'maghrib':
-        return Icons.nights_stay_outlined;
-      case 'isha':
-        return Icons.nights_stay_rounded;
-      default:
-        return Icons.access_time_rounded;
-    }
   }
 
   String _formatClockTime(DateTime time) {

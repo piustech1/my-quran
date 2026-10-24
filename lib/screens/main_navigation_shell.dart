@@ -10,7 +10,7 @@ import 'prayers_screen.dart';
 /// - Tab 0: Home Dashboard
 /// - Tab 1: Qur'an Library (Surahs, Juz, Pages, Hizbs)
 /// - Tab 2: Daily Ayah Experience
-/// - Tab 3: Prayers Schedule & Digital Tasbih
+/// - Tab 3: Prayers Schedule & Mosque Finder
 ///
 /// Pushing ReaderScreen opens full-screen without the bottom dock,
 /// while popping returns seamlessly with the dock immediately active.

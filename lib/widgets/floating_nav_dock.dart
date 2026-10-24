@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import '../screens/mosque_finder_screen.dart';
+import '../screens/zakat_screen.dart';
 
 class NavItemData {
   final String label;
@@ -348,12 +350,16 @@ class FloatingNavDock extends StatelessWidget {
                     ),
                     _buildModalQuickAction(
                       ctx,
-                      icon: Icons.fingerprint_rounded,
-                      label: 'Tasbih',
+                      icon: Icons.mosque_rounded,
+                      label: 'Mosques',
                       color: const Color(0xFF48CAE4),
                       onTap: () {
                         Navigator.pop(ctx);
-                        onTabSelected(3); // Go to Prayers & Dhikr
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const MosqueFinderScreen(),
+                          ),
+                        );
                       },
                       isDark: isDark,
                     ),
@@ -370,12 +376,16 @@ class FloatingNavDock extends StatelessWidget {
                     ),
                     _buildModalQuickAction(
                       ctx,
-                      icon: Icons.calculate_outlined,
+                      icon: Icons.volunteer_activism_rounded,
                       label: 'Zakat',
                       color: const Color(0xFFFF9E00),
                       onTap: () {
                         Navigator.pop(ctx);
-                        onTabSelected(0); // Switch to Home
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ZakatScreen(),
+                          ),
+                        );
                       },
                       isDark: isDark,
                     ),

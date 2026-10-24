@@ -10,12 +10,13 @@ import '../services/daily_ayah_service.dart';
 import '../services/location_weather_service.dart';
 import '../services/prayer_time_service.dart';
 import '../services/theme_service.dart';
-import '../widgets/dzikir_counter_dialog.dart';
 import '../widgets/floating_nav_dock.dart';
 import 'daily_ayah_screen.dart';
+import 'mosque_finder_screen.dart';
 import 'prayers_screen.dart';
 import 'quran_library_screen.dart';
 import 'reader_screen.dart';
+import 'zakat_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   final bool isEmbeddedInShell;
@@ -129,138 +130,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   }
 
 
-  void _showZakatDialog() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-    final textPrimary =
-        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary =
-        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
-    final controller = TextEditingController();
-    double zakatAmount = 0.0;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return Dialog(
-              backgroundColor: bg,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24)),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.volunteer_activism_rounded,
-                                color: AppColors.accentGold, size: 22),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Zakat Calculator',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close_rounded, size: 20),
-                          color: textSecondary,
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Enter your total eligible wealth/savings to calculate the 2.5% annual Zakat obligation.',
-                      style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12, color: textSecondary),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: controller,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      style: GoogleFonts.plusJakartaSans(
-                          color: textPrimary, fontWeight: FontWeight.bold),
-                      decoration: InputDecoration(
-                        hintText: 'Enter amount (e.g. 1000)',
-                        hintStyle:
-                            GoogleFonts.plusJakartaSans(color: textSecondary),
-                        prefixText: '\$ ',
-                        prefixStyle: GoogleFonts.plusJakartaSans(
-                            color: AppColors.accentGold,
-                            fontWeight: FontWeight.bold),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(
-                              color: isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                              color: AppColors.accentGold, width: 2),
-                        ),
-                      ),
-                      onChanged: (val) {
-                        final parsed = double.tryParse(val) ?? 0.0;
-                        setDialogState(() {
-                          zakatAmount = parsed * 0.025;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.accentGold.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                            color: AppColors.accentGold.withOpacity(0.4)),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Zakat Due (2.5%):',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: textPrimary,
-                            ),
-                          ),
-                          Text(
-                            '\$${zakatAmount.toStringAsFixed(2)}',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.accentGold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
 
 
   @override
@@ -544,7 +414,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   ),
                   const SizedBox(height: 22),
 
-                  // 3. Islamic Bento Grid: Qur'an, Zakat, Dzikir (Edge-to-edge photography, glass tags)
+                  // 3. Islamic Bento Grid: Qur'an, Zakat, Mosques (Edge-to-edge photography, glass tags)
                   _buildBentoGrid(isDark),
 
                   const SizedBox(height: 26),
@@ -985,19 +855,22 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           imagePath: 'assets/bento_zakat.jpg',
           icon: Icons.all_inclusive_rounded,
           isDark: isDark,
-          onTap: _showZakatDialog,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ZakatScreen()),
+            );
+          },
         ),
         const SizedBox(width: 12),
         _buildBentoCard(
-          label: "Dzikir",
-          imagePath: 'assets/bento_dzikir.jpg',
-          icon: Icons.nightlight_round,
-          badgeText: "0 / 33",
+          label: "Mosques",
+          imagePath: 'assets/mosque_finder_hero.jpg',
+          icon: Icons.mosque_rounded,
+          badgeText: "Nearby",
           isDark: isDark,
           onTap: () {
-            showDialog(
-              context: context,
-              builder: (_) => const DzikirCounterDialog(),
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const MosqueFinderScreen()),
             );
           },
         ),
