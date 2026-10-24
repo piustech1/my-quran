@@ -59,9 +59,12 @@ class QuranAudioService {
   final ValueNotifier<bool> isLoadingNotifier = ValueNotifier<bool>(false);
   final ValueNotifier<double> ayahPlaybackProgress = ValueNotifier<double>(0.0);
 
+  bool get isPaused => !_player.playing && currentPlayingAyah.value != null;
+
   int _maxVersesInCurrentSurah = 7;
   bool autoPlayNext = true;
-  bool _isTransitioning = false;
+  int? _lastCompletedSurah;
+  int? _lastCompletedAyah;
   DateTime _lastCompletionTime = DateTime.fromMillisecondsSinceEpoch(0);
 
   StreamSubscription<PlayerState>? _playerStateSubscription;
@@ -69,14 +72,15 @@ class QuranAudioService {
 
   void _initAudioPlayer() {
     _playerStateSubscription = _player.playerStateStream.listen((state) {
-      isPlayingNotifier.value = state.playing;
+      final isActuallyPlaying = state.playing &&
+          state.processingState != ProcessingState.completed &&
+          state.processingState != ProcessingState.idle;
+      isPlayingNotifier.value = isActuallyPlaying;
       isLoadingNotifier.value =
           state.processingState == ProcessingState.buffering ||
               state.processingState == ProcessingState.loading;
 
-      if (state.processingState == ProcessingState.completed &&
-          !_isTransitioning &&
-          state.playing) {
+      if (state.processingState == ProcessingState.completed) {
         _handleAyahCompleted();
       }
     });
@@ -115,9 +119,6 @@ class QuranAudioService {
     required int ayahNumber,
     required int maxVerses,
   }) async {
-    if (_isTransitioning) return;
-    _isTransitioning = true;
-
     _maxVersesInCurrentSurah = maxVerses;
     currentPlayingSurah.value = surahNumber;
     currentPlayingAyah.value = ayahNumber;
@@ -145,15 +146,17 @@ class QuranAudioService {
         ),
       );
       await _player.setAudioSource(audioSource);
-      await _player.play();
-    } catch (e) {
       isLoadingNotifier.value = false;
-      isPlayingNotifier.value = false;
-    } finally {
-      // Guard against duplicate triggers during audio source load
-      Future.delayed(const Duration(milliseconds: 600), () {
-        _isTransitioning = false;
-      });
+      // Do not await play(): in just_audio, play() returns a Future that only
+      // completes when the audio finishes playing or pauses.
+      _player.play();
+    } catch (e) {
+      debugPrint('Error playing ayah audio ($surahNumber:$ayahNumber): $e');
+      if (currentPlayingSurah.value == surahNumber &&
+          currentPlayingAyah.value == ayahNumber) {
+        isLoadingNotifier.value = false;
+        isPlayingNotifier.value = false;
+      }
     }
   }
 
@@ -162,15 +165,16 @@ class QuranAudioService {
   }
 
   Future<void> resume() async {
-    await _player.play();
+    _player.play();
   }
 
   Future<void> stop() async {
-    _isTransitioning = false;
     await _player.stop();
     currentPlayingAyah.value = null;
     currentPlayingSurah.value = null;
     ayahPlaybackProgress.value = 0.0;
+    _lastCompletedSurah = null;
+    _lastCompletedAyah = null;
     isPlayingNotifier.value = false;
   }
 
@@ -235,11 +239,24 @@ class QuranAudioService {
   }
 
   void _handleAyahCompleted() {
+    final currentSurah = currentPlayingSurah.value;
+    final currentAyah = currentPlayingAyah.value;
+
+    if (currentSurah == null || currentAyah == null) return;
+
     final now = DateTime.now();
-    if (now.difference(_lastCompletionTime).inMilliseconds < 800) {
+    if (now.difference(_lastCompletionTime).inMilliseconds < 350) {
+      return;
+    }
+
+    // Deduplication: prevent duplicate completion events for the exact same Ayah
+    if (currentSurah == _lastCompletedSurah &&
+        currentAyah == _lastCompletedAyah) {
       return;
     }
     _lastCompletionTime = now;
+    _lastCompletedSurah = currentSurah;
+    _lastCompletedAyah = currentAyah;
 
     if (autoPlayNext) {
       playNextAyah();

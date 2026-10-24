@@ -43,39 +43,40 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.9.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.10.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.9
-          name: "My Quran v1.8.9 - Fixed Verse Skipping, Seamless Continuous Recitation & True Background Audio"
+          tag_name: v1.8.10
+          name: "My Quran v1.8.10 - Real-Time Consecutive Ayah Recitation & Seamless Auto-Progression"
           body: |
-            ### 📖 My Quran - Release v1.8.9
+            ### 📖 My Quran - Release v1.8.10
 
-            What's New in **v1.8.9**:
+            What's New in **v1.8.10**:
 
-            #### 🎧 Fixed Verse Skipping & Seamless Recitation
-            - **No More Skipped Verses:** Eliminated the verse-skipping issue by removing the TTS vocal announcement and adding concurrency transition mutex guards and completion debouncing to the audio engine.
-            - **Seamless Auto-Play Progression:** Recitation moves smoothly from Ayah to Ayah and Surah to Surah with zero skips and zero delays.
+            #### 🎧 Real-Time Consecutive Ayah Recitation
+            - **Seamless Consecutive Playback Restored:** Fixed the issue where audio playback would halt after the first verse. Audio now flows seamlessly and consecutively from Ayah to Ayah and Surah to Surah in real-time.
+            - **Non-blocking Play Initiation:** Fixed `play()` execution by removing the blocking await and eliminating deadlocking transition mutexes, ensuring immediate verse loading and gapless transition.
+            - **Per-Ayah Completion Deduplication:** Added rigorous Surah/Ayah deduplication with debounce to guarantee zero verse skips and zero premature halts.
+            - **Accurate Frequency Wave State:** Synchronized frequency wave animation directly to actual audio playback so waveforms accurately stop when audio concludes.
 
             #### 🔒 True Background Audio & Android Foreground Service
-            - **Continuous Background Playback:** Fully integrated `just_audio_background` with `AudioServiceActivity` and Android `MediaBrowserService` foreground service so Quran recitation continues uninterrupted when minimizing the app, turning off the screen, or switching apps.
+            - **Continuous Background Playback:** Supported by Android `MediaBrowserService` foreground service so Quran recitation continues uninterrupted when minimizing the app, turning off the screen, or switching apps.
             - **Rich Notification & Lock Screen Controls:** Real-time lock screen controls with Surah name, reciter artwork, play/pause, next/previous controls.
 
             #### 📖 Mushaf 3D Page-Turn Priority
-            - **Default View Priority:** Opening any Surah now opens immediately in the authentic **3D Mushaf Page Turn Mode** with lifelike page curling and Arabic typography.
+            - **Default View Priority:** Opening any Surah opens immediately in the authentic **3D Mushaf Page Turn Mode** with lifelike page curling and Arabic typography.
 
             #### 🕌 High-Contrast Study Mode & Vibrant Mufta Arch
-            - **Rich Islamic Corner Motifs:** Increased corner ornament opacity and tint so borders and motifs are crisp, prominent, and luxurious.
-            - **Curved Mufta Arch:** High-contrast 36px curved bottom with atmospheric emerald gradient overlay and hairline golden accent, matching the home screen look.
-            - **Deep Card Contrast:** Solid card background and richer drop shadows, eliminating faintness and washed-out glassmorphism.
+            - **Rich Islamic Corner Motifs:** Crisp, luxurious corner ornaments with high contrast.
+            - **Curved Mufta Arch:** High-contrast 36px curved bottom with atmospheric emerald gradient overlay and hairline golden accent.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.9.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.10.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.9.apk
+            release-output/My-Quran-v1.8.10.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

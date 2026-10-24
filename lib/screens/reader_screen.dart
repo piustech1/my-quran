@@ -593,13 +593,19 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     tooltip: isPlaying ? 'Pause Recitation' : 'Play Surah',
                     onPressed: () {
                       if (isPlaying) {
-                        _audioService.player.pause();
+                        _audioService.pause();
                       } else {
-                        _audioService.playAyah(
-                          surahNumber: _activeSurah.number,
-                          ayahNumber: 1,
-                          maxVerses: _activeSurah.numberOfAyahs,
-                        );
+                        if (_audioService.currentPlayingSurah.value ==
+                                _activeSurah.number &&
+                            _audioService.isPaused) {
+                          _audioService.resume();
+                        } else {
+                          _audioService.playAyah(
+                            surahNumber: _activeSurah.number,
+                            ayahNumber: 1,
+                            maxVerses: _activeSurah.numberOfAyahs,
+                          );
+                        }
                       }
                     },
                   );
@@ -911,6 +917,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
               onPlay: () {
                 if (isCurrentPlaying && _audioService.isPlayingNotifier.value) {
                   _audioService.pause();
+                } else if (isCurrentPlaying &&
+                    !_audioService.isPlayingNotifier.value) {
+                  _audioService.resume();
                 } else {
                   _audioService.playAyah(
                     surahNumber: _activeSurah.number,
