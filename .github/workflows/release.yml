@@ -43,31 +43,41 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.15.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.16.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.15
-          name: "My Quran v1.8.15 - TikTok-Style Islamic Video Reels Powered by IslamHouse API"
+          tag_name: v1.8.16
+          name: "My Quran v1.8.16 - Adhan Audio Milestones, Crystal-Clear Mufta & Borderless Islamic Reels"
           body: |
-            ### 📖 My Quran - Release v1.8.15
+            ### 📖 My Quran - Release v1.8.16
 
-            What's New in **v1.8.15**:
+            What's New in **v1.8.16**:
 
-            #### 🎬 TikTok-Style Islamic Video Reels (Hikmah Reels)
-            - **Bottom Navigation Plus (+) Button Integration:** Directly access the full-screen immersive Islamic Reels feed with one click on the prominent floating dock action button.
-            - **Vertical Paging & Smooth Physics:** Swipe vertically to discover authentic Islamic short videos from verified scholars and teachers.
-            - **IslamHouse Multilingual API Hub Integration:** Powered by IslamHouse API v3 (`https://github.com/IslamHouse-API/multilingual-quran-hadith-islamic-content-database-api-hub`), delivering high-speed Cloudflare CDN MP4 streaming and rich metadata.
-            - **Multi-Language Selector:** Filter video feeds instantly across **English (`en`)**, **Arabic (`العربية`)**, **Urdu (`اردو`)**, **French (`Français`)**, **Swahili (`Kiswahili`)**, **Indonesian (`Bahasa`)**, **Turkish (`Türkçe`)**, and **Spanish (`Español`)**.
-            - **Interactive Social Controls:** Double-tap heart animation, animated like toggle with live counter, one-tap copy/share, and scholar detail sheet.
-            - **Smart Audio Session Management:** Automatically pauses background Quran recitation on entrance to prevent audio clashes, with a quick mute/unmute toggle in the top bar.
+            #### 🕌 Complete Mosque Finder UI Elimination & Prayers Screen Polish
+            - **Clean Timetable Layout:** Completely eliminated the nearby mosque finder card, shortcut icons, and indicators across the prayers page, home dashboard, and navigation quick actions dock.
+            - **Crystal-Clear Mufta Background:** Restored razor-sharp architectural clarity with authentic multi-stop atmospheric gradient matching the home dashboard.
+            - **100% Borderless Architecture:** Removed all outlines from location pills, upcoming prayer cards, and daily prayer rows.
+
+            #### 📢 Full Adhan Audio & Exact Prayer Time Alarm Milestones
+            - **Authentic Adhan Recitation:** Bundled high-fidelity Mishary Rashid Alafasy Adhan audio (`adhan.mp3`) in both app assets and Android native raw resource system.
+            - **Foreground & Background Adhan:** Automatic recitation at exact prayer minutes with coordinate pauses of Quran recitation.
+            - **Live Dismissible Adhan Banner:** Interactive banner on the prayers screen allowing one-tap stopping of Adhan recitation.
+            - **Individual Prayer Alarm Toggles:** Toggle Adhan alarms for Fajr, Dhuhr, Asr, Maghrib, and Isha with persistent settings.
+            - **Exact OS-Level Alarm Notifications:** Scheduled via `flutter_local_notifications` with `SCHEDULE_EXACT_ALARM` permissions.
+
+            #### 🎬 Borderless Islamic Reels & Official Branding
+            - **Rebranded Header:** Renamed to "Islamic Reels" with borderless back button, live status pill, mute toggle, and language selector.
+            - **Official Channel Branding:** Rebranded to `@MyQuran • Official` with verified badge; removed generic hashtags and third-party branding.
+            - **Persistent Likes:** Likes and double-tap heart interactions persist across app sessions via `SharedPreferences`.
+            - **Native System Sharing:** Integrated `share_plus` to summon the native Android sharing sheet for video sharing.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.15.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.16.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.15.apk
+            release-output/My-Quran-v1.8.16.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

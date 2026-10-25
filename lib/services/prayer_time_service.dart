@@ -104,6 +104,8 @@ class UpcomingPrayer {
     required this.remaining,
     required this.prayerDateTime,
   });
+
+  Duration get timeRemaining => remaining;
 }
 
 class PrayerTimeService {

@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 import '../models/islamic_video_item.dart';
 import '../services/islamic_video_service.dart';
@@ -58,6 +60,14 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
     super.dispose();
   }
 
+  static Future<void> persistVideoLike(IslamicVideoItem video) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('reels_liked_${video.id}', video.isLiked);
+      await prefs.setInt('reels_likes_count_${video.id}', video.likesCount);
+    } catch (_) {}
+  }
+
   Future<void> _loadVideos({bool append = false}) async {
     if (!append) {
       setState(() => _isLoading = true);
@@ -67,6 +77,21 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
       language: _currentLanguage,
       page: append ? (_videos.length ~/ 20) + 1 : 1,
     );
+
+    // Load persistent likes from SharedPreferences
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      for (final v in newVideos) {
+        final likedKey = 'reels_liked_${v.id}';
+        final countKey = 'reels_likes_count_${v.id}';
+        if (prefs.containsKey(likedKey)) {
+          v.isLiked = prefs.getBool(likedKey) ?? false;
+        }
+        if (prefs.containsKey(countKey)) {
+          v.likesCount = prefs.getInt(countKey) ?? v.likesCount;
+        }
+      }
+    } catch (_) {}
 
     if (!mounted) return;
 
@@ -181,7 +206,6 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFF0D2418).withOpacity(0.95),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-              border: Border.all(color: Colors.white12, width: 1),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -286,7 +310,6 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFF0F261B).withOpacity(0.96),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-              border: Border.all(color: Colors.white12, width: 1),
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -313,7 +336,7 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'IslamHouse Verified',
+                          'My Quran Verified',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -359,7 +382,6 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white12),
                         ),
                         child: Text(
                           '#$tag',
@@ -374,7 +396,7 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Source: IslamHouse.com Multilingual API Hub',
+                    'My Quran Islamic Media Hub',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
                       color: Colors.white38,
@@ -438,7 +460,7 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
   Widget _buildTopHeader() {
     return Row(
       children: [
-        // Back Button
+        // Back Button (No outline)
         GestureDetector(
           onTap: () {
             HapticFeedback.lightImpact();
@@ -454,7 +476,6 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.35),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white24, width: 1),
                 ),
                 child: const Icon(
                   Icons.arrow_back_ios_new_rounded,
@@ -468,7 +489,7 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
 
         const Spacer(),
 
-        // Islamic Reels Title Badge with Live indicator
+        // Islamic Reels Title Badge with Live indicator (No outline)
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: BackdropFilter(
@@ -478,7 +499,6 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.35),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white12, width: 1),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -493,7 +513,7 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Hikmah Reels',
+                    'Islamic Reels',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -509,7 +529,7 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
 
         const Spacer(),
 
-        // Mute / Unmute Button
+        // Mute / Unmute Button (No outline)
         GestureDetector(
           onTap: _toggleGlobalMute,
           child: ClipRRect(
@@ -522,7 +542,6 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.35),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white24, width: 1),
                 ),
                 child: Icon(
                   _isGlobalMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
@@ -536,7 +555,7 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
 
         const SizedBox(width: 10),
 
-        // Language Pill
+        // Language Pill (No outline)
         GestureDetector(
           onTap: _showLanguageSelector,
           child: ClipRRect(
@@ -549,7 +568,6 @@ class _IslamicReelsScreenState extends State<IslamicReelsScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1D4D36).withOpacity(0.85),
                   borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: const Color(0xFFE5B850).withOpacity(0.4), width: 1),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -745,6 +763,7 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
     });
 
     _heartAnimController.forward(from: 0.0).then((_) {
+      _IslamicReelsScreenState.persistVideoLike(widget.video);
       Future.delayed(const Duration(milliseconds: 300), () {
         if (mounted) {
           setState(() => _showDoubleTapHeart = false);
@@ -763,23 +782,15 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
         widget.video.likesCount -= 1;
       }
     });
+    _IslamicReelsScreenState.persistVideoLike(widget.video);
   }
 
   void _shareVideo() {
     HapticFeedback.mediumImpact();
-    Clipboard.setData(ClipboardData(
-      text: '${widget.video.title}\nWatch authentic Islamic guidance: ${widget.video.videoUrl}\nSource: IslamHouse.com',
-    ));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Video link copied to clipboard!',
-          style: GoogleFonts.plusJakartaSans(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF1D4D36),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 2),
+    SharePlus.instance.share(
+      ShareParams(
+        text: '${widget.video.title}\n\nWatch authentic Islamic guidance on My Quran App:\n${widget.video.videoUrl}',
+        subject: widget.video.title,
       ),
     );
   }
@@ -830,7 +841,7 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
             ),
           ),
 
-          // 3. Center Animated Play/Pause Feedback Icon
+          // 3. Center Animated Play/Pause Feedback Icon (No outline)
           if (_showPlayPauseOverlay && isInitialized)
             Center(
               child: AnimatedOpacity(
@@ -842,7 +853,6 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.55),
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white30, width: 1.5),
                   ),
                   child: Icon(
                     _isPlaying ? Icons.play_arrow_rounded : Icons.pause_rounded,
@@ -921,7 +931,7 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Scholar / Channel Avatar
+        // Scholar / Channel Avatar (No outline)
         GestureDetector(
           onTap: widget.onShowDescription,
           child: Container(
@@ -929,7 +939,6 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
             height: 48,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFE5B850), width: 2),
               gradient: const LinearGradient(
                 colors: [Color(0xFF1D4D36), Color(0xFF0F261B)],
                 begin: Alignment.topLeft,
@@ -1034,36 +1043,11 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Topic Tags Row
-        Wrap(
-          spacing: 6,
-          children: widget.video.tags.take(2).map((tag) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1D4D36).withOpacity(0.85),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: const Color(0xFFE5B850).withOpacity(0.4), width: 0.6),
-              ),
-              child: Text(
-                '#$tag',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFFE5B850),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-
-        const SizedBox(height: 8),
-
-        // Author / Channel Handle
+        // Official Channel Handle
         Row(
           children: [
             Text(
-              '@${widget.video.author}',
+              '@MyQuran • Official',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
@@ -1071,7 +1055,7 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
                 shadows: [const Shadow(blurRadius: 6, color: Colors.black)],
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 5),
             const Icon(
               Icons.verified_rounded,
               color: Color(0xFF38BDF8),

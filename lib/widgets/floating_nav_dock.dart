@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
-import '../screens/mosque_finder_screen.dart';
 import '../screens/zakat_screen.dart';
 import '../screens/islamic_reels_screen.dart';
 
@@ -359,14 +358,14 @@ class FloatingNavDock extends StatelessWidget {
                     ),
                     _buildModalQuickAction(
                       ctx,
-                      icon: Icons.mosque_rounded,
-                      label: 'Mosques',
-                      color: const Color(0xFF48CAE4),
+                      icon: Icons.play_circle_filled_rounded,
+                      label: 'Islamic Reels',
+                      color: const Color(0xFFFF5252),
                       onTap: () {
                         Navigator.pop(ctx);
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const MosqueFinderScreen(),
+                            builder: (_) => const IslamicReelsScreen(),
                           ),
                         );
                       },
@@ -427,7 +426,6 @@ class FloatingNavDock extends StatelessWidget {
             decoration: BoxDecoration(
               color: color.withOpacity(isDark ? 0.2 : 0.12),
               shape: BoxShape.circle,
-              border: Border.all(color: color.withOpacity(0.35), width: 1.2),
             ),
             alignment: Alignment.center,
             child: Icon(icon, color: color, size: 26),

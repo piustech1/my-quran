@@ -12,7 +12,7 @@ import '../services/prayer_time_service.dart';
 import '../services/theme_service.dart';
 import '../widgets/floating_nav_dock.dart';
 import 'daily_ayah_screen.dart';
-import 'mosque_finder_screen.dart';
+import 'islamic_reels_screen.dart';
 import 'prayers_screen.dart';
 import 'quran_library_screen.dart';
 import 'reader_screen.dart';
@@ -863,14 +863,14 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
         ),
         const SizedBox(width: 12),
         _buildBentoCard(
-          label: "Mosques",
-          imagePath: 'assets/mosque_finder_hero.jpg',
-          icon: Icons.mosque_rounded,
-          badgeText: "Nearby",
+          label: "Reels",
+          imagePath: 'assets/bento_zakat.jpg',
+          icon: Icons.play_circle_filled_rounded,
+          badgeText: "New",
           isDark: isDark,
           onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const MosqueFinderScreen()),
+              MaterialPageRoute(builder: (_) => const IslamicReelsScreen()),
             );
           },
         ),
