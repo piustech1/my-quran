@@ -787,11 +787,9 @@ class _ReelItemViewState extends State<_ReelItemView> with SingleTickerProviderS
 
   void _shareVideo() {
     HapticFeedback.mediumImpact();
-    SharePlus.instance.share(
-      ShareParams(
-        text: '${widget.video.title}\n\nWatch authentic Islamic guidance on My Quran App:\n${widget.video.videoUrl}',
-        subject: widget.video.title,
-      ),
+    Share.share(
+      '${widget.video.title}\n\nWatch authentic Islamic guidance on My Quran App:\n${widget.video.videoUrl}',
+      subject: widget.video.title,
     );
   }
 
