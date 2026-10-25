@@ -1,4 +1,4 @@
-name: Build & Release My Quran APK
+name: Build & Release My Quran (Signed AAB & APK)
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-and-release:
-    name: Build Android APK & Publish Release
+    name: Build Signed Android AAB & APK & Publish Release
     runs-on: ubuntu-latest
 
     steps:
@@ -37,47 +37,78 @@ jobs:
       - name: Run Tests
         run: flutter test
 
-      - name: Build Release APK
+      - name: Set up Android Signing Keystore
+        run: |
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+            cat <<EOF > android/key.properties
+            storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+            keyPassword=${{ secrets.KEY_PASSWORD }}
+            keyAlias=${{ secrets.KEY_ALIAS }}
+            storeFile=upload-keystore.jks
+            EOF
+            echo "Release keystore configured successfully."
+          else
+            echo "Warning: No keystore secret found, falling back to debug signature."
+          fi
+
+      - name: Build Signed Android App Bundle (AAB for Google Play Store)
+        run: flutter build appbundle --release
+
+      - name: Build Signed Android APK (For Direct Installs)
         run: flutter build apk --release
 
-      - name: Prepare Release APK
+      - name: Clean up Keystore Files
+        if: always()
+        run: |
+          rm -f android/app/upload-keystore.jks
+          rm -f android/key.properties
+
+      - name: Prepare Release Artifacts
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.16.apk
+          cp build/app/outputs/bundle/release/app-release.aab release-output/My-Quran-v1.8.17.aab
+          cp build/app/outputs/bundle/release/app-release.aab release-output/My-Quran-release.aab
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.17.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.16
-          name: "My Quran v1.8.16 - Adhan Audio Milestones, Crystal-Clear Mufta & Borderless Islamic Reels"
+          tag_name: v1.8.17
+          name: "My Quran v1.8.17 - Official Signed Play Store Release (.AAB & .APK)"
           body: |
-            ### 📖 My Quran - Release v1.8.16
+            ### 📖 My Quran — Release v1.8.17 (Production Signed)
 
-            What's New in **v1.8.16**:
+            This release provides production-signed builds with consistent keystore signing for Google Play Store distribution and direct installs.
 
-            #### 🕌 Complete Mosque Finder UI Elimination & Prayers Screen Polish
-            - **Clean Timetable Layout:** Completely eliminated the nearby mosque finder card, shortcut icons, and indicators across the prayers page, home dashboard, and navigation quick actions dock.
-            - **Crystal-Clear Mufta Background:** Restored razor-sharp architectural clarity with authentic multi-stop atmospheric gradient matching the home dashboard.
-            - **100% Borderless Architecture:** Removed all outlines from location pills, upcoming prayer cards, and daily prayer rows.
+            #### 📦 Release Artifacts:
+            - **`My-Quran-v1.8.17.aab`** (Android App Bundle): **Use this file for Google Play Console upload**.
+            - **`My-Quran-v1.8.17.apk`** (Universal APK): Signed universal APK for direct testing, distribution, and downloads.
 
-            #### 📢 Full Adhan Audio & Exact Prayer Time Alarm Milestones
-            - **Authentic Adhan Recitation:** Bundled high-fidelity Mishary Rashid Alafasy Adhan audio (`adhan.mp3`) in both app assets and Android native raw resource system.
-            - **Foreground & Background Adhan:** Automatic recitation at exact prayer minutes with coordinate pauses of Quran recitation.
-            - **Live Dismissible Adhan Banner:** Interactive banner on the prayers screen allowing one-tap stopping of Adhan recitation.
-            - **Individual Prayer Alarm Toggles:** Toggle Adhan alarms for Fajr, Dhuhr, Asr, Maghrib, and Isha with persistent settings.
-            - **Exact OS-Level Alarm Notifications:** Scheduled via `flutter_local_notifications` with `SCHEDULE_EXACT_ALARM` permissions.
+            ---
 
-            #### 🎬 Borderless Islamic Reels & Official Branding
-            - **Rebranded Header:** Renamed to "Islamic Reels" with borderless back button, live status pill, mute toggle, and language selector.
-            - **Official Channel Branding:** Rebranded to `@MyQuran • Official` with verified badge; removed generic hashtags and third-party branding.
-            - **Persistent Likes:** Likes and double-tap heart interactions persist across app sessions via `SharedPreferences`.
-            - **Native System Sharing:** Integrated `share_plus` to summon the native Android sharing sheet for video sharing.
+            #### 📢 Google Play Store Release Notes (What's New):
+            ```
+            What's new in My Quran v1.8.17:
+            • Authentic Mishary Rashid Alafasy Adhan audio with exact prayer time notifications & alarms.
+            • Crystal-clear, borderless Islamic interface with optimized typography.
+            • New Islamic Reels feed with authentic verified content and smooth media playback.
+            • Faster offline caching for all 114 Surahs and daily Ayah reflections.
+            • Bug fixes and battery life optimizations for background prayer reminders.
+            ```
 
-            #### 📲 Installation
-            Download **`My-Quran-v1.8.16.apk`** below directly to your Android device to install.
+            ---
+
+            #### 🕌 Key Highlights in v1.8.17:
+            1. **Google Play Store Ready**: Formatted as Android App Bundle (`.aab`) with official upload key signing and incremented `versionCode: 29`.
+            2. **Authentic Adhan & Exact Alarms**: OS-level notifications and in-app Adhan recitation via `just_audio` and `flutter_local_notifications`.
+            3. **Borderless Prayers & Mufta Clarity**: Atmospheric gradient background with zero harsh outlines.
+            4. **Islamic Reels**: Modern TikTok-style feed with persistent likes and native Android sharing.
           files: |
-            release-output/My-Quran-v1.8.16.apk
+            release-output/My-Quran-v1.8.17.aab
+            release-output/My-Quran-release.aab
+            release-output/My-Quran-v1.8.17.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

@@ -42,3 +42,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 release-output/
+
+# Android signing keys & credentials
+*.jks
+*.keystore
+key.properties
+**/key.properties
+
