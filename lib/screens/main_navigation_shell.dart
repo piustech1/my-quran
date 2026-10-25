@@ -4,6 +4,7 @@ import 'home_dashboard_screen.dart';
 import 'quran_library_screen.dart';
 import 'daily_ayah_screen.dart';
 import 'prayers_screen.dart';
+import 'islamic_reels_screen.dart';
 
 /// Primary App Navigation Shell
 /// Houses the persistent Floating Liquid Glass Navigation Dock across:
@@ -72,6 +73,13 @@ class MainNavigationShellState extends State<MainNavigationShell> {
       bottomNavigationBar: FloatingNavDock(
         currentIndex: _currentIndex,
         onTabSelected: switchTab,
+        onActionPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const IslamicReelsScreen(),
+            ),
+          );
+        },
       ),
     );
   }

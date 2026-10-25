@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../screens/mosque_finder_screen.dart';
 import '../screens/zakat_screen.dart';
+import '../screens/islamic_reels_screen.dart';
 
 class NavItemData {
   final String label;
@@ -225,8 +226,16 @@ class FloatingNavDock extends StatelessWidget {
         if (onActionPressed != null) {
           onActionPressed!();
         } else {
-          _showQuickActionsModal(context, isDark);
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const IslamicReelsScreen(),
+            ),
+          );
         }
+      },
+      onLongPress: () {
+        HapticFeedback.heavyImpact();
+        _showQuickActionsModal(context, isDark);
       },
       child: Container(
         width: 52,
