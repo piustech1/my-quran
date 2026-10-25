@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - My Quran</title>
+  <style>
+    :root {
+      --primary: #1F4E38;
+      --primary-dark: #143526;
+      --accent: #D4AF37;
+      --bg: #F8FAF9;
+      --card-bg: #FFFFFF;
+      --text: #2D3748;
+      --text-muted: #718096;
+      --border: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 40px 32px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .app-badge {
+      display: inline-block;
+      background: #E8F5E9;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    h1 {
+      color: var(--primary);
+      font-size: 28px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .meta {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    h2 {
+      color: var(--primary-dark);
+      font-size: 20px;
+      margin-top: 32px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--accent);
+      padding-left: 12px;
+    }
+
+    p, ul {
+      margin-bottom: 16px;
+      font-size: 15px;
+    }
+
+    ul {
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    strong {
+      color: #1A202C;
+    }
+
+    .highlight-box {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+
+    .highlight-box p {
+      margin: 0;
+      color: #166534;
+      font-weight: 500;
+    }
+
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="app-badge">Official Policy</div>
+      <h1>Privacy Policy for My Quran</h1>
+      <div class="meta">
+        <strong>Application:</strong> My Quran (<code>com.piustech.my_quran</code>)<br>
+        <strong>Developer:</strong> PiusTech<br>
+        <strong>Last Updated:</strong> October 25, 2026
+      </div>
+    </header>
+
+    <div class="highlight-box">
+      <p>🛡️ <strong>Summary:</strong> My Quran is built with strict privacy-by-design principles. We do not collect, sell, or monetize any personal user data. All religious preferences and prayer settings remain strictly on your personal device.</p>
+    </div>
+
+    <h2>1. Introduction</h2>
+    <p>This Privacy Policy explains how <strong>PiusTech</strong> ("we", "us", or "our") manages user information in the <strong>My Quran</strong> mobile application. We respect the sacred trust of our users and are committed to complete transparency regarding device permissions and data access.</p>
+
+    <h2>2. Information We Do NOT Collect</h2>
+    <ul>
+      <li><strong>No Account Registration:</strong> You do not need to create an account, log in, or provide your name, email, or phone number to use My Quran.</li>
+      <li><strong>No Personal Identity Tracking:</strong> We do not collect unique advertising identifiers (GAID), biometric data, contacts, or photos.</li>
+      <li><strong>No Selling of Data:</strong> We never sell, rent, or trade user data to advertisers, data brokers, or third parties.</li>
+    </ul>
+
+    <h2>3. Information We Process & Device Permissions</h2>
+    <p>To provide essential Islamic services (accurate prayer times, Adhan alarms, and audio streaming), the app requests the following specific permissions:</p>
+
+    <ul>
+      <li><strong>Location Data (Approximate / IP-Based):</strong>
+        <br>Used solely to determine your city and latitude/longitude to calculate astronomical prayer times (Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha) and local weather conditions. Your location is processed locally or via IP geocoding and is never logged, stored on external servers, or used for tracking.
+      </li>
+      <li><strong>Exact Alarms (<code>SCHEDULE_EXACT_ALARM</code> / <code>USE_EXACT_ALARM</code>):</strong>
+        <br>Required by the Android operating system to wake the device at the exact minute of each prayer time to play the Adhan and show reminder alerts, even when your phone is in battery-saving or standby mode.
+      </li>
+      <li><strong>Notifications (<code>POST_NOTIFICATIONS</code>):</strong>
+        <br>Used exclusively to deliver timely prayer time alerts, Daily Ayah notifications, and audio playback controls on your lock screen and notification drawer.
+      </li>
+      <li><strong>Foreground Service (<code>FOREGROUND_SERVICE_MEDIA_PLAYBACK</code>):</strong>
+        <br>Allows seamless Quran recitation audio and Adhan playback to continue uninterrupted when you lock your screen or switch to other applications.
+      </li>
+      <li><strong>Network Access (<code>INTERNET</code>):</strong>
+        <br>Used to fetch public Quranic text, audio recitation files from reciters (e.g., Mishary Rashid Alafasy), weather forecasts, and Islamic Reels media streams.
+      </li>
+    </ul>
+
+    <h2>4. Local Data Storage on Your Device</h2>
+    <p>My Quran stores preferences locally on your device using Android Shared Preferences, including:</p>
+    <ul>
+      <li>Your chosen reciter, translation edition, and Quran font size.</li>
+      <li>Saved bookmarks and daily Ayah reflections.</li>
+      <li>Individual prayer notification toggles (On/Off).</li>
+      <li>Liked Islamic Reels items.</li>
+    </ul>
+    <p>This data never leaves your device and is erased if you uninstall the application or clear app data.</p>
+
+    <h2>5. Third-Party Services & Open APIs</h2>
+    <p>My Quran retrieves verified public religious and environmental data through open APIs:</p>
+    <ul>
+      <li><strong>Quran Text & Translations:</strong> Provided via open-source CDN endpoints (<code>fawazahmed0/quran-api</code>).</li>
+      <li><strong>Recitation Audio:</strong> Streamed from EveryAyah public repository (<code>everyayah.com</code>).</li>
+      <li><strong>Islamic Media:</strong> Educational video streams sourced from IslamHouse API (<code>api3.islamhouse.com</code>).</li>
+      <li><strong>Weather Information:</strong> Open-Meteo weather API (<code>open-meteo.com</code>).</li>
+      <li><strong>Geolocation:</strong> Free public IP geolocation (<code>ipwho.is</code>).</li>
+    </ul>
+    <p>None of these external services receive any personally identifiable information from your device.</p>
+
+    <h2>6. Children's Privacy (COPPA & GDPR Compliance)</h2>
+    <p>My Quran is safe for users of all ages, including families and children. We do not solicit or knowingly collect personal information from children under 13. All content is strictly educational and religious.</p>
+
+    <h2>7. Security of Your Data</h2>
+    <p>All network communications between the app and public content servers occur over secure, encrypted HTTPS connections. We maintain industry-standard security measures to safeguard the integrity of the application.</p>
+
+    <h2>8. Changes to This Privacy Policy</h2>
+    <p>We may update this Privacy Policy from time to time to reflect app updates or regulatory compliance. Any revisions will be published on this URL with an updated "Last Updated" date.</p>
+
+    <h2>9. Contact Us</h2>
+    <p>If you have any questions or feedback regarding this Privacy Policy or your privacy while using My Quran, please contact us at:</p>
+    <ul>
+      <li><strong>Developer:</strong> PiusTech</li>
+      <li><strong>Email:</strong> <a href="mailto:support@piustech.com">support@piustech.com</a></li>
+      <li><strong>GitHub:</strong> <a href="https://github.com/piustech1/my-quran" target="_blank" rel="noopener">github.com/piustech1/my-quran</a></li>
+    </ul>
+
+    <footer>
+      &copy; 2026 PiusTech. All rights reserved. • My Quran Application
+    </footer>
+  </div>
+
+</body>
+</html>
