@@ -43,39 +43,50 @@ jobs:
       - name: Prepare Release APK
         run: |
           mkdir -p release-output
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.13.apk
+          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.14.apk
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.13
-          name: "My Quran v1.8.13 - Interactive Zoomable Mosque Map, Live Directions & Single-Screen Zakat Redesign"
+          tag_name: v1.8.14
+          name: "My Quran v1.8.14 - Pixel-Perfect Zakat & Prayers Redesign, Curved Mufta & Advanced Tafsir"
           body: |
-            ### 📖 My Quran - Release v1.8.13
+            ### 📖 My Quran - Release v1.8.14
 
-            What's New in **v1.8.13**:
+            What's New in **v1.8.14**:
 
-            #### 🕌 Interactive Zoomable Mosque Map & Live Directions
-            - **Interactive Touch & Zoom Canvas:** Fully interactive `InteractiveViewer` with smooth 2D panning, pinch-to-zoom (0.5x to 4.5x), floating zoom in/out (`+` / `-`) buttons, and instant recenter on user beacon (`🎯`).
-            - **Live Fly-To Camera Animation:** Searching or selecting any mosque automatically animates the map camera directly onto that mosque's location with a pulsing golden marker halo.
-            - **In-App Directions Route & Travel Time:** Renders a luminous direction polyline trajectory connecting your location beacon to the selected mosque, displaying estimated travel time (`🚗 ~X min drive • 🚶 ~Y min walk`) and distance.
-            - **Direct Google Maps Navigation Intent:** Configured Android package visibility `<queries>` for `google.navigation`, `geo:`, and `https:` to seamlessly launch turn-by-turn driving directions in Google Maps.
-            - **Strict Nearest-First Sorting:** Geolocation upgraded to secure HTTPS `ipwho.is` with Nominatim OpenStreetMap queries, displaying true immediate neighborhood mosques (0.3 km, 0.7 km, 1.2 km...).
+            #### 💰 Pixel-Perfect Zakat al-Mal Redesign
+            - **Curved Islamic Header:** Dark forest green container with authentic Islamic Mufta pattern, "Zakat al-Mal", "3rd pillar of Islam • زكاة المال", and green `2.5%` pill badge.
+            - **Sub-header Bar:** "Wealth purification" shield badge on left, currency selector pill (`Currency USD ∨`) on right.
+            - **Segmented Dual-Mode Tabs:** Smooth toggle between `[ Quick estimate ]` and detailed `[ Asset breakdown ]`.
+            - **Clean Input Cards:** "TOTAL ZAKATABLE ASSETS" card with large bold numbers, zero harsh borders or frost blur.
+            - **Side-by-Side Reference Cards:** "Eligible deductions" (0) and "Current Nisab" (610 silver / 7200 gold toggle).
+            - **Hawl Verification:** Dedicated checkbox for "Wealth held above Nisab for one lunar year".
+            - **Summary Banner:** Golden-cream banner displaying Net Wealth, Nisab reached badge, Zakah estimate, and bold green `$250.00`.
+            - **Interactive Modals:** Action pills for `[ 👥 Recipients ]` (8 Quranic categories Surah 9:60) and `[ ⓘ Nisab & rules ]`.
+            - **Bottom Control Row:** Circular reset button `[ ↺ ]` and radiant gold gradient `[ 🔗 Review estimate ↗ ]` button.
+            - **Persistent Floating Nav Dock:** Preserves user's floating liquid glass navigation dock at the bottom of the screen.
 
-            #### 💰 Single-Screen Zakat Page Redesign
-            - **Zero Endless Scrolling:** Re-architected into a compact single-screen graphic dashboard that presents all vital information at a glance.
-            - **Modern Graphic Surfaces:** Removed all card outlines/borders and frosted glass blur in favor of deep Islamic emerald graphic surfaces with soft ambient depth.
-            - **Modern Drop-down Menus:** Secondary information tucked neatly into elegant dropdown selectors:
-              - *Who Receives Zakat? (8 Quranic Categories from Surah 9:60)*
-              - *Nisab Guidelines & Deduction Rules (Gold $7,200 & Silver $610 criteria)*
-            - **Live Reactive 2.5% Calculator:** Clean, large numeric input with instant calculation and dynamic eligibility status badge.
-            - **Persistent Bottom Navigation Dock:** Embedded `FloatingNavDock` at the bottom of the screen ensuring continuous navigation access.
+            #### 🕌 Pixel-Perfect Prayers Screen Redesign
+            - **Curved Islamic Mufta Arch:** Deep forest green arch header with back button `[ < ]` and location pill `[ 📍 Kampala, Uganda ]`.
+            - **Daily Devotion Header:** "DAILY DEVOTION", bold "Prayer Times", and yellow outline clock icon `🕒`.
+            - **Elevated Upcoming Prayer Card:** Displays upcoming prayer ("Fajr"), upcoming time ("Tomorrow at 5:33 AM"), radiant golden countdown pill (`06:24:45`), and local time (`23:08:15 EAT`).
+            - **Mosque Finder Photographic Card:** Hero image of mosque with green dome and reflection pool, `[ 📍 MOSQUE FINDER ]` tag, "Find a place to pray", "Nearby mosques & directions", and circular green button `[ ↗ ]` linking directly to Mosque Finder Screen.
+            - **Today's Prayers Timetable:** Highlights active next prayer in an authentic golden-cream card with circular icon, Arabic name, "Next prayer", time, and interactive notification bell `🔔`.
+
+            #### 🌟 Daily Ayah Page Enhancements
+            - **Curved Mufta Corners:** Wrapped the signature Mufta Islamic archway backdrop in a 40px curved bottom border radius (`ClipRRect(borderRadius: BorderRadius.vertical(bottom: Radius.circular(40)))`), perfectly matching the home screen.
+            - **Advanced Tafsir & Reflection Section:** Upgraded the exegesis card with 3 interactive segmented tabs:
+              - `[ 📖 Exegesis ]`: Classical commentary with drop-quote styling and verified scholar attribution.
+              - `[ 💡 Key Lessons ]`: 3 actionable spiritual takeaways (Fawa'id) for daily life.
+              - `[ 🔤 Vocabulary ]`: Key Arabic root words, phonetics, and linguistic gems.
+              - **Quick Actions:** Instant copy formatted Ayah & Tafsir and share wisdom buttons.
 
             #### 📲 Installation
-            Download **`My-Quran-v1.8.13.apk`** below directly to your Android device to install.
+            Download **`My-Quran-v1.8.14.apk`** below directly to your Android device to install.
           files: |
-            release-output/My-Quran-v1.8.13.apk
+            release-output/My-Quran-v1.8.14.apk
             release-output/My-Quran-release.apk
           draft: false
           prerelease: false

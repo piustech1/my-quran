@@ -18,14 +18,17 @@ void main() {
     expect(find.text('Daily Ayah'), findsOneWidget);
 
     // Verify Translation dropdown in top header exists
-    expect(find.byIcon(Icons.translate_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.translate_rounded), findsAtLeastNWidgets(1));
 
     // Verify Bookmark & Share header buttons exist
-    expect(find.byIcon(Icons.share_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.share_outlined), findsAtLeastNWidgets(1));
 
     // Verify Upgraded Tafsir & Reflection Section exists
     expect(find.text('TAFSIR & REFLECTION'), findsOneWidget);
     expect(find.text('Understanding this ayah'), findsOneWidget);
+    expect(find.text('Exegesis'), findsOneWidget);
+    expect(find.text('Key Lessons'), findsOneWidget);
+    expect(find.text('Vocabulary'), findsOneWidget);
 
     // Verify Quick Actions Bar exists
     expect(find.text('Copy'), findsOneWidget);

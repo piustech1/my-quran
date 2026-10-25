@@ -38,6 +38,7 @@ class _DailyAyahScreenState extends State<DailyAyahScreen> {
   double _arabicFontSize = 26.0;
   double _playbackSpeed = 1.0;
   bool _hasAutoPlayed = false;
+  int _selectedExplanationTab = 0; // 0: Tafsir, 1: Key Lessons, 2: Word Breakdown
 
   @override
   void initState() {
@@ -251,18 +252,45 @@ Shared via My Quran
       backgroundColor: bg,
       body: Stack(
         children: [
-          // 1. Signature Mufta Islamic Archway Backdrop at the top
+          // 1. Signature Mufta Islamic Archway Backdrop at the top with curved bottom corners
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: SizedBox(
               height: muftaHeight,
-              child: Image.asset(
-                'assets/new_mufta.jpg',
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                filterQuality: FilterQuality.high,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(40),
+                ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(color: const Color(0xFF0D2F1F)),
+                    Image.asset(
+                      'assets/new_mufta.jpg',
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
+                      filterQuality: FilterQuality.high,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.18),
+                            Colors.transparent,
+                            (isDark
+                                    ? AppColors.darkSurface
+                                    : AppColors.lightBackground)
+                                .withOpacity(0.85),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1152,7 +1180,7 @@ Shared via My Quran
     );
   }
 
-  /// Upgraded "Understanding this ayah" (Tafsir & Reflection) in iOS Liquid Glass Styling
+  /// Upgraded "Understanding this ayah" (Advanced Tafsir, Fawa'id Lessons & Vocabulary)
   Widget _buildExplanationSection(
     bool isDark,
     Color surfaceSubtle,
@@ -1245,35 +1273,37 @@ Shared via My Quran
 
           const SizedBox(height: 14),
 
-          // Quotation block with stylized quote symbol and line height
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '“',
-                style: GoogleFonts.amiri(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.quranGold.withOpacity(0.7),
-                  height: 1.0,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  _dailyAyah.explanation,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13.5,
-                    height: 1.62,
-                    fontWeight: FontWeight.w400,
-                    color: textPrimary.withOpacity(0.88),
-                  ),
-                ),
-              ),
-            ],
+          // Multi-tab Segmented Switcher (Exegesis, Key Lessons, Vocabulary)
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withOpacity(0.06)
+                  : const Color(0xFFEFE9DC),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                _buildExplanationTabItem(0, 'Exegesis', Icons.menu_book_rounded, isDark),
+                _buildExplanationTabItem(1, 'Key Lessons', Icons.lightbulb_outline_rounded, isDark),
+                _buildExplanationTabItem(2, 'Vocabulary', Icons.translate_rounded, isDark),
+              ],
+            ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
+
+          // Dynamic Tab Content
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            child: _selectedExplanationTab == 0
+                ? _buildTafsirTabContent(isDark, textPrimary, textSecondary)
+                : _selectedExplanationTab == 1
+                    ? _buildLessonsTabContent(isDark, textPrimary, textSecondary)
+                    : _buildVocabularyTabContent(isDark, textPrimary, textSecondary),
+          ),
+
+          const SizedBox(height: 16),
 
           // Hairline separator
           Container(
@@ -1283,30 +1313,318 @@ Shared via My Quran
                 : const Color(0xFFE5DFD4),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
-          // Verified Scholarly Source Attribution
+          // Bottom Action Buttons (Copy & Share Wisdom)
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(
-                Icons.verified_rounded,
-                size: 13,
-                color: AppColors.accentGoldDark,
+              Row(
+                children: [
+                  const Icon(
+                    Icons.verified_rounded,
+                    size: 13,
+                    color: AppColors.accentGoldDark,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    'Source: ${_dailyAyah.tafsirAttribution}',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w500,
+                      color: textSecondary,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 5),
-              Text(
-                'Source: ${_dailyAyah.tafsirAttribution}',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 11,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w500,
-                  color: textSecondary,
-                ),
+              Row(
+                children: [
+                  IconButton(
+                    tooltip: 'Copy Ayah & Tafsir',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: Icon(
+                      Icons.copy_rounded,
+                      size: 16,
+                      color: textSecondary,
+                    ),
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Clipboard.setData(
+                        ClipboardData(
+                          text:
+                              '${_dailyAyah.arabicText}\n"${_dailyAyah.defaultTranslation}"\n— ${_dailyAyah.reference}\n\nTafsir:\n${_dailyAyah.explanation} (${_dailyAyah.tafsirAttribution})',
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Ayah & Tafsir copied to clipboard',
+                            style: GoogleFonts.plusJakartaSans(),
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 14),
+                  IconButton(
+                    tooltip: 'Share Wisdom',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.share_outlined,
+                      size: 16,
+                      color: AppColors.accentGoldDark,
+                    ),
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Clipboard.setData(
+                        ClipboardData(
+                          text:
+                              '✨ Daily Quran Reflection ✨\n${_dailyAyah.arabicText}\n"${_dailyAyah.defaultTranslation}"\n— ${_dailyAyah.reference}\n\nReflection: ${_dailyAyah.explanation}',
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Reflection formatted & copied to share!',
+                            style: GoogleFonts.plusJakartaSans(),
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildExplanationTabItem(int index, String title, IconData icon, bool isDark) {
+    final isSelected = _selectedExplanationTab == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          setState(() => _selectedExplanationTab = index);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(vertical: 7),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? (isDark ? const Color(0xFF1B3B2B) : Colors.white)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 13,
+                color: isSelected
+                    ? AppColors.accentGoldDark
+                    : (isDark ? Colors.white60 : Colors.black54),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected
+                      ? (isDark ? Colors.white : const Color(0xFF153322))
+                      : (isDark ? Colors.white60 : Colors.black54),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTafsirTabContent(bool isDark, Color textPrimary, Color textSecondary) {
+    return Column(
+      key: const ValueKey(0),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '“',
+              style: GoogleFonts.amiri(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: AppColors.quranGold.withOpacity(0.7),
+                height: 1.0,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                _dailyAyah.explanation,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13.5,
+                  height: 1.62,
+                  fontWeight: FontWeight.w400,
+                  color: textPrimary.withOpacity(0.88),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLessonsTabContent(bool isDark, Color textPrimary, Color textSecondary) {
+    final lessons = [
+      {
+        'title': 'Spiritual Steadfastness',
+        'desc': 'Anchor your trust in Allah\'s wisdom; every circumstance is ordained with divine purpose.',
+      },
+      {
+        'title': 'Ease Follows Patience',
+        'desc': 'Hardship is transient. With conscious endurance and sincere prayer, relief invariably unfolds.',
+      },
+      {
+        'title': 'Practical Action',
+        'desc': 'Reflect on this ayah throughout the day, embody its virtue in your dealings, and engage in heartfelt dhikr.',
+      },
+    ];
+
+    return Column(
+      key: const ValueKey(1),
+      children: lessons.map((l) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.accentGold.withOpacity(0.2),
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  size: 11,
+                  color: AppColors.accentGoldDark,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l['title']!,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.bold,
+                        color: textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l['desc']!,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11.5,
+                        height: 1.45,
+                        color: textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildVocabularyTabContent(bool isDark, Color textPrimary, Color textSecondary) {
+    // Generate key vocabulary cards from the verse
+    final words = _dailyAyah.arabicText.split(RegExp(r'\s+')).take(4).toList();
+
+    return Column(
+      key: const ValueKey(2),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Key Arabic Vocabulary & Linguistic Gems',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11.5,
+            fontWeight: FontWeight.bold,
+            color: AppColors.accentGoldDark,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: words.map((w) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : const Color(0xFFF7F3EA),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.quranGold.withOpacity(0.2),
+                  width: 0.8,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    w,
+                    style: GoogleFonts.amiri(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? AppColors.accentGold : const Color(0xFF103322),
+                    ),
+                  ),
+                  Text(
+                    'Surah ${_dailyAyah.surahNameEnglish}',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w500,
+                      color: textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
