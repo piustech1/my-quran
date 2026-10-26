@@ -18,7 +18,7 @@ My Quran is built with strict privacy-by-design principles. We do not collect, s
 ## 3. Information We Process & Device Permissions
 To provide essential Islamic services (accurate prayer times, Adhan alarms, and audio streaming), the app requests the following specific permissions:
 - **Location Data (Approximate / IP-Based):** Used solely to determine your city and latitude/longitude to calculate astronomical prayer times (Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha) and local weather conditions. Your location is processed locally or via IP geocoding and is never logged, stored on external servers, or used for tracking.
-- **Exact Alarms (`SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`):** Required by the Android operating system to wake the device at the exact minute of each prayer time to play the Adhan and show reminder alerts.
+- **Exact Alarms (`SCHEDULE_EXACT_ALARM`):** Required by the Android operating system to wake the device at the exact minute of each prayer time to play the Adhan and show reminder alerts.
 - **Notifications (`POST_NOTIFICATIONS`):** Used exclusively to deliver timely prayer time alerts, Daily Ayah notifications, and audio playback controls.
 - **Foreground Service (`FOREGROUND_SERVICE_MEDIA_PLAYBACK`):** Allows seamless Quran recitation audio and Adhan playback to continue uninterrupted when you lock your screen or switch apps.
 - **Network Access (`INTERNET`):** Used to fetch public Quranic text, audio recitation files, weather forecasts, and Islamic Reels media streams.
