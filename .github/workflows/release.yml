@@ -52,6 +52,11 @@ jobs:
             echo "Warning: No keystore secret found, falling back to debug signature."
           fi
 
+      - name: Ensure Android SDK 36 Platform is Installed
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-36" || true
+
       - name: Build Signed Android App Bundle (AAB for Google Play Store)
         run: flutter build appbundle --release
 
