@@ -64,56 +64,61 @@ jobs:
           rm -f android/app/upload-keystore.jks
           rm -f android/key.properties
 
+      - name: Extract App Version
+        run: |
+          RAW_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          VERSION_NAME=$(echo "$RAW_VERSION" | cut -d'+' -f1)
+          VERSION_CODE=$(echo "$RAW_VERSION" | cut -d'+' -f2)
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "TAG_NAME=v$VERSION_NAME" >> $GITHUB_ENV
+
       - name: Prepare Release Artifacts
         run: |
           mkdir -p release-output
-          cp build/app/outputs/bundle/release/app-release.aab release-output/My-Quran-v1.8.18.aab
+          cp build/app/outputs/bundle/release/app-release.aab "release-output/My-Quran-v${VERSION_NAME}.aab"
           cp build/app/outputs/bundle/release/app-release.aab release-output/My-Quran-release.aab
-          cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-v1.8.18.apk
+          cp build/app/outputs/flutter-apk/app-release.apk "release-output/My-Quran-v${VERSION_NAME}.apk"
           cp build/app/outputs/flutter-apk/app-release.apk release-output/My-Quran-release.apk
           cp assets/images/playstore_icon_512.png release-output/playstore_icon_512.png
+          cp assets/images/playstore_feature_graphic_1024x500.png release-output/playstore_feature_graphic_1024x500.png
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.8.18
-          name: "My Quran v1.8.18 - Official App Logo & Signed Play Store Release (.AAB & .APK)"
+          tag_name: ${{ env.TAG_NAME }}
+          name: "My Quran v${{ env.VERSION_NAME }} - Official Signed Play Store Release (.AAB & .APK)"
           body: |
-            ### 📖 My Quran — Release v1.8.18 (Production Signed)
+            ### 📖 My Quran — Release v${{ env.VERSION_NAME }} (Production Signed)
 
-            This release embeds the official high-resolution **My Quran Logo** across Android launcher icons (standard & round), in-app media playback, and the Google Play Store 512x512 icon asset.
+            This release updates the minimum Android SDK to **API 24 (Android 7.0+)** to satisfy Google Play Automatic Protection requirements, and includes the official full-square high-resolution **My Quran Logo** and Play Store assets.
 
             #### 📦 Release Artifacts:
-            - **`My-Quran-v1.8.18.aab`** (Android App Bundle): **Use this file for Google Play Console upload**.
-            - **`My-Quran-v1.8.18.apk`** (Universal APK): Signed universal APK for direct testing, distribution, and downloads.
-            - **`playstore_icon_512.png`**: Official 512x512 icon for Google Play Console listing.
+            - **`My-Quran-v${{ env.VERSION_NAME }}.aab`** (Android App Bundle): **Use this file for Google Play Console upload**.
+            - **`My-Quran-v${{ env.VERSION_NAME }}.apk`** (Universal APK): Signed universal APK for direct testing, distribution, and downloads.
+            - **`playstore_icon_512.png`**: Official full-square 512x512 icon for Google Play Console listing.
+            - **`playstore_feature_graphic_1024x500.png`**: Official 1024x500 feature graphic.
 
             ---
 
             #### 📢 Google Play Store Release Notes (What's New):
             ```
-            What's new in My Quran v1.8.18:
-            • Official new My Quran branding and high-definition launcher icon.
+            What's new in My Quran v${{ env.VERSION_NAME }}:
+            • Enhanced security & Google Play Automatic Protection support (minSdk 24+).
+            • Official full-square My Quran branding and high-definition launcher icon.
             • Authentic Mishary Rashid Alafasy Adhan audio with exact prayer time notifications & alarms.
             • Crystal-clear, borderless Islamic interface with optimized typography.
             • New Islamic Reels feed with authentic verified content and smooth media playback.
             • Faster offline caching for all 114 Surahs and daily Ayah reflections.
             • Bug fixes and battery life optimizations for background prayer reminders.
             ```
-
-            ---
-
-            #### 🕌 Key Highlights in v1.8.18:
-            1. **Official App Logo**: Emerald green Islamic squircle icon with crescent and mosque dome embedded across all density mipmaps and in-app media player.
-            2. **Google Play Store Ready**: Production-signed Android App Bundle (`.aab`) with `versionCode: 30` under package `com.piustech.my_quran`.
-            3. **Authentic Adhan & Exact Alarms**: OS-level notifications and in-app Adhan recitation.
-            4. **Islamic Reels**: Modern TikTok-style feed with persistent likes and native Android sharing.
           files: |
-            release-output/My-Quran-v1.8.18.aab
+            release-output/My-Quran-v${{ env.VERSION_NAME }}.aab
             release-output/My-Quran-release.aab
-            release-output/My-Quran-v1.8.18.apk
+            release-output/My-Quran-v${{ env.VERSION_NAME }}.apk
             release-output/My-Quran-release.apk
             release-output/playstore_icon_512.png
+            release-output/playstore_feature_graphic_1024x500.png
           draft: false
           prerelease: false
         env:
