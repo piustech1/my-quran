@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../constants/surah_data.dart';
+import '../models/juz.dart';
 import '../services/audio_service.dart';
 import '../services/daily_ayah_service.dart';
 import '../services/location_weather_service.dart';
 import '../services/prayer_time_service.dart';
+import '../services/storage_service.dart';
 import '../services/theme_service.dart';
 import '../widgets/floating_nav_dock.dart';
 import 'daily_ayah_screen.dart';
@@ -38,7 +40,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   final LocationWeatherService _weatherService = LocationWeatherService();
   final DailyAyahService _dailyAyahService = DailyAyahService();
   final QuranAudioService _audioService = QuranAudioService();
+  final StorageService _storageService = StorageService();
 
+  Map<String, dynamic>? _lastReadData;
   int _selectedNavIndex = 0;
   PrayerSchedule? _prayerSchedule;
   UpcomingPrayer? _upcomingPrayer;
@@ -52,6 +56,27 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     super.initState();
     _startClock();
     _loadRealData();
+    _loadLastRead();
+  }
+
+  Future<void> _loadLastRead() async {
+    final data = await _storageService.getLastRead();
+    if (mounted) {
+      setState(() => _lastReadData = data);
+    }
+  }
+
+  int _getJuzForAyah(int surahNum, int ayahNum) {
+    int juz = 1;
+    for (final j in kAllJuzs) {
+      if (j.startSurahNumber < surahNum ||
+          (j.startSurahNumber == surahNum && j.startAyah <= ayahNum)) {
+        juz = j.number;
+      } else {
+        break;
+      }
+    }
+    return juz;
   }
 
   @override
@@ -621,6 +646,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  _buildContinueReadingCard(isDark, textPrimary, textSecondary),
                   SizedBox(height: widget.isEmbeddedInShell ? 120 : 36),
                 ],
               ),
@@ -697,6 +724,231 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                 }
               },
             ),
+    );
+  }
+
+  Widget _buildContinueReadingCard(
+      bool isDark, Color textPrimary, Color textSecondary) {
+    final surahNum = (_lastReadData?['surah'] as num?)?.toInt() ?? 2;
+    final ayahNum = (_lastReadData?['ayah'] as num?)?.toInt() ?? 187;
+
+    final surahMeta = kAllSurahs.firstWhere(
+      (s) => s.number == surahNum,
+      orElse: () => kAllSurahs[1],
+    );
+
+    final totalAyahs =
+        surahMeta.numberOfAyahs > 0 ? surahMeta.numberOfAyahs : 286;
+    final percentage = ((ayahNum / totalAyahs) * 100).clamp(1, 100).round();
+    final juzNum = _getJuzForAyah(surahNum, ayahNum);
+
+    final cardBg = isDark ? const Color(0xFF13221C) : Colors.white;
+
+    void openReader() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ReaderScreen(
+            surah: surahMeta,
+            initialAyah: ayahNum,
+          ),
+        ),
+      ).then((_) => _loadLastRead());
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.35 : 0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: openReader,
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 1. Circular Progress Ring (Left)
+                SizedBox(
+                  width: 58,
+                  height: 58,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 54,
+                        height: 54,
+                        child: CircularProgressIndicator(
+                          value: percentage / 100,
+                          strokeWidth: 4.5,
+                          backgroundColor: isDark
+                              ? Colors.white.withOpacity(0.08)
+                              : const Color(0xFFE4EDE7),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFF267A53),
+                          ),
+                          strokeCap: StrokeCap.round,
+                        ),
+                      ),
+                      Text(
+                        '$percentage%',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w800,
+                          color: textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 14),
+
+                // 2. Center Text Column & Resume Button
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'CONTINUE READING',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.8,
+                          color: const Color(0xFFB8934A),
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Surah ${surahMeta.englishName}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w700,
+                          color: textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Ayah $ayahNum • Juz $juzNum',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
+                          color: textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 9),
+                      // Resume Pill
+                      GestureDetector(
+                        onTap: openReader,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 13, vertical: 5.5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF103C30),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF103C30).withOpacity(0.35),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.auto_stories_rounded,
+                                size: 13,
+                                color: Color(0xFFF5CE63),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Resume',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+
+                // 3. Right Side: 3-dots popup menu & Rihal graphic
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: Icon(
+                          Icons.more_horiz_rounded,
+                          color: textSecondary.withOpacity(0.6),
+                          size: 20,
+                        ),
+                        itemBuilder: (ctx) => [
+                          PopupMenuItem(
+                            value: 'reset',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.refresh_rounded, size: 18),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Reset to Al-Fatihah',
+                                  style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 13),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        onSelected: (val) async {
+                          if (val == 'reset') {
+                            await _storageService.saveLastRead(
+                              surahNumber: 1,
+                              surahName: 'Al-Fatiha',
+                              ayahNumber: 1,
+                            );
+                            _loadLastRead();
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Image.asset(
+                      'assets/images/rihal.png',
+                      width: 72,
+                      height: 62,
+                      fit: BoxFit.contain,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 

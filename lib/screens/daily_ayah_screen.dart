@@ -69,12 +69,14 @@ class _DailyAyahScreenState extends State<DailyAyahScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_hasAutoPlayed && mounted) {
         _hasAutoPlayed = true;
-        // Start playing the daily ayah recitation
-        _audioService.playAyah(
-          surahNumber: _dailyAyah.surahNumber,
-          ayahNumber: _dailyAyah.ayahNumber,
-          maxVerses: 286,
-        );
+        // Only start auto-play if audio is not already playing in another screen
+        if (!_audioService.isPlayingNotifier.value) {
+          _audioService.playAyah(
+            surahNumber: _dailyAyah.surahNumber,
+            ayahNumber: _dailyAyah.ayahNumber,
+            maxVerses: 286,
+          );
+        }
       }
     });
   }
@@ -878,73 +880,89 @@ Shared via My Quran
 
               const SizedBox(width: 10),
 
-              // B. Play / Pause Button
+              // B. Play / Pause Button & C. Active Animated Frequency Bars
               ValueListenableBuilder<bool>(
                 valueListenable: _audioService.isPlayingNotifier,
                 builder: (context, isPlaying, _) {
-                  return ValueListenableBuilder<bool>(
-                    valueListenable: _audioService.isLoadingNotifier,
-                    builder: (context, isLoading, _) {
-                      return GestureDetector(
-                        onTap: () {
-                          if (isPlaying) {
-                            _audioService.pause();
-                          } else {
-                            _audioService.playAyah(
-                              surahNumber: _dailyAyah.surahNumber,
-                              ayahNumber: _dailyAyah.ayahNumber,
-                              maxVerses: 286,
-                            );
-                          }
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.quranGold,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x60F5CE63),
-                                blurRadius: 10,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          alignment: Alignment.center,
-                          child: isLoading
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        AppColors.midnightNavy),
+                  return ValueListenableBuilder<int?>(
+                    valueListenable: _audioService.currentPlayingSurah,
+                    builder: (context, currentSurah, _) {
+                      return ValueListenableBuilder<int?>(
+                        valueListenable: _audioService.currentPlayingAyah,
+                        builder: (context, currentAyah, _) {
+                          final isThisAyahPlaying = isPlaying &&
+                              currentSurah == _dailyAyah.surahNumber &&
+                              currentAyah == _dailyAyah.ayahNumber;
+
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: _audioService.isLoadingNotifier,
+                            builder: (context, isLoading, _) {
+                              final isThisAyahLoading = isLoading &&
+                                  currentSurah == _dailyAyah.surahNumber &&
+                                  currentAyah == _dailyAyah.ayahNumber;
+
+                              return Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (isThisAyahPlaying) {
+                                        _audioService.pause();
+                                      } else {
+                                        _audioService.playAyah(
+                                          surahNumber: _dailyAyah.surahNumber,
+                                          ayahNumber: _dailyAyah.ayahNumber,
+                                          maxVerses: 286,
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: AppColors.quranGold,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Color(0x60F5CE63),
+                                            blurRadius: 10,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: isThisAyahLoading
+                                          ? const SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<Color>(
+                                                        AppColors.midnightNavy),
+                                              ),
+                                            )
+                                          : Icon(
+                                              isThisAyahPlaying
+                                                  ? Icons.pause_rounded
+                                                  : Icons.play_arrow_rounded,
+                                              color: AppColors.midnightNavy,
+                                              size: 24,
+                                            ),
+                                    ),
                                   ),
-                                )
-                              : Icon(
-                                  isPlaying
-                                      ? Icons.pause_rounded
-                                      : Icons.play_arrow_rounded,
-                                  color: AppColors.midnightNavy,
-                                  size: 24,
-                                ),
-                        ),
+                                  const SizedBox(width: 10),
+                                  _FrequencyWaveBars(
+                                    isPlaying: isThisAyahPlaying,
+                                    barColor: AppColors.quranGold,
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
-
-              const SizedBox(width: 10),
-
-              // C. Active Animated Frequency Bars
-              ValueListenableBuilder<bool>(
-                valueListenable: _audioService.isPlayingNotifier,
-                builder: (context, isPlaying, _) {
-                  return _FrequencyWaveBars(
-                    isPlaying: isPlaying,
-                    barColor: AppColors.quranGold,
                   );
                 },
               ),
