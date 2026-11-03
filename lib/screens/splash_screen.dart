@@ -1,10 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/storage_service.dart';
 import 'main_navigation_shell.dart';
+import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final Widget? targetScreen;
+
+  const SplashScreen({
+    super.key,
+    this.targetScreen,
+  });
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -62,14 +69,25 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
-  void _navigateToHome() {
+  Future<void> _navigateToHome() async {
     if (_hasNavigated || !mounted) return;
     _hasNavigated = true;
     _safetyTimer?.cancel();
 
+    Widget nextScreen;
+    if (widget.targetScreen != null) {
+      nextScreen = widget.targetScreen!;
+    } else {
+      final storage = StorageService();
+      final completed = await storage.hasCompletedOnboarding();
+      nextScreen =
+          completed ? const MainNavigationShell() : const OnboardingScreen();
+    }
+
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const MainNavigationShell(),
+        pageBuilder: (_, __, ___) => nextScreen,
         transitionsBuilder: (_, animation, __, child) {
           return FadeTransition(opacity: animation, child: child);
         },

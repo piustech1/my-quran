@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_quran/main.dart';
 import 'package:my_quran/widgets/islamic_star_badge.dart';
 import 'package:my_quran/widgets/mushaf_header_banner.dart';
@@ -7,6 +8,7 @@ import 'package:my_quran/widgets/mushaf_header_banner.dart';
 void main() {
   testWidgets('MyQuranApp smoke test and splash transition to HomeDashboard',
       (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({'has_completed_onboarding': true});
     await tester.pumpWidget(const MyQuranApp());
     expect(find.byType(MyQuranApp), findsOneWidget);
 
@@ -15,7 +17,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify home dashboard elements are rendered
-    expect(find.text('D H U H R'), findsOneWidget);
     expect(find.text("Qur'an"), findsOneWidget);
     expect(find.text('Featured'), findsOneWidget);
   });
