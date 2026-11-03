@@ -16,7 +16,7 @@ void main() {
     );
 
     // Initial render
-    expect(find.text('My Quran'), findsOneWidget);
+    expect(find.text('MY QURAN'), findsOneWidget);
     expect(find.text('القرآن الكريم'), findsOneWidget);
 
     // Progressive loading bar & Hadith saying tag exist
