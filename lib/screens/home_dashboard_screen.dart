@@ -248,19 +248,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 2. Main Prayer Card (Solid White with drop shadow in Light Mode)
+                  // 2. Main Prayer Card (Solid White with drop shadow in Light Mode, Zero Harsh Outline)
                   Container(
                     height: 184,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.darkCard : Colors.white,
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: isDark
-                            ? AppColors.darkBorder
-                            : const Color(0xFFEFE9DF),
-                        width: 1.0,
-                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(isDark ? 0.40 : 0.08),
@@ -1116,9 +1110,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
         const SizedBox(width: 12),
         _buildBentoCard(
           label: "Reels",
-          imagePath: 'assets/bento_zakat.jpg',
+          imagePath: 'assets/bento_reels.jpg',
           icon: Icons.play_circle_filled_rounded,
-          badgeText: "New",
+          badgeText: "Reels",
           isDark: isDark,
           onTap: () {
             Navigator.of(context).push(
@@ -1189,7 +1183,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   ),
                 ),
 
-                // 3. Frosted Glass Label Tag at bottom
+                // 3. Frosted Glass Label Tag at bottom (Zero harsh outline)
                 Positioned(
                   left: 8,
                   right: 8,
@@ -1204,10 +1198,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.38),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.18),
-                            width: 0.8,
-                          ),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,

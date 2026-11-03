@@ -395,10 +395,10 @@ Shared via My Quran
           // Right Action Area: Translation Dropdown Menu, Bookmark, Share
           Row(
             children: [
-              // Liquid Glass Translation Dropdown Selector
+              // High-Contrast Translation Dropdown Selector
               _buildTranslationDropdownMenu(isDark, textPrimary, textSecondary),
 
-              const SizedBox(width: 7),
+              const SizedBox(width: 8),
 
               // Bookmark Toggle
               _buildLiquidGlassCircleButton(
@@ -409,11 +409,13 @@ Shared via My Quran
                       ? Icons.bookmark_rounded
                       : Icons.bookmark_border_rounded,
                   size: 19,
-                  color: _isBookmarked ? AppColors.quranGold : textSecondary,
+                  color: _isBookmarked
+                      ? AppColors.quranGold
+                      : (isDark ? Colors.white : const Color(0xFF0F3826)),
                 ),
               ),
 
-              const SizedBox(width: 7),
+              const SizedBox(width: 8),
 
               // Share Button
               _buildLiquidGlassCircleButton(
@@ -422,7 +424,7 @@ Shared via My Quran
                 child: Icon(
                   Icons.share_outlined,
                   size: 18,
-                  color: textSecondary,
+                  color: isDark ? Colors.white : const Color(0xFF0F3826),
                 ),
               ),
             ],
@@ -432,7 +434,7 @@ Shared via My Quran
     );
   }
 
-  /// Reusable Liquid Glass Circular Button
+  /// Reusable High-Contrast Frosted Glass Circular Button (ZERO HARSH OUTLINES)
   Widget _buildLiquidGlassCircleButton({
     required bool isDark,
     required VoidCallback onTap,
@@ -444,22 +446,20 @@ Shared via My Quran
       child: ClipRRect(
         borderRadius: BorderRadius.circular(size / 2),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
           child: Container(
             width: size,
             height: size,
             decoration: BoxDecoration(
-              color: (isDark ? Colors.black : Colors.white).withOpacity(0.42),
+              color: isDark
+                  ? const Color(0xFF143B29).withOpacity(0.88)
+                  : Colors.white.withOpacity(0.95),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: (isDark ? Colors.white : Colors.black).withOpacity(0.12),
-                width: 0.8,
-              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -471,7 +471,7 @@ Shared via My Quran
     );
   }
 
-  /// Compact iOS-style Liquid Glass Translation Selector Dropdown in Top Header
+  /// Compact High-Contrast Translation Selector Dropdown in Top Header (ZERO HARSH OUTLINES)
   Widget _buildTranslationDropdownMenu(
     bool isDark,
     Color textPrimary,
@@ -481,13 +481,9 @@ Shared via My Quran
       initialValue: _selectedEdition,
       onSelected: _onSelectTranslation,
       elevation: 10,
-      color: isDark ? AppColors.darkCard : Colors.white,
+      color: isDark ? const Color(0xFF143B29) : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
-        side: BorderSide(
-          color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
-          width: 0.8,
-        ),
       ),
       itemBuilder: (context) => DailyAyahService.supportedTranslations.map((edition) {
         final isSelected = edition.id == _selectedEdition.id;
@@ -514,14 +510,14 @@ Shared via My Quran
                         fontSize: 13,
                         fontWeight:
                             isSelected ? FontWeight.bold : FontWeight.w500,
-                        color: textPrimary,
+                        color: isDark ? Colors.white : textPrimary,
                       ),
                     ),
                     Text(
                       edition.authorName,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10.5,
-                        color: textSecondary,
+                        color: isDark ? Colors.white60 : textSecondary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -536,40 +532,45 @@ Shared via My Quran
       child: ClipRRect(
         borderRadius: BorderRadius.circular(19),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
           child: Container(
             height: 38,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
             decoration: BoxDecoration(
-              color: (isDark ? Colors.black : Colors.white).withOpacity(0.42),
+              color: isDark
+                  ? const Color(0xFF143B29).withOpacity(0.88)
+                  : Colors.white.withOpacity(0.95),
               borderRadius: BorderRadius.circular(19),
-              border: Border.all(
-                color: (isDark ? Colors.white : Colors.black).withOpacity(0.12),
-                width: 0.8,
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(
                   Icons.translate_rounded,
-                  size: 14,
-                  color: AppColors.accentGoldDark,
+                  size: 15,
+                  color: Color(0xFFCCA048),
                 ),
-                const SizedBox(width: 5),
+                const SizedBox(width: 6),
                 Text(
                   _selectedEdition.languageName,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w600,
-                    color: textPrimary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : const Color(0xFF0F3826),
                   ),
                 ),
-                const SizedBox(width: 2),
+                const SizedBox(width: 3),
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  size: 15,
-                  color: textSecondary,
+                  size: 17,
+                  color: isDark ? Colors.white70 : const Color(0xFF0F3826),
                 ),
               ],
             ),
@@ -999,64 +1000,125 @@ Shared via My Quran
 
   /// Subtle Bottom Progress Bar and Duration Timestamps inside Image
   Widget _buildImageBottomProgress() {
-    return StreamBuilder<Duration>(
-      stream: _audioService.player.positionStream,
-      builder: (context, posSnapshot) {
-        final position = posSnapshot.data ?? Duration.zero;
-        final duration =
-            _audioService.player.duration ?? const Duration(seconds: 1);
-        final progress =
-            (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+    return ValueListenableBuilder<int?>(
+      valueListenable: _audioService.currentPlayingSurah,
+      builder: (context, currentSurah, _) {
+        return ValueListenableBuilder<int?>(
+          valueListenable: _audioService.currentPlayingAyah,
+          builder: (context, currentAyah, _) {
+            final isThisAyahActive = currentSurah == _dailyAyah.surahNumber &&
+                currentAyah == _dailyAyah.ayahNumber;
 
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SliderTheme(
-              data: SliderThemeData(
-                trackHeight: 2.8,
-                activeTrackColor: AppColors.quranGold,
-                inactiveTrackColor: Colors.white.withOpacity(0.25),
-                thumbColor: AppColors.quranGold,
-                thumbShape:
-                    const RoundSliderThumbShape(enabledThumbRadius: 4.5),
-                overlayShape:
-                    const RoundSliderOverlayShape(overlayRadius: 8.0),
-              ),
-              child: Slider(
-                value: progress,
-                onChanged: (val) {
-                  final target = Duration(
-                      milliseconds:
-                          (val * duration.inMilliseconds).round());
-                  _audioService.player.seek(target);
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            if (!isThisAyahActive) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    _formatDuration(position),
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10,
-                      color: Colors.white.withOpacity(0.85),
-                      fontWeight: FontWeight.w600,
+                  SliderTheme(
+                    data: SliderThemeData(
+                      trackHeight: 2.8,
+                      activeTrackColor: AppColors.quranGold,
+                      inactiveTrackColor: Colors.white.withOpacity(0.25),
+                      thumbColor: AppColors.quranGold,
+                      thumbShape:
+                          const RoundSliderThumbShape(enabledThumbRadius: 4.5),
+                      overlayShape:
+                          const RoundSliderOverlayShape(overlayRadius: 8.0),
+                    ),
+                    child: const Slider(
+                      value: 0.0,
+                      onChanged: null,
                     ),
                   ),
-                  Text(
-                    _formatDuration(duration),
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10,
-                      color: Colors.white.withOpacity(0.85),
-                      fontWeight: FontWeight.w600,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '0:00',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10,
+                            color: Colors.white.withOpacity(0.85),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          '0:00',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10,
+                            color: Colors.white.withOpacity(0.85),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
-            ),
-          ],
+              );
+            }
+
+            return StreamBuilder<Duration>(
+              stream: _audioService.player.positionStream,
+              builder: (context, posSnapshot) {
+                final position = posSnapshot.data ?? Duration.zero;
+                final duration =
+                    _audioService.player.duration ?? const Duration(seconds: 1);
+                final progress =
+                    (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SliderTheme(
+                      data: SliderThemeData(
+                        trackHeight: 2.8,
+                        activeTrackColor: AppColors.quranGold,
+                        inactiveTrackColor: Colors.white.withOpacity(0.25),
+                        thumbColor: AppColors.quranGold,
+                        thumbShape:
+                            const RoundSliderThumbShape(enabledThumbRadius: 4.5),
+                        overlayShape:
+                            const RoundSliderOverlayShape(overlayRadius: 8.0),
+                      ),
+                      child: Slider(
+                        value: progress,
+                        onChanged: (val) {
+                          final target = Duration(
+                              milliseconds:
+                                  (val * duration.inMilliseconds).round());
+                          _audioService.player.seek(target);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _formatDuration(position),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10,
+                              color: Colors.white.withOpacity(0.85),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            _formatDuration(duration),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10,
+                              color: Colors.white.withOpacity(0.85),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
         );
       },
     );

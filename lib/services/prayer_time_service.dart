@@ -78,7 +78,60 @@ class PrayerSchedule {
     return parts.first;
   }
 
+  static String calculateHijriDate([DateTime? date]) {
+    final d = date ?? DateTime.now();
+    int y = d.year;
+    int m = d.month;
+    int day = d.day;
+    if (m < 3) {
+      y -= 1;
+      m += 12;
+    }
+    final a = (y / 100).floor();
+    final b = 2 - a + (a / 4).floor();
+    final jd = (365.25 * (y + 4716)).floor() +
+        (30.6001 * (m + 1)).floor() +
+        day +
+        b -
+        1524.5;
+
+    const islamicEpoch = 1948439.5;
+    final z = jd - islamicEpoch;
+    final cyc = (z / 10631).floor();
+    final rem = z - 10631 * cyc;
+    final j = ((rem - 0.1335) / 354.366).floor();
+    final hYear = 30 * cyc + j + 1;
+    final remYear = rem - (j * 354 + ((3 + 11 * j) / 30).floor());
+    final hMonth = ((remYear - 0.5) / 29.5).floor() + 1;
+    final hDay = (remYear - (hMonth - 1) * 29.5).floor() + 1;
+
+    const hijriMonths = [
+      'Muharram',
+      'Safar',
+      'Rabi al-Awwal',
+      'Rabi al-Thani',
+      'Jumada al-Ula',
+      'Jumada al-Thani',
+      'Rajab',
+      'Sha\'ban',
+      'Ramadan',
+      'Shawwal',
+      'Dhu al-Qi\'dah',
+      'Dhu al-Hijjah'
+    ];
+    final mIdx = (hMonth - 1).clamp(0, 11);
+    return '${hDay.clamp(1, 30)} ${hijriMonths[mIdx]} $hYear AH';
+  }
+
   static PrayerSchedule fallbackDefault() {
+    final now = DateTime.now();
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    final dynamicDate = '${now.day} ${months[now.month - 1]} ${now.year}';
+    final dynamicHijri = calculateHijriDate(now);
+
     return PrayerSchedule(
       fajr: '05:33',
       sunrise: '06:31',
@@ -86,8 +139,8 @@ class PrayerSchedule {
       asr: '15:52',
       maghrib: '18:37',
       isha: '19:35',
-      readableDate: '23 Oct 2026',
-      hijriDate: '12 Jumada al-awwal 1448 AH',
+      readableDate: dynamicDate,
+      hijriDate: dynamicHijri,
     );
   }
 }

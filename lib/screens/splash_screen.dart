@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import '../constants/app_colors.dart';
 import 'main_navigation_shell.dart';
 
@@ -22,6 +24,9 @@ class _SplashScreenState extends State<SplashScreen>
   late final Animation<double> _sayingFadeAnimation;
   late final Animation<Offset> _sayingSlideAnimation;
 
+  Timer? _safetyTimer;
+  bool _hasNavigated = false;
+
   @override
   void initState() {
     super.initState();
@@ -41,10 +46,10 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _entranceController, curve: Curves.easeOutBack),
     );
 
-    // 2. Progressive loading bar animation (0.0 to 1.0 over 2.4 seconds)
+    // 2. Progressive loading bar animation (0.0 to 1.0 over 2.6 seconds)
     _progressController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2400),
+      duration: const Duration(milliseconds: 2600),
     );
 
     // 3. Shimmer / progressive wave on the saying tag
@@ -74,22 +79,36 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Navigate to Main Navigation Shell upon completion
     _progressController.addStatusListener((status) {
-      if (status == AnimationStatus.completed && mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const MainNavigationShell(),
-            transitionsBuilder: (_, animation, __, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 550),
-          ),
-        );
+      if (status == AnimationStatus.completed) {
+        _navigateToHome();
       }
     });
+
+    // 4-second safety fallback timer
+    _safetyTimer = Timer(const Duration(milliseconds: 3800), () {
+      _navigateToHome();
+    });
+  }
+
+  void _navigateToHome() {
+    if (_hasNavigated || !mounted) return;
+    _hasNavigated = true;
+    _safetyTimer?.cancel();
+
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const MainNavigationShell(),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 550),
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _safetyTimer?.cancel();
     _entranceController.dispose();
     _progressController.dispose();
     _shimmerController.dispose();
@@ -99,98 +118,135 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
-    final textPrimary =
-        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary =
-        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    const textSecondary = Color(0xFFC7DEC9);
 
     return Scaffold(
-      backgroundColor: bg,
-      body: SafeArea(
-        child: SizedBox.expand(
-          child: Column(
-            children: [
-              const Spacer(flex: 3),
-
-              // A. Main Center: Official Logo, Title, and Calligraphy
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Official App Logo with ambient glow halo
-                      Container(
-                        width: 104,
-                        height: 104,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(26),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.accentGold.withOpacity(isDark ? 0.30 : 0.22),
-                              blurRadius: 36,
-                              spreadRadius: 4,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(26),
-                          child: Image.asset(
-                            'assets/images/app_logo.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              color: const Color(0xFF204B34),
-                              child: const Icon(
-                                Icons.menu_book_rounded,
-                                color: Color(0xFFF5CE63),
-                                size: 50,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Brand App Name
-                      Text(
-                        'My Quran',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: textPrimary,
-                          letterSpacing: 0.4,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-
-                      // Arabic Calligraphy
-                      Text(
-                        'القرآن الكريم',
-                        textDirection: TextDirection.rtl,
-                        style: GoogleFonts.amiri(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.accentGold,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-
-                      Text(
-                        'The Holy Quran & Daily Companion',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12.5,
-                          color: textSecondary,
-                          letterSpacing: 0.3,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
+      backgroundColor: const Color(0xFF0D2818),
+      body: Stack(
+        children: [
+          // Background radial golden glow
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(0, -0.15),
+                  radius: 0.9,
+                  colors: [
+                    Color(0x38D4AF37),
+                    Color(0x120D2818),
+                    Color(0xFF0D2818),
+                  ],
+                  stops: [0.0, 0.55, 1.0],
                 ),
               ),
+            ),
+          ),
+
+          SafeArea(
+            child: SizedBox.expand(
+              child: Column(
+                children: [
+                  const Spacer(flex: 3),
+
+                  // A. Main Center: Lottie Calligraphy Mandala, Official Logo, Title
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Stack of Lottie Calligraphy Mandala & Logo
+                          SizedBox(
+                            width: 170,
+                            height: 170,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // Lottie Calligraphy Mandala Animation
+                                Lottie.asset(
+                                  'assets/animations/splash_calligraphy.json',
+                                  width: 170,
+                                  height: 170,
+                                  fit: BoxFit.contain,
+                                  repeat: true,
+                                  errorBuilder: (_, __, ___) =>
+                                      const SizedBox.shrink(),
+                                ),
+
+                                // Centered App Logo
+                                Container(
+                                  width: 88,
+                                  height: 88,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(22),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Color(0x60D4AF37),
+                                        blurRadius: 30,
+                                        spreadRadius: 2,
+                                        offset: Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(22),
+                                    child: Image.asset(
+                                      'assets/images/app_logo.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        color: const Color(0xFF204B34),
+                                        child: const Icon(
+                                          Icons.menu_book_rounded,
+                                          color: Color(0xFFF5CE63),
+                                          size: 42,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+
+                          // Brand App Name
+                          Text(
+                            'MY QURAN',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              letterSpacing: 2.2,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+
+                          // Arabic Calligraphy
+                          Text(
+                            'القرآن الكريم',
+                            textDirection: TextDirection.rtl,
+                            style: GoogleFonts.amiri(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFFD4AF37),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+
+                          Text(
+                            'DAILY DEVOTION & RECITATION',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              color: const Color(0xFFC7DEC9),
+                              letterSpacing: 1.4,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
               const Spacer(flex: 3),
 
@@ -328,6 +384,8 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         ),
       ),
-    );
+    ],
+  ),
+);
   }
 }

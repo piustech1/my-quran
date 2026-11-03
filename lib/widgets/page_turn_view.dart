@@ -334,27 +334,69 @@ class _PageTurnViewState extends State<PageTurnView> {
 
                     const SizedBox(height: 6),
 
-                    // Crisp high-visibility bottom page number
+                    // Authentic Islamic Rub El Hizb medallion page number
                     Center(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 4),
+                            horizontal: 16, vertical: 4),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.white.withOpacity(0.08)
-                              : Colors.black.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(14),
+                              ? const Color(0xFF133624)
+                              : const Color(0xFFFAF2E4),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFCCA048)
+                                  .withOpacity(isDark ? 0.18 : 0.12),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          '•  ${pageIndex + 1}  •',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            color: isDark
-                                ? AppColors.warmGold
-                                : AppColors.forestGreen,
-                            letterSpacing: 2.5,
-                            fontWeight: FontWeight.w800,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              '۞',
+                              style: GoogleFonts.amiri(
+                                fontSize: 13,
+                                color: const Color(0xFFCCA048),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              _toArabicDigits(pageIndex + 1),
+                              style: GoogleFonts.amiri(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: isDark
+                                    ? const Color(0xFFF5E4B2)
+                                    : const Color(0xFF143825),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '(${pageIndex + 1})',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? Colors.white60
+                                    : const Color(0xFF78716C),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '۞',
+                              style: GoogleFonts.amiri(
+                                fontSize: 13,
+                                color: const Color(0xFFCCA048),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -398,6 +440,16 @@ class _PageTurnViewState extends State<PageTurnView> {
         ),
       ),
     );
+  }
+
+  /// Converts an integer to Eastern Arabic numeral digits (٠, ١, ٢, etc.)
+  String _toArabicDigits(int number) {
+    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return number
+        .toString()
+        .split('')
+        .map((digit) => arabicDigits[int.parse(digit)])
+        .join('');
   }
 
   /// Routes to the active translation mode (Arabic Only, English Only, or Interlinear)
