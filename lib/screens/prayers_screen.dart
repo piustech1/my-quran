@@ -318,7 +318,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
             top: false,
             bottom: false,
             child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.only(
                 bottom: widget.isEmbeddedInShell ? 86 : 24,
               ),
@@ -808,8 +808,8 @@ class _PrayersScreenState extends State<PrayersScreen> {
         if (isNext) {
           // Highlighted Golden-Cream Active Next Prayer Card (NO BORDER / OUTLINE)
           return Container(
-            margin: const EdgeInsets.only(bottom: 5),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            margin: const EdgeInsets.only(bottom: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1D4530) : const Color(0xFFFAF0D9),
               borderRadius: BorderRadius.circular(20),
@@ -825,8 +825,8 @@ class _PrayersScreenState extends State<PrayersScreen> {
               children: [
                 // Amber circle with bespoke Islamic prayer icon
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 38,
+                  height: 38,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xFFCCA048),
@@ -847,7 +847,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                           Text(
                             p.name,
                             style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14.5,
+                              fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: isDark ? Colors.white : const Color(0xFF18181B),
                             ),
@@ -856,7 +856,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                           Text(
                             p.arabicName,
                             style: GoogleFonts.amiri(
-                              fontSize: 13.5,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: isDark ? const Color(0xFFCCA048) : const Color(0xFF986F20),
                             ),
@@ -867,7 +867,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                       Text(
                         'Next prayer',
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 10.5,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: isDark ? const Color(0xFFCCA048) : const Color(0xFF986F20),
                         ),
@@ -882,7 +882,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                     Text(
                       _format12Hour(p.time),
                       style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
+                        fontSize: 14.5,
                         fontWeight: FontWeight.bold,
                         color: isDark ? Colors.white : const Color(0xFF18181B),
                       ),
@@ -896,7 +896,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                           isReminding
                               ? Icons.notifications_active_rounded
                               : Icons.notifications_off_outlined,
-                          size: 19,
+                          size: 20,
                           color: isReminding
                               ? (isDark ? const Color(0xFFCCA048) : const Color(0xFF986F20))
                               : Colors.grey,
@@ -912,8 +912,8 @@ class _PrayersScreenState extends State<PrayersScreen> {
 
         // Clean Neutral Card for other prayers (NO BORDER / OUTLINE)
         return Container(
-          margin: const EdgeInsets.only(bottom: 5),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          margin: const EdgeInsets.only(bottom: 7),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF142E20) : Colors.white,
             borderRadius: BorderRadius.circular(18),
@@ -929,8 +929,8 @@ class _PrayersScreenState extends State<PrayersScreen> {
             children: [
               // Subtle circular icon badge with bespoke Islamic prayer icon
               Container(
-                width: 34,
-                height: 34,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isDark
@@ -953,7 +953,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                         Text(
                           p.name,
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14,
+                            fontSize: 14.5,
                             fontWeight: FontWeight.w600,
                             color: isDark ? Colors.white70 : const Color(0xFF292524),
                           ),
@@ -962,7 +962,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                         Text(
                           p.arabicName,
                           style: GoogleFonts.amiri(
-                            fontSize: 13,
+                            fontSize: 13.5,
                             color: isDark ? Colors.white54 : Colors.black45,
                           ),
                         ),
@@ -971,7 +971,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                     Text(
                       p.isPast ? 'Completed' : 'Upcoming',
                       style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10.5,
+                        fontSize: 11,
                         color: isDark ? Colors.white38 : const Color(0xFFA19B91),
                       ),
                     ),
@@ -985,7 +985,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                   Text(
                     _format12Hour(p.time),
                     style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13.5,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: isDark ? Colors.white60 : const Color(0xFF57534E),
                     ),
@@ -1000,7 +1000,7 @@ class _PrayersScreenState extends State<PrayersScreen> {
                           isReminding
                               ? Icons.notifications_active_rounded
                               : Icons.notifications_off_outlined,
-                          size: 18,
+                          size: 19,
                           color: isReminding
                               ? (isDark ? const Color(0xFFCCA048) : const Color(0xFF1B633D))
                               : Colors.grey.withOpacity(0.5),

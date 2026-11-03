@@ -37,13 +37,13 @@ class QiblaCard extends StatelessWidget {
             );
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
             child: Row(
               children: [
                 // 1. Golden Circular Compass Badge with Kaaba Accent
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 50,
+                  height: 50,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
@@ -58,8 +58,8 @@ class QiblaCard extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                         color: Color(0x40D4AF37),
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
+                        blurRadius: 10,
+                        offset: Offset(0, 3),
                       ),
                     ],
                   ),
@@ -67,7 +67,7 @@ class QiblaCard extends StatelessWidget {
                     child: Icon(
                       Icons.explore_rounded,
                       color: Color(0xFF062B21),
-                      size: 24,
+                      size: 26,
                     ),
                   ),
                 ),
@@ -84,7 +84,7 @@ class QiblaCard extends StatelessWidget {
                           Text(
                             'QIBLA DIRECTION',
                             style: GoogleFonts.plusJakartaSans(
-                              fontSize: 9.5,
+                              fontSize: 10,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 1.0,
                               color: const Color(0xFFB8892B),
@@ -93,7 +93,7 @@ class QiblaCard extends StatelessWidget {
                           const SizedBox(width: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 1.5),
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: const Color(0xFFB8892B).withOpacity(0.18),
                               borderRadius: BorderRadius.circular(6),
@@ -101,7 +101,7 @@ class QiblaCard extends StatelessWidget {
                             child: Text(
                               'COMPASS',
                               style: GoogleFonts.plusJakartaSans(
-                                fontSize: 8.5,
+                                fontSize: 9,
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFFB8892B),
                               ),
@@ -109,20 +109,20 @@ class QiblaCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
                       Text(
                         'Locate Holy Kaaba',
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14.5,
+                          fontSize: 15.5,
                           fontWeight: FontWeight.bold,
                           color: isDark ? Colors.white : const Color(0xFF1C1917),
                         ),
                       ),
-                      const SizedBox(height: 1),
+                      const SizedBox(height: 2),
                       Text(
                         'Real-time compass & distance',
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
+                          fontSize: 11.5,
                           fontWeight: FontWeight.w500,
                           color: isDark ? Colors.white60 : const Color(0xFF888279),
                         ),
@@ -134,12 +134,19 @@ class QiblaCard extends StatelessWidget {
                 // 3. Right Action Arrow Pill
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     color: isDark
                         ? const Color(0xFF1D4530)
                         : const Color(0xFF0F3826),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -147,16 +154,16 @@ class QiblaCard extends StatelessWidget {
                       Text(
                         'Open',
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 5),
                       const Icon(
                         Icons.arrow_forward_ios_rounded,
                         color: Color(0xFFF5CE63),
-                        size: 10,
+                        size: 11,
                       ),
                     ],
                   ),

@@ -67,73 +67,82 @@ class FloatingNavDock extends StatelessWidget {
     final glassColor = isDark
         ? const Color(0xFF132A1E).withOpacity(0.85)
         : Colors.white.withOpacity(0.88);
-    final borderColor = isDark
-        ? Colors.white.withOpacity(0.12)
-        : Colors.white.withOpacity(0.65);
     final shadowColor = isDark
         ? Colors.black.withOpacity(0.45)
         : const Color(0xFF1B382B).withOpacity(0.10);
 
-    return Container(
-      // Keep clear gap above the bottom edge — never touches bottom
-      margin: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: bottomPadding > 0 ? bottomPadding + 6 : 20,
-      ),
-      height: 64,
-      child: Row(
-        children: [
-          // 1. Main Liquid Glass Pill Capsule
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(34),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                child: Container(
-                  height: 64,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: glassColor,
-                    borderRadius: BorderRadius.circular(34),
-                    border: Border.all(color: borderColor, width: 1.2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: shadowColor,
-                        blurRadius: 28,
-                        offset: const Offset(0, 10),
-                      ),
-                      BoxShadow(
-                        color: Colors.white.withOpacity(isDark ? 0.04 : 0.4),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: List.generate(defaultItems.length, (index) {
-                      final item = defaultItems[index];
-                      final isSelected = currentIndex == index;
-                      return _buildNavItem(
-                        context: context,
-                        index: index,
-                        item: item,
-                        isSelected: isSelected,
-                        isDark: isDark,
-                      );
-                    }),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                (isDark ? const Color(0xFF0A1F14) : Colors.white).withOpacity(0.0),
+                (isDark ? const Color(0xFF0A1F14) : Colors.white).withOpacity(0.70),
+                (isDark ? const Color(0xFF0A1F14) : Colors.white).withOpacity(0.92),
+              ],
+              stops: const [0.0, 0.35, 1.0],
+            ),
+          ),
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 10,
+            bottom: bottomPadding > 0 ? bottomPadding + 6 : 18,
+          ),
+          child: Row(
+            children: [
+              // 1. Main Liquid Glass Pill Capsule
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(34),
+                  child: Container(
+                    height: 64,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: glassColor,
+                      borderRadius: BorderRadius.circular(34),
+                      boxShadow: [
+                        BoxShadow(
+                          color: shadowColor,
+                          blurRadius: 28,
+                          offset: const Offset(0, 10),
+                        ),
+                        BoxShadow(
+                          color: Colors.white.withOpacity(isDark ? 0.04 : 0.4),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: List.generate(defaultItems.length, (index) {
+                        final item = defaultItems[index];
+                        final isSelected = currentIndex == index;
+                        return _buildNavItem(
+                          context: context,
+                          index: index,
+                          item: item,
+                          isSelected: isSelected,
+                          isDark: isDark,
+                        );
+                      }),
+                    ),
                   ),
                 ),
               ),
-            ),
+
+              const SizedBox(width: 10),
+
+              // 2. Elevated Floating Companion Action Button (Matching reference circular action button)
+              _buildActionButton(context, isDark),
+            ],
           ),
-
-          const SizedBox(width: 10),
-
-          // 2. Elevated Floating Companion Action Button (Matching reference circular action button)
-          _buildActionButton(context, isDark),
-        ],
+        ),
       ),
     );
   }

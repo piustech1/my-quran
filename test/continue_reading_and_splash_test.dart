@@ -7,7 +7,7 @@ import 'package:my_quran/services/audio_service.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('SplashScreen renders official app logo, progress bar, and Hadith saying tag',
+  testWidgets('SplashScreen renders official app logo, MY QURAN, Arabic title, and progress bar',
       (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
@@ -19,22 +19,12 @@ void main() {
     expect(find.text('MY QURAN'), findsOneWidget);
     expect(find.text('القرآن الكريم'), findsOneWidget);
 
-    // Progressive loading bar & Hadith saying tag exist
-    expect(
-      find.text('«خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ»'),
-      findsOneWidget,
-    );
-    expect(
-      find.text('“The best among you are those who learn the Quran and teach it”'),
-      findsOneWidget,
-    );
+    // Minimal app logo image exists
+    expect(find.byType(Image), findsOneWidget);
 
     // Advance animation
     await tester.pump(const Duration(milliseconds: 1200));
-    expect(
-      find.text('«خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ»'),
-      findsOneWidget,
-    );
+    expect(find.text('MY QURAN'), findsOneWidget);
 
     // Finish splash timer
     await tester.pump(const Duration(milliseconds: 1500));

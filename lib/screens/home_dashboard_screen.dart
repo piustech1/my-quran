@@ -648,12 +648,32 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
             ),
           ),
 
-          // 3. Floating Deep Emerald Capsule Top Bar matching reference
+          // 3. Full-Width Frosted Glass Top Header Blur Layer with Floating Capsule
           Positioned(
-            top: topPadding + 10,
-            left: 18,
-            right: 18,
-            child: _buildHeaderRow(isDark),
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(18, topPadding + 10, 18, 12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        const Color(0xFF0D2F1F).withOpacity(0.88),
+                        const Color(0xFF0D2F1F).withOpacity(0.40),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.72, 1.0],
+                    ),
+                  ),
+                  child: _buildHeaderRow(isDark),
+                ),
+              ),
+            ),
           ),
 
           // 4. Backgroundless Golden Frequency Waves (Seen between top app bar & prayer card when reciting)
@@ -1112,7 +1132,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           label: "Reels",
           imagePath: 'assets/bento_reels.jpg',
           icon: Icons.play_circle_filled_rounded,
-          badgeText: "Reels",
           isDark: isDark,
           onTap: () {
             Navigator.of(context).push(
