@@ -8,9 +8,9 @@ class PopOutClipper extends CustomClipper<Path> {
 
   @override
   Path getClip(Size size) {
-    const cx = 80.0;
-    const cy = 102.0;
+    final cx = size.width / 2;
     const r = 64.0;
+    final cy = size.height - r;
 
     final path = Path()
       ..moveTo(cx - r, cy)
@@ -18,9 +18,9 @@ class PopOutClipper extends CustomClipper<Path> {
       ..lineTo(cx + r, 0)
       ..lineTo(cx + r, cy)
       ..arcToPoint(
-        const Offset(cx - r, cy),
+        Offset(cx - r, cy),
         radius: const Radius.circular(r),
-        clockwise: false,
+        clockwise: true,
       )
       ..close();
     return path;

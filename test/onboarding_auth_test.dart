@@ -191,6 +191,24 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(PopOutAvatarBadge), findsOneWidget);
     });
+
+    test('PopOutClipper geometry covers head pop-out and entire circle interior', () {
+      const clipper = PopOutClipper();
+      final path = clipper.getClip(const Size(160, 166));
+
+      // Head pop-out above the circle
+      expect(path.contains(const Offset(80, 20)), isTrue);
+      // Face in upper half of circle
+      expect(path.contains(const Offset(80, 70)), isTrue);
+      // Center of circle
+      expect(path.contains(const Offset(80, 102)), isTrue);
+      // Torso in lower half of circle
+      expect(path.contains(const Offset(80, 130)), isTrue);
+      // Just inside bottom edge of circle
+      expect(path.contains(const Offset(80, 165)), isTrue);
+      // Outside bottom edge of circle (clipped)
+      expect(path.contains(const Offset(80, 168)), isFalse);
+    });
   });
 
   group('StorageService Reactive Sync Tests', () {
