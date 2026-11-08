@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
@@ -54,6 +55,30 @@ class _ReaderScreenState extends State<ReaderScreen> {
     _audioService.currentPlayingAyah.addListener(_handleAudioAyahChange);
     // Listen to Surah changes when continuous recitation advances to next Surah
     _audioService.currentPlayingSurah.addListener(_handleAudioSurahChange);
+
+    // Track scroll position to auto-persist reading progress as the user scrolls
+    _scrollController.addListener(_handleUserScroll);
+  }
+
+  Timer? _scrollDebounceTimer;
+
+  void _handleUserScroll() {
+    if (_readerMode != ReaderMode.verseList || !_scrollController.hasClients || _ayahs.isEmpty) {
+      return;
+    }
+    _scrollDebounceTimer?.cancel();
+    _scrollDebounceTimer = Timer(const Duration(milliseconds: 600), () {
+      if (!mounted || !_scrollController.hasClients || _ayahs.isEmpty) return;
+      final offset = _scrollController.offset;
+      // Estimate which ayah is visible at the top of the viewport
+      final index = ((offset - 40.0) / 190.0).floor().clamp(0, _ayahs.length - 1);
+      final visibleAyah = _ayahs[index];
+      _storage.saveLastRead(
+        surahNumber: _activeSurah.number,
+        surahName: _activeSurah.englishName,
+        ayahNumber: visibleAyah.verse,
+      );
+    });
   }
 
   void _handleAudioSurahChange() {
@@ -93,6 +118,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   @override
   void dispose() {
+    _scrollDebounceTimer?.cancel();
+    _scrollController.removeListener(_handleUserScroll);
     _audioService.currentPlayingAyah.removeListener(_handleAudioAyahChange);
     _audioService.currentPlayingSurah.removeListener(_handleAudioSurahChange);
     _scrollController.dispose();

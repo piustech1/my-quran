@@ -5,6 +5,7 @@ import 'package:my_quran/screens/auth/login_screen.dart';
 import 'package:my_quran/screens/auth/signup_screen.dart';
 import 'package:my_quran/screens/onboarding_screen.dart';
 import 'package:my_quran/services/storage_service.dart';
+import 'package:my_quran/widgets/pop_out_avatar_badge.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -160,6 +161,65 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Passwords do not match'), findsNothing);
+      expect(find.text('Passwords match'), findsOneWidget);
+    });
+  });
+
+  group('PopOutAvatarBadge Widget Tests', () {
+    testWidgets('Renders Login variant avatar badge cleanly',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: PopOutAvatarBadge(variant: AvatarVariant.login),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(PopOutAvatarBadge), findsOneWidget);
+    });
+
+    testWidgets('Renders SignUp variant avatar badge cleanly',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: PopOutAvatarBadge(variant: AvatarVariant.signup),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(PopOutAvatarBadge), findsOneWidget);
+    });
+  });
+
+  group('StorageService Reactive Sync Tests', () {
+    test('Saves last read and updates lastReadNotifier', () async {
+      final storage = StorageService();
+      expect(storage.lastReadNotifier.value, isNull);
+
+      await storage.saveLastRead(
+        surahNumber: 2,
+        surahName: 'Al-Baqarah',
+        ayahNumber: 255,
+      );
+
+      expect(storage.lastReadNotifier.value, isNotNull);
+      expect(storage.lastReadNotifier.value!['surah'], equals(2));
+      expect(storage.lastReadNotifier.value!['ayah'], equals(255));
+    });
+
+    test('Toggles bookmarks and updates bookmarksNotifier', () async {
+      final storage = StorageService();
+      expect(storage.bookmarksNotifier.value, isEmpty);
+
+      final added = await storage.toggleBookmark(18);
+      expect(added, isTrue);
+      expect(storage.bookmarksNotifier.value, contains(18));
+
+      final removed = await storage.toggleBookmark(18);
+      expect(removed, isFalse);
+      expect(storage.bookmarksNotifier.value, isNot(contains(18)));
     });
   });
 }

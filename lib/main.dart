@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'screens/splash_screen.dart';
+import 'services/firebase_sync_service.dart';
 import 'services/theme_service.dart';
 import 'theme/app_theme.dart';
 
@@ -16,6 +17,13 @@ void main() async {
 
   final themeService = ThemeService();
   await themeService.init();
+
+  // Initialize Firebase Realtime Database & Auth sync (local-first fallback if config is deferred)
+  try {
+    await FirebaseSyncService().init();
+  } catch (e) {
+    debugPrint('Firebase init handled: $e');
+  }
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

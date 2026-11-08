@@ -1,9 +1,13 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/firebase_sync_service.dart';
 import '../../services/storage_service.dart';
 import '../../theme/tokens.dart';
+import '../../widgets/hero_geometry_painter.dart';
+import '../../widgets/pop_out_avatar_badge.dart';
 import '../main_navigation_shell.dart';
 import 'signup_screen.dart';
 
@@ -74,7 +78,14 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     await Future.delayed(const Duration(milliseconds: 600));
 
-    // Persist login session
+    // Sign in via Firebase if connected
+    try {
+      await FirebaseSyncService().signInWithEmail(email, password);
+    } catch (e) {
+      debugPrint('[LoginScreen] Firebase sign-in note: $e');
+    }
+
+    // Persist login session locally and sync data
     await _storageService.saveUserSession(
       name: email.split('@').first,
       email: email,
@@ -216,13 +227,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final heroHeight = screenHeight * 0.32;
+    final heroHeight = math.max(screenHeight * 0.38, 296.0);
 
     return Scaffold(
-      backgroundColor: NoorColors.emeraldDeep,
+      backgroundColor: NoorColors.emeraldNight,
       body: Stack(
         children: [
-          // 1. Top 32% Hero Section
+          // 1. Top Hero Section with Faint Arabesque Geometry & Pop-Out Avatar Badge
           Positioned(
             top: 0,
             left: 0,
@@ -230,22 +241,20 @@ class _LoginScreenState extends State<LoginScreen> {
             height: heroHeight,
             child: Container(
               decoration: const BoxDecoration(
-                gradient: NoorGradients.emeraldRadial,
+                gradient: NoorGradients.heroRadial,
               ),
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Islamic Arch Vector Background
-                  SvgPicture.asset(
-                    'assets/svg/islamic_arch_background.svg',
-                    fit: BoxFit.cover,
-                    alignment: Alignment.bottomCenter,
+                  // Faint Arabesque 8-point star lattice, muqarnas arches & sparkles
+                  const CustomPaint(
+                    painter: HeroGeometryPainter(),
                   ),
 
-                  // Hero Text & Bismillah Badge
+                  // Hero Content
                   SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 38),
                       child: Center(
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -253,49 +262,35 @@ class _LoginScreenState extends State<LoginScreen> {
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Bismillah Calligraphy Badge
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/svg/bismillah_calligraphy_badge.svg',
-                                    width: 88,
-                                    height: 88,
-                                  ),
-                                  Text(
-                                    'بِسْمِ اللَّهِ',
-                                    style: GoogleFonts.amiri(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: NoorColors.goldLight,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              // Avatar Badge with 128px glowing ring and pop-out clipped hijab illustration
+                              const PopOutAvatarBadge(variant: AvatarVariant.login),
 
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 16),
 
                               // Welcome Back Title
                               Text(
                                 'Welcome Back',
-                                style: GoogleFonts.cormorantGaramond(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: NoorColors.cream,
-                                  letterSpacing: 0.3,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: NoorColors.ivory,
+                                  letterSpacing: -0.3,
                                 ),
                               ),
 
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 6),
 
                               // Subtitle
-                              Text(
-                                'Assalamu Alaikum. Sign in to sync your bookmarks and dhikr.',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.manrope(
-                                  fontSize: 12.5,
-                                  color: NoorColors.cream.withOpacity(0.75),
-                                  height: 1.35,
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 300),
+                                child: Text(
+                                  'Sign in to sync your bookmarks and dhikr.',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13,
+                                    color: NoorColors.sand,
+                                    height: 1.4,
+                                  ),
                                 ),
                               ),
                             ],
@@ -309,9 +304,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // 2. Cream Curved Bottom Sheet
+          // 2. Cream Curved Bottom Sheet (overlapping hero by 32px)
           Positioned(
-            top: heroHeight - 24,
+            top: heroHeight - 32,
             left: 0,
             right: 0,
             bottom: 0,
@@ -325,18 +320,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: NoorRadii.sheet,
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(28, 28, 28, 28),
+                  padding: const EdgeInsets.fromLTRB(28, 12, 28, 28),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Grab indicator pill
+                      // Grab indicator pill (40x4px)
                       Center(
                         child: Container(
-                          width: 36,
+                          width: 40,
                           height: 4,
-                          margin: const EdgeInsets.only(bottom: 20),
+                          margin: const EdgeInsets.only(bottom: 24),
                           decoration: BoxDecoration(
-                            color: NoorColors.line,
+                            color: NoorColors.fieldBorder,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),

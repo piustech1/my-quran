@@ -1,9 +1,13 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/firebase_sync_service.dart';
 import '../../services/storage_service.dart';
 import '../../theme/tokens.dart';
+import '../../widgets/hero_geometry_painter.dart';
+import '../../widgets/pop_out_avatar_badge.dart';
 import '../main_navigation_shell.dart';
 import 'login_screen.dart';
 
@@ -112,7 +116,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() => _isLoading = true);
     await Future.delayed(const Duration(milliseconds: 650));
 
-    // Save session to local storage
+    // Sign up via Firebase if connected
+    try {
+      await FirebaseSyncService().signUpWithEmail(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+    } catch (e) {
+      debugPrint('[SignUpScreen] Firebase sign-up note: $e');
+    }
+
+    // Save session to local storage and sync
     await _storageService.saveUserSession(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
@@ -145,16 +160,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  Widget _buildRequirementChip(String label, bool ok) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: ok ? NoorColors.forest.withOpacity(0.12) : NoorColors.field,
+        borderRadius: BorderRadius.circular(50),
+        border: Border.all(
+          color: ok ? NoorColors.forest.withOpacity(0.3) : NoorColors.fieldBorder,
+          width: 0.8,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 14,
+            height: 14,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ok ? NoorColors.forest : Colors.transparent,
+              border: ok ? null : Border.all(color: NoorColors.fieldBorder),
+            ),
+            child: ok
+                ? const Icon(Icons.check, size: 9, color: NoorColors.ivory)
+                : null,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: ok ? NoorColors.forest : NoorColors.inkSoft,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final heroHeight = screenHeight * 0.28;
+    final heroHeight = math.max(screenHeight * 0.38, 296.0);
+
+    final pass = _passwordController.text;
+    final hasLength = pass.length >= 8;
+    final hasLetter = RegExp(r'[a-zA-Z]').hasMatch(pass);
+    final hasNumber = RegExp(r'[0-9]').hasMatch(pass);
+    final confirmPass = _confirmPasswordController.text;
+    final passwordsMatch = confirmPass.isNotEmpty && confirmPass == pass;
 
     return Scaffold(
-      backgroundColor: NoorColors.emeraldDeep,
+      backgroundColor: NoorColors.emeraldNight,
       body: Stack(
         children: [
-          // 1. Top 28% Hero Section
+          // 1. Top Hero Section with Faint Arabesque Geometry & Pop-Out Avatar Badge
           Positioned(
             top: 0,
             left: 0,
@@ -162,22 +224,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
             height: heroHeight,
             child: Container(
               decoration: const BoxDecoration(
-                gradient: NoorGradients.emeraldRadial,
+                gradient: NoorGradients.heroRadial,
               ),
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Arch vector
-                  SvgPicture.asset(
-                    'assets/svg/islamic_arch_background.svg',
-                    fit: BoxFit.cover,
-                    alignment: Alignment.bottomCenter,
+                  // Faint Arabesque 8-point star lattice, muqarnas arches & sparkles
+                  const CustomPaint(
+                    painter: HeroGeometryPainter(),
                   ),
 
                   // Hero Content
                   SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 6, 24, 20),
+                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 38),
                       child: Center(
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -185,47 +245,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Bismillah badge
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/svg/bismillah_calligraphy_badge.svg',
-                                    width: 72,
-                                    height: 72,
-                                  ),
-                                  Text(
-                                    'بِسْمِ اللَّهِ',
-                                    style: GoogleFonts.amiri(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: NoorColors.goldLight,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              // Avatar Badge with 128px glowing ring and pop-out clipped hijab illustration
+                              const PopOutAvatarBadge(variant: AvatarVariant.signup),
 
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 16),
 
+                              // Title
                               Text(
                                 'Create Your Account',
-                                style: GoogleFonts.cormorantGaramond(
-                                  fontSize: 27,
-                                  fontWeight: FontWeight.bold,
-                                  color: NoorColors.cream,
-                                  letterSpacing: 0.3,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: NoorColors.ivory,
+                                  letterSpacing: -0.3,
                                 ),
                               ),
 
-                              const SizedBox(height: 3),
+                              const SizedBox(height: 6),
 
-                              Text(
-                                'Begin your spiritual journey with recitation and daily remembrance.',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.manrope(
-                                  fontSize: 12,
-                                  color: NoorColors.cream.withOpacity(0.75),
-                                  height: 1.35,
+                              // Subtitle
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 300),
+                                child: Text(
+                                  'Begin your spiritual journey with daily recitation.',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13,
+                                    color: NoorColors.sand,
+                                    height: 1.4,
+                                  ),
                                 ),
                               ),
                             ],
@@ -239,9 +287,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
 
-          // 2. Cream Curved Bottom Sheet
+          // 2. Cream Curved Bottom Sheet (overlapping hero by 32px)
           Positioned(
-            top: heroHeight - 20,
+            top: heroHeight - 32,
             left: 0,
             right: 0,
             bottom: 0,
@@ -255,18 +303,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 borderRadius: NoorRadii.sheet,
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(28, 24, 28, 28),
+                  padding: const EdgeInsets.fromLTRB(28, 12, 28, 28),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Grab indicator pill
+                      // Grab indicator pill (40x4px)
                       Center(
                         child: Container(
-                          width: 36,
+                          width: 40,
                           height: 4,
-                          margin: const EdgeInsets.only(bottom: 18),
+                          margin: const EdgeInsets.only(bottom: 24),
                           decoration: BoxDecoration(
-                            color: NoorColors.line,
+                            color: NoorColors.fieldBorder,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -333,6 +381,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         isValid: _passwordController.text.length >= 8,
                       ),
 
+                      // Password Criteria Chips
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _buildRequirementChip('8+ characters', hasLength),
+                          _buildRequirementChip('A letter', hasLetter),
+                          _buildRequirementChip('A number', hasNumber),
+                        ],
+                      ),
+
                       const SizedBox(height: 14),
 
                       // Confirm Password Field
@@ -365,10 +425,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                         ),
-                        isValid: _confirmPasswordController.text.isNotEmpty &&
-                            _confirmPasswordController.text ==
-                                _passwordController.text,
+                        isValid: passwordsMatch,
                       ),
+
+                      // Passwords match indicator
+                      if (passwordsMatch) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              size: 14,
+                              color: NoorColors.forest,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Passwords match',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: NoorColors.forest,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
 
                       const SizedBox(height: 14),
 
