@@ -24,6 +24,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -54,8 +59,23 @@ jobs:
 
       - name: Ensure Android SDK 36 Platform is Installed
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-36" || true
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+          if command -v sdkmanager >/dev/null 2>&1; then
+            yes | sdkmanager --licenses || true
+            sdkmanager "platforms;android-36" || true
+          fi
+
+      - name: Pre-warm Gradle Wrapper with Retry
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          for i in 1 2 3 4 5; do
+            echo "Attempt $i: Validating Gradle wrapper..."
+            ./gradlew --version && break || {
+              echo "Gradle init failed, retrying in 5 seconds..."
+              sleep 5
+            }
+          done
 
       - name: Build Signed Android App Bundle (AAB for Google Play Store)
         run: flutter build appbundle --release
@@ -109,11 +129,13 @@ jobs:
             #### 📢 Google Play Store Release Notes (What's New):
             ```
             What's new in My Quran v${{ env.VERSION_NAME }}:
+            • Cloud sync with Firebase Realtime Database & persistent cross-device storage.
+            • Debounced automatic reading progress tracking as you scroll through verses.
+            • Redesigned luxury Islamic Noor Sanctuary hero headers with glowing 3D avatar badges.
+            • Live password requirement feedback chips & matching validation indicators.
             • Enhanced security & Google Play Automatic Protection support (minSdk 24+).
-            • Official full-square My Quran branding and high-definition launcher icon.
             • Authentic Mishary Rashid Alafasy Adhan audio with exact prayer time notifications & alarms.
             • Crystal-clear, borderless Islamic interface with optimized typography.
-            • New Islamic Reels feed with authentic verified content and smooth media playback.
             • Faster offline caching for all 114 Surahs and daily Ayah reflections.
             • Bug fixes and battery life optimizations for background prayer reminders.
             ```
